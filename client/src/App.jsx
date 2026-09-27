@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import DashboardPlaceholder from "./pages/citizen/DashboardPlaceholder";
+import BenefitPassport from "./pages/citizen/BenefitPassport";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 
 function App() {
@@ -23,6 +24,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <DashboardPlaceholder />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/benefit-passport"
+            element={
+              <ProtectedRoute>
+                <BenefitPassport />
               </ProtectedRoute>
             }
           />
