@@ -10,6 +10,7 @@ import profileRoutes from "./routes/profileRoutes.js";
 import schemeRoutes from "./routes/schemeRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import matchingRoutes from "./routes/matchingRoutes.js";
+import lifeSituationRoutes from "./routes/lifeSituationRoutes.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
 const app = express();
@@ -44,6 +45,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/schemes", schemeRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/matching", matchingRoutes);
+app.use("/api/life-situation", lifeSituationRoutes);
 
 // Catch-all 404 handler
 app.use(notFoundHandler);

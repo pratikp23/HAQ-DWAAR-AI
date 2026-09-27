@@ -9,6 +9,7 @@ import BenefitPassport from "./pages/citizen/BenefitPassport";
 import Schemes from "./pages/citizen/Schemes";
 import SchemeDetails from "./pages/citizen/SchemeDetails";
 import Recommendations from "./pages/citizen/Recommendations";
+import LifeSituation from "./pages/citizen/LifeSituation";
 import AdminSchemes from "./pages/admin/AdminSchemes";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 
@@ -36,6 +37,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <BenefitPassport />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/life-situation"
+            element={
+              <ProtectedRoute>
+                <LifeSituation />
               </ProtectedRoute>
             }
           />
