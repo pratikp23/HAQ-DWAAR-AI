@@ -6,6 +6,9 @@ import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import DashboardPlaceholder from "./pages/citizen/DashboardPlaceholder";
 import BenefitPassport from "./pages/citizen/BenefitPassport";
+import Schemes from "./pages/citizen/Schemes";
+import SchemeDetails from "./pages/citizen/SchemeDetails";
+import AdminSchemes from "./pages/admin/AdminSchemes";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 
 function App() {
@@ -32,6 +35,32 @@ function App() {
             element={
               <ProtectedRoute>
                 <BenefitPassport />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/schemes"
+            element={
+              <ProtectedRoute>
+                <Schemes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/schemes/:id"
+            element={
+              <ProtectedRoute>
+                <SchemeDetails />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Authenticated Admin Routes */}
+          <Route
+            path="/admin/schemes"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminSchemes />
               </ProtectedRoute>
             }
           />

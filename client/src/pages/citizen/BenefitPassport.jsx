@@ -112,13 +112,14 @@ export default function BenefitPassport() {
 
   // Load existing profile on mount
   useEffect(() => {
+    let isMounted = true;
     const fetchCitizenProfile = async () => {
       setLoading(true);
       setError(null);
       try {
         const res = await getProfile();
         const p = res?.data?.profile;
-        if (p) {
+        if (isMounted && p) {
           setCompleteness(res.data.profileCompleteness || 0);
 
           setPersonal({
@@ -180,13 +181,18 @@ export default function BenefitPassport() {
           });
         }
       } catch (err) {
-        setError(err.message || "Failed to load Benefit Passport.");
+        if (isMounted) {
+          setError(err.message || "Failed to load Benefit Passport.");
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     fetchCitizenProfile();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const toggleNeed = (need) => {
@@ -199,14 +205,16 @@ export default function BenefitPassport() {
     occupation.occupationType === "Farmer" || kisanDetails.isFarmer;
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) {
+      e.preventDefault();
+    }
     setSaving(true);
     setMessage(null);
     setError(null);
 
     // Client-side validations
     if (personal.age !== "" && (Number(personal.age) < 0 || Number(personal.age) > 125)) {
-      setError("Age must be between 0 and 125.");
+      setError("Please enter a valid age between 0 and 125.");
       setSaving(false);
       return;
     }
@@ -236,28 +244,28 @@ export default function BenefitPassport() {
     const payload = {
       personal: {
         age: personal.age === "" ? null : Number(personal.age),
-        gender: personal.gender,
-        category: personal.category,
+        gender: personal.gender || null,
+        category: personal.category || null,
         differentlyAbled: personal.differentlyAbled,
       },
       location: {
-        state: location.state,
-        district: location.district,
-        city: location.city,
-        areaType: location.areaType,
+        state: location.state || "",
+        district: location.district || "",
+        city: location.city || "",
+        areaType: location.areaType || null,
       },
       education: {
-        qualification: education.qualification,
-        currentCourse: education.currentCourse,
-        institution: education.institution,
+        qualification: education.qualification || null,
+        currentCourse: education.currentCourse || "",
+        institution: education.institution || "",
         gradePercentage:
           education.gradePercentage === "" ? null : Number(education.gradePercentage),
       },
       occupation: {
-        occupationType: occupation.occupationType,
+        occupationType: occupation.occupationType || null,
         annualIncome:
           occupation.annualIncome === "" ? null : Number(occupation.annualIncome),
-        incomeRange: occupation.incomeRange,
+        incomeRange: occupation.incomeRange || null,
       },
       kisanDetails: {
         isFarmer: isFarmerActive,
@@ -266,7 +274,7 @@ export default function BenefitPassport() {
         cropTypes: kisanDetails.cropTypes
           ? kisanDetails.cropTypes.split(",").map((s) => s.trim()).filter(Boolean)
           : [],
-        irrigationType: kisanDetails.irrigationType,
+        irrigationType: kisanDetails.irrigationType || null,
         kisanCreditCard: kisanDetails.kisanCreditCard,
       },
       needs,
@@ -279,7 +287,7 @@ export default function BenefitPassport() {
       setMessage("Benefit Passport saved successfully!");
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
-      setError(err.message || "Failed to save Benefit Passport.");
+      setError(err.message || "Failed to save Benefit Passport. Please check your connection.");
     } finally {
       setSaving(false);
     }
@@ -295,7 +303,7 @@ export default function BenefitPassport() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-16">
+    <div className="min-h-screen bg-slate-50 text-slate-900 pb-20">
       {/* Top Bar */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
@@ -306,10 +314,28 @@ export default function BenefitPassport() {
             <ArrowLeft className="w-4 h-4 mr-1.5" />
             Back to Dashboard
           </Link>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
             <span className="text-xs font-bold text-slate-700 hidden sm:inline">
-              Benefit Passport: {completeness}%
+              Passport: {completeness}%
             </span>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={saving}
+              className="inline-flex items-center justify-center px-4 py-1.5 rounded-lg text-xs font-semibold text-white bg-blue-700 hover:bg-blue-800 shadow-sm disabled:opacity-50 transition-colors"
+            >
+              {saving ? (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="w-3.5 h-3.5 mr-1.5" />
+                  Save Passport
+                </>
+              )}
+            </button>
           </div>
         </div>
       </header>
@@ -340,7 +366,7 @@ export default function BenefitPassport() {
         {error && (
           <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-900 text-xs sm:text-sm flex items-center space-x-2.5 shadow-sm">
             <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
-            <span>{error}</span>
+            <span className="font-semibold">{error}</span>
           </div>
         )}
 

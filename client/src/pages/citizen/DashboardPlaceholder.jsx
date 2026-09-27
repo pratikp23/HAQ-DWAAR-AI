@@ -136,15 +136,31 @@ export default function DashboardPlaceholder() {
               </p>
             </div>
 
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 flex flex-col sm:flex-row gap-2.5">
+              <Link
+                to="/dashboard/schemes"
+                className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-semibold text-sm bg-blue-600 hover:bg-blue-500 text-white shadow-md transition-colors border border-blue-400/40"
+              >
+                <Compass className="w-4 h-4 mr-2" />
+                Explore Schemes
+              </Link>
               <Link
                 to="/dashboard/benefit-passport"
-                className="inline-flex items-center px-5 py-2.5 rounded-xl font-semibold text-sm bg-white text-blue-900 hover:bg-blue-50 shadow-md transition-colors"
+                className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-semibold text-sm bg-white text-blue-900 hover:bg-blue-50 shadow-md transition-colors"
               >
                 <FileText className="w-4 h-4 mr-2 text-blue-700" />
                 {completeness >= 100 ? "Update Passport" : "Complete Passport"}
                 <ArrowRight className="w-4 h-4 ml-1.5" />
               </Link>
+              {user?.role === "admin" && (
+                <Link
+                  to="/admin/schemes"
+                  className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl font-semibold text-sm bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-md transition-colors"
+                >
+                  <Shield className="w-4 h-4 mr-1.5" />
+                  Admin Console
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -311,19 +327,24 @@ export default function DashboardPlaceholder() {
           </div>
         </div>
 
-        {/* Phase 4 Roadmap Notice */}
-        <div className="bg-slate-100 rounded-xl p-5 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        {/* Verified Schemes Catalog Link Banner */}
+        <div className="bg-gradient-to-r from-slate-900 to-blue-950 rounded-xl p-5 border border-slate-800 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
           <div className="space-y-1">
-            <h4 className="font-bold text-slate-800 text-sm">Next: Verified Scheme Database &amp; Realistic Seeding (Phase 4)</h4>
-            <p className="text-xs text-slate-600">
-              Structured database of central and state welfare opportunities with deterministic eligibility rules for students and farmers.
+            <div className="flex items-center space-x-2">
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                Phase 4 Active
+              </span>
+              <h4 className="font-bold text-white text-sm">Verified Scheme Registry &amp; Directory</h4>
+            </div>
+            <p className="text-xs text-slate-300">
+              Browse 10 authentic, verified Central &amp; State government schemes across Students, Kisans, and General welfare with official portal links.
             </p>
           </div>
           <Link
-            to="/dashboard/benefit-passport"
-            className="inline-flex items-center text-xs font-semibold text-blue-700 hover:text-blue-800 flex-shrink-0"
+            to="/dashboard/schemes"
+            className="inline-flex items-center px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white flex-shrink-0 shadow transition-colors"
           >
-            Review Benefit Passport <ArrowRight className="w-3.5 h-3.5 ml-1" />
+            Open Scheme Catalog <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
           </Link>
         </div>
 
