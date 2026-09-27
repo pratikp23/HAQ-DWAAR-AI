@@ -6,6 +6,10 @@ import cookieParser from "cookie-parser";
 
 import healthRoutes from "./routes/healthRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
+import schemeRoutes from "./routes/schemeRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import matchingRoutes from "./routes/matchingRoutes.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
 const app = express();
@@ -36,6 +40,10 @@ app.use(express.urlencoded({ extended: true }));
 // Base API Routes
 app.use("/api", healthRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/profile", profileRoutes);
+app.use("/api/schemes", schemeRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/matching", matchingRoutes);
 
 // Catch-all 404 handler
 app.use(notFoundHandler);

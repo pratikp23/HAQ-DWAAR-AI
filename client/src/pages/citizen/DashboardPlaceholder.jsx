@@ -138,27 +138,33 @@ export default function DashboardPlaceholder() {
 
             <div className="flex-shrink-0 flex flex-col sm:flex-row gap-2.5">
               <Link
-                to="/dashboard/schemes"
-                className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-semibold text-sm bg-blue-600 hover:bg-blue-500 text-white shadow-md transition-colors border border-blue-400/40"
+                to="/dashboard/recommendations"
+                className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-bold text-sm bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md transition-colors"
               >
-                <Compass className="w-4 h-4 mr-2" />
-                Explore Schemes
+                <Sparkles className="w-4 h-4 mr-2" />
+                Benefits For You
+              </Link>
+              <Link
+                to="/dashboard/schemes"
+                className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl font-semibold text-sm bg-blue-600 hover:bg-blue-500 text-white shadow-md transition-colors border border-blue-400/40"
+              >
+                <Compass className="w-4 h-4 mr-1.5" />
+                All Schemes
               </Link>
               <Link
                 to="/dashboard/benefit-passport"
-                className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-semibold text-sm bg-white text-blue-900 hover:bg-blue-50 shadow-md transition-colors"
+                className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl font-semibold text-sm bg-white text-blue-900 hover:bg-blue-50 shadow-md transition-colors"
               >
-                <FileText className="w-4 h-4 mr-2 text-blue-700" />
-                {completeness >= 100 ? "Update Passport" : "Complete Passport"}
-                <ArrowRight className="w-4 h-4 ml-1.5" />
+                <FileText className="w-4 h-4 mr-1.5 text-blue-700" />
+                {completeness >= 100 ? "Passport" : "Complete"}
               </Link>
               {user?.role === "admin" && (
                 <Link
                   to="/admin/schemes"
-                  className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl font-semibold text-sm bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-md transition-colors"
+                  className="inline-flex items-center justify-center px-3.5 py-2.5 rounded-xl font-semibold text-sm bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-md transition-colors"
                 >
-                  <Shield className="w-4 h-4 mr-1.5" />
-                  Admin Console
+                  <Shield className="w-4 h-4 mr-1" />
+                  Admin
                 </Link>
               )}
             </div>
@@ -327,12 +333,34 @@ export default function DashboardPlaceholder() {
           </div>
         </div>
 
+        {/* Personalized Matching Engine Banner (Phase 5) */}
+        <div className="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 rounded-xl p-5 border border-emerald-800 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+          <div className="space-y-1">
+            <div className="flex items-center space-x-2">
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
+                Phase 5 Active
+              </span>
+              <h4 className="font-bold text-white text-sm">Deterministic Matching &amp; "Why This Match?"</h4>
+            </div>
+            <p className="text-xs text-emerald-100">
+              Personalized benefit recommendations matched deterministically against your Benefit Passport with complete rule breakdown.
+            </p>
+          </div>
+          <Link
+            to="/dashboard/recommendations"
+            className="inline-flex items-center px-4 py-2 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 flex-shrink-0 shadow transition-colors"
+          >
+            <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+            View My Matches <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+          </Link>
+        </div>
+
         {/* Verified Schemes Catalog Link Banner */}
         <div className="bg-gradient-to-r from-slate-900 to-blue-950 rounded-xl p-5 border border-slate-800 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
           <div className="space-y-1">
             <div className="flex items-center space-x-2">
-              <span className="px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                Phase 4 Active
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                Registry
               </span>
               <h4 className="font-bold text-white text-sm">Verified Scheme Registry &amp; Directory</h4>
             </div>

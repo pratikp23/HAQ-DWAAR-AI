@@ -8,6 +8,7 @@ import DashboardPlaceholder from "./pages/citizen/DashboardPlaceholder";
 import BenefitPassport from "./pages/citizen/BenefitPassport";
 import Schemes from "./pages/citizen/Schemes";
 import SchemeDetails from "./pages/citizen/SchemeDetails";
+import Recommendations from "./pages/citizen/Recommendations";
 import AdminSchemes from "./pages/admin/AdminSchemes";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 
@@ -35,6 +36,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <BenefitPassport />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/recommendations"
+            element={
+              <ProtectedRoute>
+                <Recommendations />
               </ProtectedRoute>
             }
           />
