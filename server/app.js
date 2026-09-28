@@ -11,6 +11,8 @@ import schemeRoutes from "./routes/schemeRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import matchingRoutes from "./routes/matchingRoutes.js";
 import lifeSituationRoutes from "./routes/lifeSituationRoutes.js";
+import documentRoutes from "./routes/documentRoutes.js";
+import digilockerRoutes from "./routes/digilockerRoutes.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
 const app = express();
@@ -46,6 +48,8 @@ app.use("/api/schemes", schemeRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/matching", matchingRoutes);
 app.use("/api/life-situation", lifeSituationRoutes);
+app.use("/api/documents", documentRoutes);
+app.use("/api/digilocker", digilockerRoutes);
 
 // Catch-all 404 handler
 app.use(notFoundHandler);

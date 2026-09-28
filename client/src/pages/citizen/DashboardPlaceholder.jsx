@@ -159,6 +159,13 @@ export default function DashboardPlaceholder() {
                 Schemes
               </Link>
               <Link
+                to="/dashboard/documents"
+                className="inline-flex items-center justify-center px-3.5 py-2.5 rounded-xl font-semibold text-sm bg-teal-600 hover:bg-teal-500 text-white shadow-md transition-colors"
+              >
+                <FileText className="w-4 h-4 mr-1 text-teal-200" />
+                Documents
+              </Link>
+              <Link
                 to="/dashboard/benefit-passport"
                 className="inline-flex items-center justify-center px-3.5 py-2.5 rounded-xl font-semibold text-sm bg-white text-blue-900 hover:bg-blue-50 shadow-md transition-colors"
               >
@@ -338,6 +345,28 @@ export default function DashboardPlaceholder() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Document Vault & DigiLocker Banner (Phase 8) */}
+        <div className="bg-gradient-to-r from-teal-900 via-emerald-950 to-slate-900 rounded-xl p-5 border border-teal-800 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+          <div className="space-y-1">
+            <div className="flex items-center space-x-2">
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-teal-400/20 text-teal-300 border border-teal-400/30">
+                Phase 8 Active
+              </span>
+              <h4 className="font-bold text-white text-sm">Personal Document Vault &amp; DigiLocker Integration</h4>
+            </div>
+            <p className="text-xs text-teal-100">
+              Upload certificates and IDs or import them through DigiLocker Demo. Reuse them while checking scheme document requirements.
+            </p>
+          </div>
+          <Link
+            to="/dashboard/documents"
+            className="inline-flex items-center px-4 py-2 rounded-lg text-xs font-bold bg-teal-500 hover:bg-teal-400 text-slate-950 flex-shrink-0 shadow transition-colors"
+          >
+            <FileText className="w-3.5 h-3.5 mr-1.5" />
+            Open Document Vault <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+          </Link>
         </div>
 
         {/* Life Situation NLU Engine Banner (Phase 6) */}

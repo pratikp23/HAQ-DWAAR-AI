@@ -13,8 +13,9 @@ export const getSchemes = async (req, res, next) => {
     // Citizens can strictly view VERIFIED schemes only
     const conditions = [];
 
-    // Role-based visibility enforcement
-    if (req.user.role !== "admin") {
+    // Role-based visibility enforcement (anonymous & citizens see strictly VERIFIED)
+    const isAdmin = req.user && req.user.role === "admin";
+    if (!isAdmin) {
       conditions.push({ verificationStatus: "VERIFIED" });
     } else if (status && status !== "ALL") {
       conditions.push({ verificationStatus: status });
@@ -94,8 +95,9 @@ export const getSchemeById = async (req, res, next) => {
       });
     }
 
-    // Citizens cannot view unverified or archived schemes
-    if (req.user.role !== "admin" && scheme.verificationStatus !== "VERIFIED") {
+    // Unauthenticated visitors and citizens cannot view unverified or archived schemes
+    const isAdmin = req.user && req.user.role === "admin";
+    if (!isAdmin && scheme.verificationStatus !== "VERIFIED") {
       return res.status(404).json({
         success: false,
         message: "Scheme not available or currently under verification.",

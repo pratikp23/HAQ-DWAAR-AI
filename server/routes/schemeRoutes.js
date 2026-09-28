@@ -6,14 +6,14 @@ import {
   updateScheme,
   archiveScheme,
 } from "../controllers/schemeController.js";
-import { requireAuth } from "../middleware/authMiddleware.js";
+import { requireAuth, optionalAuth } from "../middleware/authMiddleware.js";
 import { requireRole } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
-// Citizen & Admin accessible
-router.get("/", requireAuth, getSchemes);
-router.get("/:id", requireAuth, getSchemeById);
+// Publicly accessible with optional auth (Citizens see VERIFIED; Admins see drafts/all)
+router.get("/", optionalAuth, getSchemes);
+router.get("/:id", optionalAuth, getSchemeById);
 
 // Admin role strictly required
 router.post("/", requireAuth, requireRole("admin"), createScheme);

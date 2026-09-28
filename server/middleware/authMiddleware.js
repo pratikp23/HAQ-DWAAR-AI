@@ -57,3 +57,41 @@ export const requireAuth = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * Optional Authentication Middleware:
+ * Inspects token if provided. If valid, attaches req.user.
+ * If token is missing or invalid, sets req.user = null and continues without error.
+ */
+export const optionalAuth = async (req, res, next) => {
+  try {
+    let token = null;
+
+    if (req.cookies && req.cookies.token) {
+      token = req.cookies.token;
+    } else if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer ")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+
+    if (!token) {
+      req.user = null;
+      return next();
+    }
+
+    const jwtSecret = process.env.JWT_SECRET || "haqdwaar_jwt_secret_dev_key_2026_secure";
+    try {
+      const decoded = jwt.verify(token, jwtSecret);
+      const user = await User.findById(decoded.userId).select("-passwordHash");
+      req.user = user || null;
+    } catch (err) {
+      req.user = null;
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};

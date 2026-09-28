@@ -21,7 +21,9 @@ const CATEGORIES = [
   { id: "ALL", label: "All Opportunities" },
   { id: "STUDENT", label: "Student & Education", icon: GraduationCap },
   { id: "KISAN", label: "Kisan & Agriculture", icon: Sprout },
-  { id: "GENERAL", label: "General & Welfare", icon: Building },
+  { id: "EMPLOYMENT", label: "Employment & Livelihood", icon: Briefcase },
+  { id: "BUSINESS", label: "Business & MSME", icon: Building },
+  { id: "GENERAL", label: "General & Welfare", icon: Globe },
 ];
 
 export default function Schemes() {
