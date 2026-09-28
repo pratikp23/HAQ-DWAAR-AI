@@ -207,23 +207,32 @@ export default function SchemeDetails() {
                 </p>
               </div>
 
-              <button
-                onClick={handleCheckMatch}
-                disabled={evaluating}
-                className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-500 text-white shadow-md transition-colors flex-shrink-0 disabled:opacity-50"
-              >
-                {evaluating ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                    Evaluating...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4 mr-2 text-blue-300" />
-                    {evaluation ? "Re-evaluate Match" : "Check My Match"}
-                  </>
-                )}
-              </button>
+              <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
+                <Link
+                  to={`/dashboard/readiness/${scheme._id}`}
+                  className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition-colors whitespace-nowrap"
+                >
+                  <FileCheck2 className="w-4 h-4 mr-1.5" />
+                  Check Application Readiness →
+                </Link>
+                <button
+                  onClick={handleCheckMatch}
+                  disabled={evaluating}
+                  className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl font-bold text-xs bg-white/10 hover:bg-white/20 text-white border border-white/20 shadow-md transition-colors flex-shrink-0 disabled:opacity-50 whitespace-nowrap"
+                >
+                  {evaluating ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                      Evaluating...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 mr-2 text-blue-300" />
+                      {evaluation ? "Re-evaluate Match" : "Check Profile Match"}
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
 
             {evalError && (
@@ -422,12 +431,20 @@ export default function SchemeDetails() {
             </div>
 
             {isAuthenticated ? (
-              <Link
-                to="/dashboard/documents"
-                className="inline-flex items-center text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg border border-emerald-200 transition"
-              >
-                + Manage Document Vault
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  to={`/dashboard/readiness/${scheme._id}`}
+                  className="inline-flex items-center text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg border border-blue-200 transition"
+                >
+                  Check Readiness & Plan →
+                </Link>
+                <Link
+                  to="/dashboard/documents"
+                  className="inline-flex items-center text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg border border-emerald-200 transition"
+                >
+                  + Manage Vault
+                </Link>
+              </div>
             ) : (
               <Link
                 to="/register"

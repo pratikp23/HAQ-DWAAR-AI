@@ -12,6 +12,7 @@ import SchemeDetails from "./pages/citizen/SchemeDetails";
 import Recommendations from "./pages/citizen/Recommendations";
 import LifeSituation from "./pages/citizen/LifeSituation";
 import Documents from "./pages/citizen/Documents";
+import Readiness from "./pages/citizen/Readiness";
 import AdminSchemes from "./pages/admin/AdminSchemes";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 
@@ -87,6 +88,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <SchemeDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/readiness/:schemeId"
+            element={
+              <ProtectedRoute>
+                <Readiness />
               </ProtectedRoute>
             }
           />

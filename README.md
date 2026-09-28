@@ -106,7 +106,15 @@ HAQ DWAAR AI provides two complementary, coexisting user journeys:
 - **Phase 6: Life Situation NLU Engine**: Natural language understanding with Gemini 1.5 Flash, strict Zod validation, and safe rule-based fallback.
 - **Phase 7: Document Upload & Document Health**: File upload, OCR extraction abstraction, document health analysis (`VALID`, `NEEDS_VERIFICATION`, `EXPIRED`, `INCOMPLETE`), sensitive ID masking.
 - **Phase 8: Personal Document Vault & DigiLocker Demo**: Centralized vault, simulated DigiLocker OAuth flow, CSRF state protection, duplicate import prevention.
-- **Phase 8.1: Public Scheme Discovery & Refinement**: Unauthenticated public browsing (`/browse-schemes`, `/schemes/:id`), `optionalAuth` middleware, responsive `Navbar`, `Footer`, redesigned `HomePage`, `HowItWorks`, `Features`, `About`, `FAQ`, and dual CTAs.
+- **Phase 8.1: Public Scheme Discovery & Refinement**: Unauthenticated public browsing (`/browse-schemes`, `/schemes/:id`), `optionalAuth` middleware, responsive `Navbar`, `Footer`, unified multi-section `HomePage`, and dual citizen journeys.
+- **Phase 9: Application Preparation Readiness & Personal Action Plan**:
+  - Deterministic 0–100 Application Preparation Readiness Score:
+    - *Required Documents (50 pts)*: Based on mandatory certificates present in citizen's vault and weighted by health status (`VALID` = 1.0, `NEEDS_VERIFICATION` = 0.5, `INCOMPLETE`/`EXPIRED` = 0).
+    - *Profile Information (30 pts)*: Completeness of scheme-relevant fields in Benefit Passport.
+    - *Action Readiness (20 pts)*: Presence of verified official application gateway (+10 pts) and preparation information completeness (+10 pts).
+  - Clear architectural separation between Profile Matching and Preparation Readiness: Failed profile conditions never deduct points from action readiness.
+  - Personal Action Plan (`/dashboard/readiness/:schemeId`): Prioritized, deterministic next steps (HIGH, MEDIUM, LOW) linking directly to document uploads, passport updates, or official government portals.
+  - Standardized civic transparency disclaimer and verified official portal links.
 
 ---
 

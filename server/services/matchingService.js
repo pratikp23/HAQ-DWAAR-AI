@@ -52,7 +52,13 @@ function formatValue(val) {
  * Compare two values using the specified deterministic operator
  */
 export function evaluateOperator(actual, operator, expected) {
-  const op = (operator || "equals").toLowerCase().trim();
+  let op = (operator || "equals").toLowerCase().trim();
+  if (op === "gte") op = "greater_than_or_equal";
+  if (op === "lte") op = "less_than_or_equal";
+  if (op === "gt") op = "greater_than";
+  if (op === "lt") op = "less_than";
+  if (op === "eq") op = "equals";
+  if (op === "ne") op = "not_equals";
 
   switch (op) {
     case "equals": {

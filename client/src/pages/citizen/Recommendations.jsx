@@ -424,10 +424,16 @@ export default function Recommendations() {
                           </a>
                         )}
                         <Link
+                          to={`/dashboard/readiness/${rec.schemeId}`}
+                          className="inline-flex items-center px-3 py-1.5 rounded-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-2xs transition-colors"
+                        >
+                          Check Readiness →
+                        </Link>
+                        <Link
                           to={`/dashboard/schemes/${rec.schemeId}`}
                           className="inline-flex items-center px-3.5 py-1.5 rounded-lg font-semibold bg-slate-900 hover:bg-slate-800 text-white shadow-sm transition-colors"
                         >
-                          View Scheme Checklist <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                          Details <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                         </Link>
                       </div>
                     </div>
