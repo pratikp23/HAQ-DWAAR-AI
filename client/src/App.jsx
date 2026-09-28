@@ -14,6 +14,8 @@ import LifeSituation from "./pages/citizen/LifeSituation";
 import Documents from "./pages/citizen/Documents";
 import Readiness from "./pages/citizen/Readiness";
 import AdminSchemes from "./pages/admin/AdminSchemes";
+import AdminNotifications from "./pages/admin/AdminNotifications";
+import NotificationReview from "./pages/admin/NotificationReview";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 
 function App() {
@@ -106,6 +108,22 @@ function App() {
             element={
               <ProtectedRoute requiredRole="admin">
                 <AdminSchemes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/notifications"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminNotifications />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/notifications/:id"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <NotificationReview />
               </ProtectedRoute>
             }
           />

@@ -115,6 +115,19 @@ HAQ DWAAR AI provides two complementary, coexisting user journeys:
   - Clear architectural separation between Profile Matching and Preparation Readiness: Failed profile conditions never deduct points from action readiness.
   - Personal Action Plan (`/dashboard/readiness/:schemeId`): Prioritized, deterministic next steps (HIGH, MEDIUM, LOW) linking directly to document uploads, passport updates, or official government portals.
   - Standardized civic transparency disclaimer and verified official portal links.
+- **Phase 10: PDF Notification Analyzer + Admin Verification**:
+  - Secure government notification PDF ingestion (PDF mime enforcement, 5 MB limit, randomized file storage).
+  - Machine-readability heuristics via `pdf-parse`: Accurately detects scanned/no-text PDFs (`ocrRequired: true`) with explicit admin warnings without falsely claiming OCR was performed.
+  - Deterministic candidate metadata extractor: Distinguishes issuing department, reference number, notification dates, start dates, application deadlines, eligibility clauses, required documents, and benefit highlights.
+  - Prompt Injection Defense: PDF text is treated strictly as untrusted data; embedded injection directives are parsed solely as plain text with zero privilege escalation.
+  - Hybrid AI extraction: Optional Gemini 1.5 assistance with Zod schema validation, gracefully falling back to deterministic extraction when API keys are absent or requests fail.
+  - **Strict Civic Trust Boundary**:
+    `PDF → Extraction → UNVERIFIED (REVIEW_REQUIRED) → Admin Review → APPROVED`
+    - AI or OCR extractions are NEVER treated as authoritative government data.
+    - Approving a notification NEVER automatically modifies verified Scheme records.
+    - Scheme updates are strictly field-specific (default unchecked) with mandatory confirmation required for portal URL updates.
+  - Complete immutable audit trail (`NotificationReviewLog`) recording every administrative action (`UPLOADED`, `ANALYZED`, `UPDATED`, `APPROVED`, `REJECTED`, `SCHEME_UPDATE_PREVIEWED`, `SCHEME_UPDATE_APPLIED`).
+  - Dedicated Admin UI at `/admin/notifications` and `/admin/notifications/:id` featuring side-by-side comparison tables, raw text inspector, editable candidate fields, and visual trust banners.
 
 ---
 

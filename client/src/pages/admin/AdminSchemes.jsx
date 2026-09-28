@@ -146,11 +146,17 @@ export default function AdminSchemes() {
               <ArrowLeft className="w-4 h-4 mr-1.5" />
               Citizen Portal
             </Link>
-            <span className="text-slate-600">|</span>
             <div className="flex items-center space-x-2">
               <Shield className="w-5 h-5 text-indigo-400" />
               <span className="font-bold text-sm tracking-tight">Admin Scheme Management</span>
             </div>
+            <span className="text-slate-600">|</span>
+            <Link
+              to="/admin/notifications"
+              className="inline-flex items-center text-xs font-semibold text-slate-300 hover:text-white"
+            >
+              Notification Analyzer →
+            </Link>
           </div>
 
           <button
