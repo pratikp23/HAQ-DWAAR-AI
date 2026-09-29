@@ -15,9 +15,15 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useLanguage } from "../../context/LanguageContext";
+import { LayoutContext } from "../../context/LayoutContext";
 import { getUnreadCount } from "../../services/notificationApi";
 
-export default function Navbar() {
+export default function Navbar({ forceRender = false }) {
+  const { inLayout } = useContext(LayoutContext) || {};
+  if (inLayout && !forceRender) {
+    return null;
+  }
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -294,8 +300,10 @@ export default function Navbar() {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               type="button"
-              className="p-2 rounded-lg text-slate-700 hover:text-slate-950 hover:bg-slate-100 focus:outline-none"
-              aria-label="Toggle menu"
+              className="p-2 rounded-lg text-slate-700 hover:text-slate-950 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#591d8f] focus-visible:ring-offset-2"
+              aria-label="Toggle navigation menu"
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-menu-drawer"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -305,42 +313,45 @@ export default function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-5 space-y-2 shadow-lg animate-fade-in">
+        <div
+          id="mobile-menu-drawer"
+          className="md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-5 space-y-2 shadow-lg animate-fade-in"
+        >
           <div className="space-y-1">
             <button
               onClick={(e) => handleNavClick(e, "top")}
-              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50"
+              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-[#591d8f]"
             >
               {t("navHome", "Home")}
             </button>
             <Link
               to="/browse-schemes"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50"
+              className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-[#591d8f]"
             >
               {t("navBrowseSchemes", "Browse Schemes")}
             </Link>
             <button
               onClick={(e) => handleNavClick(e, "how-it-works")}
-              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50"
+              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-[#591d8f]"
             >
               {t("navHowItWorks", "How It Works")}
             </button>
             <button
               onClick={(e) => handleNavClick(e, "features")}
-              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50"
+              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-[#591d8f]"
             >
               {t("navFeatures", "Features")}
             </button>
             <button
               onClick={(e) => handleNavClick(e, "about")}
-              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50"
+              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-[#591d8f]"
             >
               {t("navAbout", "About")}
             </button>
             <button
               onClick={(e) => handleNavClick(e, "faq")}
-              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50"
+              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-[#591d8f]"
             >
               {t("navFaq", "FAQ")}
             </button>
@@ -359,12 +370,92 @@ export default function Navbar() {
                       ? "bg-[#240b49] text-white"
                       : "bg-slate-100 text-slate-700"
                   }`}
+                  aria-label={`Switch language to ${l.label}`}
                 >
                   {l.flag} {l.short}
                 </button>
               ))}
             </div>
           </div>
+
+          {/* Authenticated Citizen Navigation in Mobile Menu */}
+          {isAuthenticated && user?.role === "citizen" && (
+            <div className="pt-2 border-t border-slate-100 space-y-1">
+              <div className="px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                Citizen Portal Services
+              </div>
+              <Link
+                to="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-purple-50 hover:text-[#591d8f]"
+              >
+                Dashboard Overview
+              </Link>
+              <Link
+                to="/dashboard/benefit-passport"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-purple-50 hover:text-[#591d8f]"
+              >
+                Benefit Passport
+              </Link>
+              <Link
+                to="/dashboard/documents"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-purple-50 hover:text-[#591d8f]"
+              >
+                Document Vault
+              </Link>
+              <Link
+                to="/dashboard/applications"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-purple-50 hover:text-[#591d8f]"
+              >
+                Tracked Applications
+              </Link>
+              <Link
+                to="/dashboard/notifications"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-purple-50 hover:text-[#591d8f]"
+              >
+                <span>Alerts &amp; Notifications</span>
+                {unreadCount > 0 && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-red-600 text-white">
+                    {unreadCount}
+                  </span>
+                )}
+              </Link>
+            </div>
+          )}
+
+          {/* Authenticated Admin Navigation in Mobile Menu */}
+          {isAuthenticated && user?.role === "admin" && (
+            <div className="pt-2 border-t border-slate-100 space-y-1">
+              <div className="px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                Admin Console
+              </div>
+              <Link
+                to="/admin"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-purple-50 hover:text-[#591d8f]"
+              >
+                Analytics Dashboard
+              </Link>
+              <Link
+                to="/admin/schemes"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-purple-50 hover:text-[#591d8f]"
+              >
+                Manage Schemes
+              </Link>
+              <Link
+                to="/admin/notifications"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-purple-50 hover:text-[#591d8f]"
+              >
+                Notification Analyzer
+              </Link>
+            </div>
+          )}
 
           <div className="pt-3 border-t border-slate-100 space-y-2">
             {isAuthenticated ? (
@@ -383,6 +474,7 @@ export default function Navbar() {
                     handleLogout();
                   }}
                   className="w-full flex items-center justify-center px-4 py-2.5 rounded-xl text-xs font-extrabold text-rose-600 bg-rose-50 border border-rose-200 hover:bg-rose-100 transition"
+                  aria-label="Log Out of your account"
                 >
                   <LogOut className="w-4 h-4 mr-1.5" />
                   <span>Log Out ({user?.name || user?.email})</span>

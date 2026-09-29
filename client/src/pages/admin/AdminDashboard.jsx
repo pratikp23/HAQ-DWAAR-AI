@@ -48,6 +48,8 @@ import {
   StatusBarChart,
   DistributionPieChart,
 } from "../../components/admin/AnalyticsChart";
+import { LayoutContext } from "../../context/LayoutContext";
+import { useContext } from "react";
 
 const RANGE_OPTIONS = [
   { id: "7d", label: "7 Days" },
@@ -58,6 +60,7 @@ const RANGE_OPTIONS = [
 
 export default function AdminDashboard() {
   const { logout } = useAuth();
+  const { inLayout } = useContext(LayoutContext) || {};
   const navigate = useNavigate();
 
   const [range, setRange] = useState("all");
@@ -189,56 +192,58 @@ export default function AdminDashboard() {
   }));
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-20">
-      {/* Admin Top Navigation */}
-      <header className="bg-slate-900 text-white sticky top-0 z-30 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3 sm:space-x-4 overflow-x-auto py-2">
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center text-xs font-semibold text-slate-300 hover:text-white shrink-0"
-            >
-              <ArrowLeft className="w-4 h-4 mr-1.5" />
-              Citizen Portal
-            </Link>
-            <span className="text-slate-600">|</span>
-            <div className="flex items-center space-x-1.5 text-indigo-400 font-bold text-xs shrink-0">
-              <LayoutDashboard className="w-4 h-4" />
-              <span>Admin Operations</span>
+    <div className="min-h-screen bg-[#f7f5fa] text-[#0f172a] pb-20">
+      {/* Admin Top Navigation (only when standalone) */}
+      {!inLayout && (
+        <header className="bg-slate-900 text-white sticky top-0 z-30 shadow-md">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <div className="flex items-center space-x-3 sm:space-x-4 overflow-x-auto py-2">
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center text-xs font-semibold text-slate-300 hover:text-white shrink-0"
+              >
+                <ArrowLeft className="w-4 h-4 mr-1.5" />
+                Citizen Portal
+              </Link>
+              <span className="text-slate-600">|</span>
+              <div className="flex items-center space-x-1.5 text-indigo-400 font-bold text-xs shrink-0">
+                <LayoutDashboard className="w-4 h-4" />
+                <span>Admin Operations</span>
+              </div>
+              <span className="text-slate-600">|</span>
+              <Link
+                to="/admin/schemes"
+                className="inline-flex items-center text-xs font-semibold text-slate-300 hover:text-white shrink-0"
+              >
+                <Shield className="w-3.5 h-3.5 mr-1 text-slate-400" />
+                Scheme Catalog
+              </Link>
+              <span className="text-slate-600">|</span>
+              <Link
+                to="/admin/notifications"
+                className="inline-flex items-center text-xs font-semibold text-slate-300 hover:text-white shrink-0"
+              >
+                <FileText className="w-3.5 h-3.5 mr-1 text-slate-400" />
+                Notification Analyzer
+              </Link>
             </div>
-            <span className="text-slate-600">|</span>
-            <Link
-              to="/admin/schemes"
-              className="inline-flex items-center text-xs font-semibold text-slate-300 hover:text-white shrink-0"
-            >
-              <Shield className="w-3.5 h-3.5 mr-1 text-slate-400" />
-              Scheme Catalog
-            </Link>
-            <span className="text-slate-600">|</span>
-            <Link
-              to="/admin/notifications"
-              className="inline-flex items-center text-xs font-semibold text-slate-300 hover:text-white shrink-0"
-            >
-              <FileText className="w-3.5 h-3.5 mr-1 text-slate-400" />
-              Notification Analyzer
-            </Link>
-          </div>
 
-          <div className="flex items-center space-x-2">
-            <span className="hidden sm:inline-block px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 shrink-0">
-              Admin Console
-            </span>
-            <button
-              onClick={handleLogout}
-              className="inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-bold text-rose-300 hover:text-white hover:bg-rose-600/30 border border-rose-400/30 transition-colors shrink-0"
-              title="Sign Out"
-            >
-              <LogOut className="w-3.5 h-3.5 mr-1" />
-              <span>Log Out</span>
-            </button>
+            <div className="flex items-center space-x-2">
+              <span className="hidden sm:inline-block px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 shrink-0">
+                Admin Console
+              </span>
+              <button
+                onClick={handleLogout}
+                className="inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-bold text-rose-300 hover:text-white hover:bg-rose-600/30 border border-rose-400/30 transition-colors shrink-0"
+                title="Sign Out"
+              >
+                <LogOut className="w-3.5 h-3.5 mr-1" />
+                <span>Log Out</span>
+              </button>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 space-y-6">

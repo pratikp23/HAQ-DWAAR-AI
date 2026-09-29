@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { LayoutContext } from "../../context/LayoutContext";
 import { 
   getSchemes, 
   createScheme, 
@@ -22,6 +23,7 @@ import {
 
 export default function AdminSchemes() {
   const { logout } = useAuth();
+  const { inLayout } = useContext(LayoutContext) || {};
   const navigate = useNavigate();
 
   const [schemes, setSchemes] = useState([]);
@@ -148,80 +150,92 @@ export default function AdminSchemes() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-20">
-      {/* Top Header */}
-      <header className="bg-slate-900 text-white sticky top-0 z-30 shadow-md">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              <ArrowLeft className="w-4 h-4 mr-1.5" />
-              Citizen Portal
-            </Link>
-            <div className="flex items-center space-x-2">
-              <Shield className="w-5 h-5 text-indigo-400" />
-              <span className="font-bold text-sm tracking-tight">Admin Scheme Management</span>
+    <div className="min-h-screen bg-[#f7f5fa] text-[#0f172a] pb-20">
+      {/* Top Header (only when standalone) */}
+      {!inLayout && (
+        <header className="bg-slate-900 text-white sticky top-0 z-30 shadow-md">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center text-xs font-semibold text-slate-300 hover:text-white"
+              >
+                <ArrowLeft className="w-4 h-4 mr-1.5" />
+                Citizen Portal
+              </Link>
+              <div className="flex items-center space-x-2">
+                <Shield className="w-5 h-5 text-indigo-400" />
+                <span className="font-bold text-sm tracking-tight">Admin Scheme Management</span>
+              </div>
+              <span className="text-slate-600">|</span>
+              <Link
+                to="/admin/notifications"
+                className="inline-flex items-center text-xs font-semibold text-slate-300 hover:text-white"
+              >
+                Notification Analyzer →
+              </Link>
             </div>
-            <span className="text-slate-600">|</span>
-            <Link
-              to="/admin/notifications"
-              className="inline-flex items-center text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Notification Analyzer →
-            </Link>
-          </div>
 
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="inline-flex items-center px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition-colors"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Add Scheme
-            </button>
-            <button
-              onClick={handleLogout}
-              className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold text-rose-300 hover:text-white hover:bg-rose-600/30 border border-rose-400/30 transition-colors"
-              title="Sign Out"
-            >
-              <LogOut className="w-3.5 h-3.5 mr-1" />
-              <span>Log Out</span>
-            </button>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="inline-flex items-center px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition-colors"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add Scheme
+              </button>
+              <button
+                onClick={handleLogout}
+                className="inline-flex items-center px-3.5 py-1.5 rounded-lg text-xs font-bold text-rose-300 hover:text-white hover:bg-rose-600/30 border border-rose-400/30 transition-colors"
+                title="Sign Out"
+              >
+                <LogOut className="w-3.5 h-3.5 mr-1" />
+                <span>Log Out</span>
+              </button>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
 
       {/* Main Container */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 space-y-6">
         
         {/* Page Banner */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-2xl border border-[#e9e1f5] shadow-xs">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-2xl font-extrabold text-[#0f172a] tracking-tight">
               Scheme Verification &amp; Catalog Control
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600">
+            <p className="text-xs sm:text-sm text-[#4b5563] mt-1">
               Only verified records are accessible to citizens. DRAFT and ARCHIVED schemes are quarantined.
             </p>
           </div>
 
-          {/* Status Filters */}
-          <div className="flex items-center space-x-1.5 bg-white p-1 rounded-lg border border-slate-200 text-xs shadow-sm">
-            {["ALL", "VERIFIED", "DRAFT", "ARCHIVED"].map((st) => (
-              <button
-                key={st}
-                onClick={() => setStatusFilter(st)}
-                className={`px-3 py-1 rounded-md font-semibold transition-colors ${
-                  statusFilter === st
-                    ? "bg-slate-900 text-white"
-                    : "text-slate-600 hover:bg-slate-100"
-                }`}
-              >
-                {st}
-              </button>
-            ))}
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* Status Filters */}
+            <div className="flex items-center space-x-1.5 bg-[#fbf9fe] p-1 rounded-xl border border-[#e9e1f5] text-xs">
+              {["ALL", "VERIFIED", "DRAFT", "ARCHIVED"].map((st) => (
+                <button
+                  key={st}
+                  onClick={() => setStatusFilter(st)}
+                  className={`px-3 py-1 rounded-lg font-bold transition-colors ${
+                    statusFilter === st
+                      ? "bg-[#2b0f4c] text-white"
+                      : "text-[#4b5563] hover:bg-[#f7f5fa]"
+                  }`}
+                >
+                  {st}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="inline-flex items-center px-3.5 py-2 rounded-xl text-xs font-bold bg-[#ea580c] hover:bg-[#c2410c] text-white shadow-xs transition-colors"
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              Add Scheme
+            </button>
           </div>
         </div>
 

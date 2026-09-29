@@ -2,17 +2,75 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Page & Surfaces */
+  --color-page: #f7f5fa;
+  --color-surface: #ffffff;
+  --color-surface-soft: #fbf9fe;
+  --color-surface-soft-alt: #faf9fc;
+
+  /* Plum / Brand */
+  --color-brand: #240b49;
+  --color-brand-primary: #2b0f4c;
+  --color-brand-dark: #1e0a3c;
+  --color-brand-bright: #591d8f;
+  --color-plum-300: #6c28a8;
+  --color-plum-400: #4d1e8d;
+  --color-plum-500: #3d156b;
+
+  /* Orange / Action */
+  --color-action: #ea580c;
+  --color-action-hover: #c2410c;
+  --color-action-highlight: #f97316;
+  --color-action-light: #fb923c;
+
+  /* Status */
+  --color-success: #059669;
+  --color-warning: #d97706;
+  --color-info: #2563eb;
+  --color-danger: #dc2626;
+
+  /* Text */
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #4b5563;
+
+  /* Borders */
+  --color-border: #e9e1f5;
+  --color-border-alt: #e5dcf2;
+}
+
 @layer base {
   body {
-    font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', 'Noto Sans Devanagari', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: #0f172a;
     background-color: #f7f5fa;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     letter-spacing: -0.02em;
+    color: #0f172a;
+  }
+
+  /* Accessible focus indicators */
+  :focus-visible {
+    outline: 2px solid #591d8f;
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  .bg-civic-gradient {
+    background: linear-gradient(135deg, #1e0a3c 0%, #2b0f4c 50%, #3d156b 100%);
+  }
+  
+  .bg-plum-gradient {
+    background: linear-gradient(135deg, #240b49 0%, #2b0f4c 60%, #4d1e8d 100%);
+  }
+
+  .text-balance {
+    text-wrap: balance;
   }
 }

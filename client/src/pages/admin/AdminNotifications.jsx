@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { LayoutContext } from "../../context/LayoutContext";
 import {
   uploadNotification,
   getNotifications,
@@ -32,6 +33,7 @@ import {
 export default function AdminNotifications() {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const { inLayout } = useContext(LayoutContext) || {};
 
   const handleLogout = async () => {
     try {
@@ -162,47 +164,49 @@ export default function AdminNotifications() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-20">
-      {/* Admin Top Header */}
-      <header className="bg-slate-900 text-white sticky top-0 z-30 shadow-md">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              <ArrowLeft className="w-4 h-4 mr-1.5" />
-              Citizen Portal
-            </Link>
-            <span className="text-slate-600">|</span>
-            <Link
-              to="/admin/schemes"
-              className="inline-flex items-center text-xs font-semibold text-slate-300 hover:text-white"
-            >
-              Scheme Catalog
-            </Link>
-            <span className="text-slate-600">|</span>
-            <div className="flex items-center space-x-1.5 text-indigo-400">
-              <FileText className="w-4 h-4" />
-              <span className="font-bold text-xs">Notification Analyzer</span>
+    <div className="min-h-screen bg-[#f7f5fa] text-[#0f172a] pb-20">
+      {/* Admin Top Header (only when standalone) */}
+      {!inLayout && (
+        <header className="bg-slate-900 text-white sticky top-0 z-30 shadow-md">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center text-xs font-semibold text-slate-300 hover:text-white"
+              >
+                <ArrowLeft className="w-4 h-4 mr-1.5" />
+                Citizen Portal
+              </Link>
+              <span className="text-slate-600">|</span>
+              <Link
+                to="/admin/schemes"
+                className="inline-flex items-center text-xs font-semibold text-slate-300 hover:text-white"
+              >
+                Scheme Catalog
+              </Link>
+              <span className="text-slate-600">|</span>
+              <div className="flex items-center space-x-1.5 text-indigo-400">
+                <FileText className="w-4 h-4" />
+                <span className="font-bold text-xs">Notification Analyzer</span>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <span className="hidden sm:inline-block px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+                Admin Console
+              </span>
+              <button
+                onClick={handleLogout}
+                className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold text-rose-300 hover:text-white hover:bg-rose-600/30 border border-rose-400/30 transition-colors"
+                title="Sign Out"
+              >
+                <LogOut className="w-3.5 h-3.5 mr-1" />
+                <span>Log Out</span>
+              </button>
             </div>
           </div>
-
-          <div className="flex items-center space-x-2">
-            <span className="hidden sm:inline-block px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
-              Admin Console
-            </span>
-            <button
-              onClick={handleLogout}
-              className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold text-rose-300 hover:text-white hover:bg-rose-600/30 border border-rose-400/30 transition-colors"
-              title="Sign Out"
-            >
-              <LogOut className="w-3.5 h-3.5 mr-1" />
-              <span>Log Out</span>
-            </button>
-          </div>
-        </div>
-      </header>
+        </header>
+      )}
 
       {/* Main Container */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 space-y-6">

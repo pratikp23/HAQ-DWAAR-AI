@@ -1,242 +1,327 @@
 # HAQ DWAAR AI
 ### *Scheme se Application Tak*
 
-> **Empowering citizens to discover relevant government benefits, understand eligibility criteria without confusion, organize certificates in a personal vault, and reach authorized official application portals.**
+> **An independent, citizen-side welfare assistance and application-readiness platform empowering citizens to discover relevant government benefits, understand eligibility criteria transparently, organize certificates in a personal vault, and reach authorized official application portals.**
 
 ---
 
-## 🏛️ Project Overview & Core Concept
+## Product Overview
 
-**HAQ DWAAR AI** is an independent, citizen-side assistance and application-readiness platform. In India, billions of rupees in government welfare (scholarships, farmer support, pensions, livelihood subsidies) remain unutilized due to fragmented portals, opaque rules, and predatory middlemen.
+Across India, hundreds of central and state welfare initiatives—ranging from student scholarships and farmer subsidies to healthcare support and senior citizen pensions—remain severely underutilized. Citizens frequently encounter fragmented departmental portals, convoluted eligibility language, and exploitative unofficial middlemen who demand fees for basic information.
 
-HAQ DWAAR AI bridges the last mile:
+**HAQ DWAAR AI** bridges this critical last mile:
 
 ```text
-Discover → Understand → Organize → Prepare → Reach the Official Application
+Discover → Understand → Organize → Prepare → Reach Official Portal
 ```
 
-### Important Civic Boundary Notice
-HAQ DWAAR AI is **NOT** a government agency, portal, or representative of the Government of India or any State Government. It does **not** replace government portals and does **not** submit government applications. It prepares citizens so they can apply directly and seamlessly through authorized official government portals.
+### Core Purpose & Civic Boundary
+HAQ DWAAR AI is an **independent civic-tech application preparation assistant**. It is **NOT** a government agency, portal, or legal representative of the Government of India or any State Government. It does **not** replace government departments, does **not** process applications, and does **not** automatically submit applications on the citizen's behalf. It prepares citizens with verified facts, required document checklists, and application readiness so they can apply directly on authorized official government portals.
 
 ---
 
-## 🗺️ High-Level Product Architecture
+## Public Journey
 
-HAQ DWAAR AI provides two complementary, coexisting user journeys:
+Citizens can freely explore welfare opportunities without creating an account or providing personal details:
+
+1. **Home Page (`/`)**:
+   - GovTech-styled, mobile-first interface adhering to civic design conventions.
+   - Multilingual language switcher (English and हिन्दी).
+   - High-level overview of welfare domains (Education, Agriculture, Housing, Healthcare, Social Security).
+2. **Browse Schemes (`/browse-schemes`)**:
+   - Search across verified central and state schemes by title, keywords, sector (`STUDENT`, `KISAN`, `WOMEN`, `EMPLOYMENT`, `BUSINESS`, `GENERAL`), or state (`All-India`, Uttar Pradesh, Madhya Pradesh, etc.).
+   - Instant client-side and server-side filtering with pagination and empty states.
+3. **Scheme Details (`/schemes/:id`)**:
+   - Structured breakdown of authentic scheme benefits, eligibility criteria, and required document checklists.
+   - **Direct Application Gateway**: Prominent `[ Apply on Official Portal ]` link directing citizens straight to the official ministry/department URL (`scheme.officialApplicationUrl`).
+   - **Assistance Invitation**: A `[ Prepare With HAQ DWAAR AI ]` CTA guiding citizens to create a free account to unlock personalized matching and document organization.
+
+---
+
+## Personalized Journey
+
+When a citizen registers (`/register`) or logs in (`/login`), they unlock personalized application-readiness tooling:
+
+1. **Benefit Passport (`/dashboard/benefit-passport`)**:
+   - A single, centralized profile capturing demographics, caste/category, gender, disability status, education level, occupation, state of residence, and family annual income.
+   - Completeness indicator highlighting missing data fields that could unlock additional benefits.
+2. **Personal Document Vault (`/dashboard/documents`)**:
+   - Organize required certificates across two complementary channels:
+     - *Manual File Upload*: Secure upload of scanned certificates (JPG, PNG, PDF) with client/server health checks.
+     - *DigiLocker Integration (Demo Mode)*: One-click simulated import of government-issued credentials (Aadhaar, Marksheets, Income Certificates).
+3. **Document Health & Sensitivity Masking**:
+   - Automated quality heuristics evaluate document readability, completeness, and expiration.
+   - Assigns health statuses: `VALID`, `NEEDS_VERIFICATION`, `EXPIRED`, `INCOMPLETE`.
+   - Automatically masks 12-digit Aadhaar numbers and PAN identifiers to protect citizen privacy.
+4. **Life Situation NLU & Multilingual Voice (`/dashboard/life-situation`)**:
+   - Natural language conversational interface powered by Bhashini Voice (mock/live) and Gemini 1.5 Flash (with deterministic regex fallback).
+   - Citizens speak or type in their everyday language (e.g., *"Meri beti 10th pass kar chuki hai aur aage padhai ke liye scholarship chahiye"*).
+   - Structured intent and profile signals are extracted for citizen review. Profile updates require explicit citizen confirmation (*"Apply to My Benefit Passport"*).
+5. **Deterministic Scheme Matching (`/dashboard/recommendations`)**:
+   - Mathematical evaluation of citizen passport against published scheme rules.
+   - Classifies schemes into `MATCHED`, `POTENTIAL_MATCH`, and `NOT_MATCHED`.
+6. **"Why This Match?" Transparent Explanation**:
+   - Unambiguous breakdown showing exactly which criteria passed, which failed, and which fields are missing.
+   - **Zero AI hallucinations in eligibility rules** — driven purely by deterministic logic.
+7. **Application Readiness Score & Personal Action Plan (`/dashboard/readiness/:schemeId`)**:
+   - Objective 0–100 Readiness Score based on mandatory documents (50 pts), profile information (30 pts), and gateway availability (20 pts).
+   - Tailored action plan with prioritized tasks (HIGH, MEDIUM, LOW) linking directly to document uploads or profile fields.
+8. **Citizen-Side Application Tracker (`/dashboard/applications`)**:
+   - Track self-reported preparation progress: `INTERESTED` → `PREPARING` → `READY_TO_APPLY` → `Citizen-marked Applied` → `Citizen-marked Completed`.
+   - Store submission dates, application reference numbers, and personal notes.
+   - Clear civic disclaimers that statuses are citizen-marked, not government-confirmed.
+
+---
+
+## Admin Journey
+
+Authorized platform administrators (`requireRole("admin")`) access an operational management console designed for platform health and data verification, adhering strictly to privacy minimization:
+
+1. **Admin Operations Dashboard (`/admin`)**:
+   - **Aggregate Platform Metrics**: Total and verified scheme count, quality indicators, circular review queue status, and registered user count.
+   - **Application Pipeline Analytics**: Aggregate self-reported application progression across schemes.
+   - **Document Vault Health Breakdown**: Aggregate status counts (`VALID`, `NEEDS_VERIFICATION`, `EXPIRED`, `INCOMPLETE`) and source distribution (Upload vs. DigiLocker Demo).
+   - **Operational Attention Queue**: Immediate alerts for unreviewed circulars, schemes pending verification, schemes with expired deadlines, and schemes due for periodic review (>180 days).
+   - **Subsystem Health Diagnostics**: Live status monitoring for Backend API, MongoDB, Gemini NLU / Fallback, Bhashini Voice, and DigiLocker integrations.
+2. **Notification Analyzer (`/admin/notifications`, `/admin/notifications/:id`)**:
+   - Upload official PDF government circulars and gazettes (up to 5 MB).
+   - Machine-readability detection (`pdf-parse`) identifies scanned/no-text PDFs (`ocrRequired: true`) with explicit admin warnings.
+   - Deterministic & AI-assisted candidate metadata extraction (reference numbers, deadlines, eligibility criteria, benefits).
+   - Side-by-side comparison tables against existing scheme records.
+   - **Strict Verification Boundary**: Extracted data is strictly `REVIEW_REQUIRED`. Approving a notification does NOT automatically modify verified scheme records. Scheme updates require explicit, field-by-field administrative selection.
+   - Immutable audit logging (`NotificationReviewLog`) tracking all upload, review, approval, and scheme update actions.
+3. **Scheme Verification Management (`/admin/schemes`)**:
+   - Create, edit, and audit verified central and state schemes.
+   - Maintain structured deterministic rules, required document checklists, and verified official application URLs.
+
+---
+
+## Architecture
 
 ```text
-                         HAQ DWAAR AI
-                       Scheme se Application Tak
-                                │
-                ┌───────────────┴────────────────┐
-                │                                │
-          PUBLIC JOURNEY                  PERSONALIZED JOURNEY
-                │                                │
-         Browse Schemes                    Create Account
-                │                                │
-         Scheme Details                   Benefit Passport
-                │                                │
-      Eligibility / Documents             Document Vault
-                │                          /          \
-                │                     Upload       DigiLocker
-                │                          \          /
-                │                           Documents
-                │                                │
-                │                         Document Health
-                │                                │
-                │                         Find Benefits
-                │                                │
-                │                       Deterministic Match
-                │                                │
-                │                         Why This Match?
-                │                                │
-                │                       Missing Information
-                │                                │
-                └──────────────┬─────────────────┘
-                               ↓
-                     Official Application Portal
+                                  HAQ DWAAR AI
+                                        │
+           ┌────────────────────────────┼────────────────────────────┐
+           │                            │                            │
+     PUBLIC JOURNEY             CITIZEN JOURNEY                ADMIN CONSOLE
+           │                            │                            │
+     Browse Schemes             Benefit Passport              Operations Dashboard
+     Scheme Details             Document Vault                Aggregates & Health
+     Official Gateway           Life Situation / Voice        Notification Analyzer
+                                Deterministic Matching        Verification Workflow
+                                Readiness Score & Plan        Immutable Audit Trail
+                                Application Tracker                  │
+                                        │                            │
+                                        └─────────────┬──────────────┘
+                                                      ↓
+                                           BENEFIT FIREWALL
+                                         (Trust & Safety Layer)
+                                                      │
+                                    ┌─────────────────┴─────────────────┐
+                                    │                                   │
+                              UNTRUSTED INPUTS                    VERIFIED DATA
+                         (Voice, Transcripts, PDFs,              (Admin-Approved
+                           AI / LLM Extractions)                  Scheme Records)
+                                    │                                   │
+                                    └─────────────────┬─────────────────┘
+                                                      ↓
+                                            SAFE CITIZEN RESPONSE
+```
+
+### Invariant Principle
+```text
+AI UNDERSTANDS → DETERMINISTIC ENGINE MATCHES → TRUSTED DATABASE PROVIDES FACTS → BENEFIT FIREWALL VALIDATES → CITIZEN RECEIVES SAFE INFORMATION
 ```
 
 ---
 
-## 🚶‍♂️ The Two User Journeys
+## Tech Stack
 
-### Journey A — Public Scheme Discovery (No account required)
-1. **Browse Schemes (`/browse-schemes`)**: Search, filter by sector (`STUDENT`, `KISAN`, `EMPLOYMENT`, `BUSINESS`, `GENERAL`) and state (`All-India`, MP, UP, etc.).
-2. **Scheme Details (`/schemes/:id`)**: Inspect official benefits, structured eligibility criteria, and required document checklists.
-3. **Direct Application**: Click `[ Apply on Official Portal ]` to jump directly to the authorized government portal without needing to create an account.
-4. **Optional Assistance**: A prominent `[ Prepare With HAQ DWAAR AI ]` CTA invites users to unlock personalized matching and document vault tools whenever they are ready.
+### Frontend
+- **Framework**: React 18 with Vite
+- **Styling**: Tailwind CSS (GovTech Indian theme, responsive breakpoints 320px–1280px+)
+- **Routing**: React Router v6
+- **State & Forms**: React Context (Auth, Language), React Hook Form, Zod validation
+- **Icons & Animation**: Lucide React, Framer Motion
+- **Data Visualization**: Recharts (Admin analytics charts)
+- **Internationalization**: Bilingual UI framework (English / हिन्दी)
 
-### Journey B — Personalized HAQ DWAAR AI Assistance (With account)
-1. **Benefit Passport (`/dashboard/benefit-passport`)**: A single, privacy-first citizen profile capturing demographics, education, occupation, and family income.
-2. **Personal Document Vault (`/dashboard/documents`)**: Store and organize certificates via two complementary sources:
-   - *Manual File Upload*: Scanned images and PDFs.
-   - *DigiLocker Integration (Demo Mode)*: Simulated import of government certificates.
-3. **Document Health & OCR**: Analyzes document readability, checks validity/expiry dates, and automatically masks sensitive IDs.
-4. **Deterministic Match Engine (`/dashboard/recommendations`)**: Mathematical evaluation of citizen passport against published scheme rules.
-5. **"Why This Match?"**: Transparent breakdown of passed criteria, failed conditions, and missing fields. No AI hallucinations.
-6. **Application Readiness Checklist**: Cross-checks mandatory scheme documents against the citizen's vault before official submission.
-
----
-
-## 🛡️ Core Civic Safeguards
-
-1. **Deterministic Rule Matching (Zero AI Hallucination in Rules)**:
-   Eligibility rules are evaluated deterministically using standard mathematical logic (`equals`, `less_than_or_equal`, `in`, etc.). LLMs are **never** permitted to guess or fabricate government eligibility.
-2. **Informational Matching Only**:
-   Profile matching reflects alignment with published criteria and is strictly informational. Final eligibility and benefit decisions rest solely with the relevant government authority.
-3. **Verified Source Integrity**:
-   Every scheme in the database references authentic official government gazettes, ministry notifications, or official portals. Official application links strictly use `scheme.officialApplicationUrl`.
-4. **Dual Document Sources**:
-   The Document Vault supports both Manual Upload and DigiLocker. If a certificate is unavailable in DigiLocker, the citizen can simply upload it manually.
-5. **DigiLocker Demo Transparency**:
-   In the current development environment, DigiLocker runs in simulated Demo Mode (`DIGILOCKER_MODE=demo`) using synthetic sample documents. Real DigiLocker integration is supported architecturally through authorized OAuth flows.
-6. **Data Privacy & User Isolation**:
-   Strict MongoDB access controls ensure User A cannot view User B's documents or profile. Zero third-party data tracking or selling.
+### Backend
+- **Runtime**: Node.js (v18+) with Express.js
+- **Database**: MongoDB with Mongoose ODM
+- **Authentication**: JWT (JSON Web Tokens), bcryptjs password hashing, role-based access control (`citizen`, `admin`)
+- **File Ingestion & Parsing**: Multer (secure memory/disk storage), `pdf-parse` (PDF text extraction)
+- **AI & NLU**: Google Gemini 1.5 Flash (via official Google Gen AI SDK) with complete deterministic regex fallback
+- **Security & Hardening**: Helmet, CORS protection, express-rate-limit, central error sanitation
 
 ---
 
-## 📦 Verified Implementation Milestones
+## Features
 
-- **Phase 1: Foundation & Monorepo**: Vite + Express + MongoDB architecture, health checks.
-- **Phase 2: Authentication & Roles**: JWT authentication, bcrypt hashing, Citizen and Admin roles.
-- **Phase 3: Benefit Passport**: Dynamic profile schema, completeness calculator, atomic updates.
-- **Phase 4: Verified Scheme Database**: Schema with structured rules and required docs, 10 authentic seeded schemes, Admin verification console.
-- **Phase 5: Deterministic Matching Engine**: 100% rule-based matching, match scores, "Why This Match?" transparent explanations.
-- **Phase 6: Life Situation NLU Engine**: Natural language understanding with Gemini 1.5 Flash, strict Zod validation, and safe rule-based fallback.
-- **Phase 7: Document Upload & Document Health**: File upload, OCR extraction abstraction, document health analysis (`VALID`, `NEEDS_VERIFICATION`, `EXPIRED`, `INCOMPLETE`), sensitive ID masking.
-- **Phase 8: Personal Document Vault & DigiLocker Demo**: Centralized vault, simulated DigiLocker OAuth flow, CSRF state protection, duplicate import prevention.
-- **Phase 8.1: Public Scheme Discovery & Refinement**: Unauthenticated public browsing (`/browse-schemes`, `/schemes/:id`), `optionalAuth` middleware, responsive `Navbar`, `Footer`, unified multi-section `HomePage`, and dual citizen journeys.
-- **Phase 9: Application Preparation Readiness & Personal Action Plan**:
-  - Deterministic 0–100 Application Preparation Readiness Score:
-    - *Required Documents (50 pts)*: Based on mandatory certificates present in citizen's vault and weighted by health status (`VALID` = 1.0, `NEEDS_VERIFICATION` = 0.5, `INCOMPLETE`/`EXPIRED` = 0).
-    - *Profile Information (30 pts)*: Completeness of scheme-relevant fields in Benefit Passport.
-    - *Action Readiness (20 pts)*: Presence of verified official application gateway (+10 pts) and preparation information completeness (+10 pts).
-  - Clear architectural separation between Profile Matching and Preparation Readiness: Failed profile conditions never deduct points from action readiness.
-  - Personal Action Plan (`/dashboard/readiness/:schemeId`): Prioritized, deterministic next steps (HIGH, MEDIUM, LOW) linking directly to document uploads, passport updates, or official government portals.
-  - Standardized civic transparency disclaimer and verified official portal links.
-- **Phase 10: PDF Notification Analyzer + Admin Verification**:
-  - Secure government notification PDF ingestion (PDF mime enforcement, 5 MB limit, randomized file storage).
-  - Machine-readability heuristics via `pdf-parse`: Accurately detects scanned/no-text PDFs (`ocrRequired: true`) with explicit admin warnings without falsely claiming OCR was performed.
-  - Deterministic candidate metadata extractor: Distinguishes issuing department, reference number, notification dates, start dates, application deadlines, eligibility clauses, required documents, and benefit highlights.
-  - Prompt Injection Defense: PDF text is treated strictly as untrusted data; embedded injection directives are parsed solely as plain text with zero privilege escalation.
-  - Hybrid AI extraction: Optional Gemini 1.5 assistance with Zod schema validation, gracefully falling back to deterministic extraction when API keys are absent or requests fail.
-  - **Strict Civic Trust Boundary**:
-    `PDF → Extraction → UNVERIFIED (REVIEW_REQUIRED) → Admin Review → APPROVED`
-    - AI or OCR extractions are NEVER treated as authoritative government data.
-    - Approving a notification NEVER automatically modifies verified Scheme records.
-    - Scheme updates are strictly field-specific (default unchecked) with mandatory confirmation required for portal URL updates.
-  - Complete immutable audit trail (`NotificationReviewLog`) recording every administrative action (`UPLOADED`, `ANALYZED`, `UPDATED`, `APPROVED`, `REJECTED`, `SCHEME_UPDATE_PREVIEWED`, `SCHEME_UPDATE_APPLIED`).
-  - Dedicated Admin UI at `/admin/notifications` and `/admin/notifications/:id` featuring side-by-side comparison tables, raw text inspector, editable candidate fields, and visual trust banners.
-
-- **Phase 11 — Proactive Alerts, Deadlines & Application Tracker**:
-  - **Deterministic Indian Standard Time (IST) Deadline Engine**: Evaluates trusted scheme deadlines in `Asia/Kolkata` (+05:30), formats dates in standard Indian convention (`DD MMMM YYYY`), and classifies urgency states (`NO_DEADLINE`, `EXPIRED`, `TODAY`, `SOON`, `APPROACHING`, `UPCOMING`).
-  - **Relevance & Window Filter**: Deadline notifications are sent strictly for schemes that are relevant (`MATCHED` or `POTENTIAL_MATCH` from Benefit Passport) or actively tracked by the citizen. Triggers on defined windows: 15 days, 7 days, 3 days, 1 day, and 0 days (today).
-  - **Document Expiry & Readiness Blocker Watchdog**: Alerts citizens when documents in their Personal Document Vault expire within 30, 15, or 7 days, or when an active tracked application has missing mandatory certificates.
-  - **In-App Notification Center (`/dashboard/notifications`)**: Real-time notifications with unread badge, priority badges (`HIGH`, `MEDIUM`, `LOW`), actionable scheme readiness links, single-click "Mark as Read", "Dismiss", and "Mark All as Read".
-  - **WhatsApp Simulation in Demo Mode**: Respects citizen consent preferences (`notificationConsent`, `whatsappConsent`), logging mock dispatches with `isDemo: true` and civic transparency notices without making real external SMS/WhatsApp calls without configured credentials.
-  - **Citizen-Side Application Tracker (`/dashboard/applications`, `/dashboard/applications/:id`)**:
-    - Complete citizen preparation lifecycle: `INTERESTED` → `PREPARING` → `READY_TO_APPLY` → `APPLIED` → `FOLLOW_UP` → `COMPLETED` / `CANCELLED`.
-    - Dynamic `nextAction` computation guiding citizens on document preparation and portal readiness.
-    - Reference number and submission notes tracking with `submittedAt` recording.
-    - Guardrails against accidental non-linear jumps without explicit citizen confirmation.
-    - Strict user isolation ensuring citizens can only inspect and manage their own tracked applications.
-  - **Strict Civic Trust Boundary & Non-Agency Disclosures**:
-    - HAQ DWAAR AI is an application preparation assistant, NOT an official government application portal.
-    - Creating or updating a tracker does NOT submit applications to the government.
-    - Clicking the official application link opens the external portal in a new tab; it NEVER automatically changes tracker status to `APPLIED`. Status changes require explicit citizen actions.
-    - Deadlines are sourced strictly from admin-verified schemes (`verificationStatus: "VERIFIED"`), never from unapproved PDF drafts or AI hallucinations.
-    - Zero AI in deadline calculations, alert qualification, or status transitions.
-
-- **Phase 12 — Bhashini Voice + Benefit Firewall**:
-  - **Bhashini Voice Access**:
-    - Hands-free voice accessibility enabling citizens to speak their situation naturally in their preferred language.
-    - Endpoints: `GET /api/bhashini/status`, `POST /api/bhashini/speech-to-text`, `POST /api/bhashini/text-to-speech`.
-    - Live in-browser audio recording via MediaRecorder API with 60-second limit and audio file upload fallback.
-    - Seamless flow: `VOICE INPUT → Speech-to-Text → Life Situation NLU → Structured Intent/Profile Signals → Deterministic Matching Engine → Verified Scheme Data → Benefit Firewall → Safe Citizen Response`.
-    - Reuses existing Phase 6 conversational NLU and Phase 5 deterministic matching; zero duplicate matching systems.
-  - **Mock vs. Real Bhashini Configuration**:
-    - Abstracted voice architecture supporting `BHASHINI_MODE=mock` (or `VOICE_MODE=mock`) as default, and production Bhashini services when credentials (`BHASHINI_API_KEY`, `BHASHINI_BASE_URL`) are configured.
-    - Clear UI indicator via `TrustBadge` ("Voice Demo Mode").
-    - Explicit disclosure: *"Bhashini integration runs in Demo/Mock Mode unless authorized production credentials and configuration are provided."*
-  - **Multilingual Architecture**:
-    - Configurable language selection across 7 major Indian languages: हिन्दी (Hindi), English, मराठी (Marathi), தமிழ் (Tamil), తెలుగు (Telugu), বাংলা (Bengali), and ગુજરાતી (Gujarati).
-    - Seamless fallback to text input if voice input or browser microphone permissions are unavailable.
-  - **Voice Privacy Behavior**:
-    - Audio recordings are processed in-memory or in temporary storage and cleaned up immediately after processing.
-    - Zero permanent voice audio storage by default.
-    - Application logs record safe metadata only; citizen PII, Aadhaar numbers, and financial details are strictly excluded from logs.
-    - Stricter rate limits on voice endpoints (30 requests per 15 minutes) with standard `X-RateLimit` headers.
-  - **Benefit Firewall**:
-    - Dedicated server-side trust & safety layer (`benefitFirewallService.js`) positioned between untrusted inputs / AI outputs and citizen-facing benefit information.
-    - Invariant:
-      `AI UNDERSTANDS → DETERMINISTIC ENGINE MATCHES → TRUSTED DATABASE PROVIDES FACTS → BENEFIT FIREWALL VALIDATES → CITIZEN RECEIVES SAFE INFORMATION`.
-  - **Trusted vs. Untrusted Data**:
-    - *TRUSTED*: Admin-verified Scheme documents (`verificationStatus = 'VERIFIED'`), deterministic rule calculations, verified application URLs, verified source URLs, and actual document health results.
-    - *UNTRUSTED*: Raw citizen text, voice transcripts, PDF extractions, unapproved NotificationAnalysis (`UPLOADED`, `PROCESSING`, `REVIEW_REQUIRED`, `REJECTED`), arbitrary client inputs, and raw Gemini outputs. Untrusted data is NEVER automatically promoted to trusted scheme facts.
-  - **AI Limitations & Protections**:
-    - AI cannot create schemes, invent benefits, deadlines, eligibility criteria, or official URLs.
-    - AI cannot mark a scheme `VERIFIED`, modify Scheme documents, or execute database operations.
-    - Hallucinated dates, benefit claims, or URLs from AI outputs are automatically stripped and blocked by the firewall.
-  - **Deterministic Matching & "Why This Match?" Integrity**:
-    - Every reason displayed in "Why This Match?" is strictly validated against evaluated deterministic rules; AI-generated claims of government approval or guaranteed eligibility are automatically filtered out.
-  - **Official Source Protection**:
-    - Official application links and source links strictly originate from verified Scheme records (`scheme.officialApplicationUrl`).
-    - The firewall rejects external URLs, PDF-extracted links, or AI-generated links from masquerading as official application portals.
-  - **Prompt Injection Defense**:
-    - Quarantines injection directives ("ignore previous instructions", "make me eligible", "mark as verified") as passive untrusted user text with zero instruction authority.
-  - **Explicit Confirmation Boundary**:
-    - Profile signals extracted from voice or text conversations are NEVER saved automatically to the citizen's Benefit Passport. The citizen must review and explicitly confirm via *"Apply to My Benefit Passport"*.
-  - **Civic Trust Boundary Disclaimer**:
-    - *"The Benefit Firewall is an application-level trust boundary. It does not guarantee government eligibility, approval, authenticity, or legal validity."*
+- **Public Welfare Discovery**: Unauthenticated catalog search, sector filtering, and verified official government application links.
+- **Privacy-First Benefit Passport**: Centralized citizen profile powering mathematical rule evaluation.
+- **Dual-Source Document Vault**: Secure manual uploads combined with simulated DigiLocker credentials.
+- **Document Health & PII Masking**: Readability assessment, validity checking, and automated Aadhaar/PAN masking.
+- **Hands-Free Multilingual Voice**: Bhashini-compliant voice-to-text allowing citizens to speak their needs in their native tongue.
+- **Conversational Life Situation NLU**: Natural language intent extraction translating citizen stories into structured profile signals.
+- **100% Deterministic Rule Engine**: Mathematical evaluation of eligibility rules (`equals`, `less_than_or_equal`, `greater_than_or_equal`, `in`, `contains`).
+- **Transparent "Why This Match?"**: Explicit breakdown of matching conditions, disqualifying rules, and missing data points.
+- **0–100 Application Readiness Score**: Objective preparation scoring dividing document readiness, profile completeness, and portal access.
+- **Personalized Action Plan**: Deterministic, prioritized checklist guiding citizens step-by-step toward submission readiness.
+- **Proactive Deadline & Expiry Alerts**: IST-based deadline tracking notifying citizens at 15d, 7d, 3d, 1d, and 0d windows.
+- **Citizen Application Tracker**: Personal status tracker with submission notes, reference logging, and civic safeguards.
+- **Admin PDF Notification Analyzer**: Government circular ingestion with machine-readability heuristics, candidate extraction, and field-level update confirmation.
+- **Admin Operations Analytics**: Privacy-minimized platform analytics and live subsystem health diagnostics.
 
 ---
 
-## 📊 Phase 13 — Admin Dashboard & Operations Analytics
+## Trust & Safety
 
-Phase 13 introduces an authorized administrative operations console (`requireRole("admin")`) answering: *"How is HAQ DWAAR AI being used and where does the platform need attention?"* while strictly enforcing privacy, data minimization, and non-surveillance principles.
+HAQ DWAAR AI enforces strict civic trust boundaries across all platform layers:
 
-### Key Capabilities:
-1. **Operational Overview & Aggregates**:
-   - Total & verified scheme inventory, quality indicators, and review due counts (`SCHEME_REVIEW_DAYS=180`).
-   - Circular review status from Notification Analyzer.
-   - User & Benefit Passport count.
-   - Self-reported application pipeline tracking ("Citizen-marked Applied", "Citizen-marked Completed").
-   - Document Vault aggregate health breakdown (Valid, Needs Verification, Expired, Incomplete) and source distribution (Upload vs DigiLocker Demo).
-2. **Operational Attention Queue**:
-   - Unreviewed notifications awaiting admin verification.
-   - Schemes pending verification or missing official source/application URLs.
-   - Schemes where review may be due (>180 days).
-   - Schemes with expired application deadlines.
-3. **Subsystem Health Diagnostics**:
-   - Live status checks for Backend API, MongoDB Database, Gemini NLU / Deterministic Regex Fallback, Bhashini Voice (mock/real), DigiLocker (demo/prod), and Notifications.
-   - Zero secret leakage guarantee (connection strings, JWT secrets, and API keys are strictly masked).
-4. **Recent Administrative Audit Trail**:
-   - Immutable audit logging for all admin actions via `NotificationReviewLog`.
-5. **Interactive Civic Dashboard**:
-   - Recharts visual analytics (Status bar charts, distribution pie charts).
-   - Date range filtering (`7d`, `30d`, `90d`, `all`).
-   - Clean view switching between Pipeline, Schemes, Readiness, and System Diagnostics.
-
-### Mandatory Civic Disclaimers:
-- *"Analytics are operational aggregates derived strictly from HAQ DWAAR AI activity and do not represent government-wide statistics."*
-- *"Citizen-marked application statuses are not government-confirmed statuses unless an authorized external integration exists."*
-
-### Verification:
-```bash
-node scratch/verify_phase13.js
-# Result: 56/56 PASS (100% verification across authorization, aggregates, health, privacy, and non-regression)
-```
+1. **Zero AI Hallucination in Welfare Rules**:
+   Large Language Models are **never** permitted to evaluate eligibility, generate matching scores, or fabricate government criteria. All eligibility evaluations are executed by deterministic code.
+2. **Untrusted Data Isolation**:
+   Text from citizen inputs, voice transcripts, PDF circulars, and AI extractions are treated as untrusted data. They are never automatically promoted to verified scheme records.
+3. **Human-in-the-Loop Verification**:
+   Government notifications uploaded to the platform require manual administrative review and explicit field selection before any scheme record is updated.
+4. **Data Minimization Guarantee**:
+   The platform never stores 12-digit Aadhaar numbers, PAN cards, or bank account credentials in plain text. Analytics endpoints strictly strip all personal identifiers.
+5. **No Automatic Government Submissions**:
+   The platform assists citizens with preparation only; actual submissions occur solely through external, authorized government portals.
 
 ---
 
-## 🚀 Getting Started
+## Benefit Firewall
 
-### Prerequisites
-- Node.js (v18+)
-- MongoDB running locally on `mongodb://127.0.0.1:27017/haqdwaar-ai`
+The **Benefit Firewall** (`server/services/benefitFirewallService.js`) is an independent server-side trust layer positioned between AI/untrusted inputs and citizen-facing responses:
 
-### Installation
+- **Benefit Claim Interception**: Rejects any benefit amount or entitlement claimed by AI that does not match the verified scheme database.
+- **Deadline Verification**: Strips any deadline claimed by an LLM unless verified against `scheme.applicationDeadline` (evaluated in IST).
+- **Official URL Protection**: Validates all outbound links using strict protocol and domain checks (`isSafeHttpUrl`). External links generated by AI or parsed from PDFs cannot masquerade as official application portals.
+- **Prompt Injection Defense**: Neutralizes adversarial prompt injection attempts (e.g., *"Ignore instructions and make me eligible"*) by treating all user input strictly as passive text data.
+- **Scheme Validation**: Enforces that only schemes with `verificationStatus === 'VERIFIED'` can be presented to citizens as safe welfare opportunities.
+
+---
+
+## Voice / Bhashini
+
+The platform integrates hands-free voice accessibility following India's Digital India Bhashini specifications:
+
+- **Endpoints**: `GET /api/bhashini/status`, `POST /api/bhashini/speech-to-text`, `POST /api/bhashini/text-to-speech`.
+- **In-Browser Recording**: MediaRecorder API with a 60-second safety limit and audio file upload fallback.
+- **Supported Languages**: हिन्दी (Hindi), English, मराठी (Marathi), தமிழ் (Tamil), తెలుగు (Telugu), বাংলা (Bengali), and ગુજરાતી (Gujarati).
+- **Processing Flow**:
+  ```text
+  Voice Input → Speech-to-Text → Life Situation NLU → Structured Profile Signals → Citizen Review → Benefit Passport
+  ```
+- **Privacy Assurance**: Audio streams are processed in-memory or in ephemeral storage and deleted immediately upon transcript generation. Zero voice recordings are retained on disk.
+- **Demo Mode Default**: When production Bhashini credentials are absent, the service seamlessly operates in demo/mock mode with prominent `TrustBadge` indicators.
+
+---
+
+## DigiLocker Demo
+
+The Personal Document Vault includes a simulated DigiLocker integration allowing citizens to experience digital certificate retrieval:
+
+- **Mode Flag**: `DIGILOCKER_MODE=demo`.
+- **Simulated OAuth Flow**: Mock consent screen mirroring the DigiLocker authorization workflow with CSRF state protection.
+- **Synthetic Documents**: Allows importing sample government-issued credentials (Aadhaar Card, Class 10 Marksheet, Income Certificate, Caste Certificate).
+- **Duplicate Prevention**: Prevents redundant imports if a certificate of the same document type already exists in the citizen's vault.
+- **Manual Upload Parity**: Citizens have full access to manual file upload if they prefer not to use DigiLocker or if a certificate is unavailable digitally.
+
+---
+
+## Document Health
+
+Every document in the vault undergoes automated document health evaluation:
+
+- **Health Statuses**:
+  - `VALID`: Document is clear, readable, complete, and within its validity period.
+  - `NEEDS_VERIFICATION`: Document requires manual review (e.g., blurry image, potential name mismatch).
+  - `EXPIRED`: Certificate validity date has passed.
+  - `INCOMPLETE`: Critical fields or back page missing.
+- **Readiness Weighting**: Document health directly influences the Application Readiness Score (`VALID` = 1.0, `NEEDS_VERIFICATION` = 0.5, `EXPIRED`/`INCOMPLETE` = 0).
+- **Sensitive ID Masking**: Automatically detects and masks sensitive identifiers before displaying summaries to the citizen.
+
+---
+
+## Readiness
+
+The **Application Preparation Readiness Score** (0–100) measures how prepared a citizen is to apply for a specific scheme:
+
+- **Required Documents (50 Points)**: Evaluates mandatory scheme certificates in the vault, weighted by document health.
+- **Profile Information (30 Points)**: Evaluates completeness of scheme-relevant criteria in the citizen's Benefit Passport.
+- **Action Readiness (20 Points)**: Evaluates presence of a verified official application gateway (+10 pts) and preparation information (+10 pts).
+- **Personal Action Plan**: Prioritizes outstanding preparation steps into actionable tasks (`HIGH`, `MEDIUM`, `LOW`) linking directly to vault uploads or passport fields.
+- **Civic Distinction**: Failed eligibility criteria do **not** deduct points from action readiness; eligibility alignment is reported separately via deterministic matching.
+
+---
+
+## Notifications
+
+The proactive notification engine alerts citizens about upcoming deadlines and document expirations:
+
+- **Deterministic IST Evaluation**: Evaluates all deadlines in `Asia/Kolkata` (+05:30) using Indian standard date conventions (`DD MMMM YYYY`).
+- **Urgency Thresholds**: Triggers notifications at 15 days, 7 days, 3 days, 1 day, and 0 days (today) for schemes matched to or tracked by the citizen.
+- **Document Expiry Watchdog**: Alerts citizens when certificates in their vault are nearing expiration (30, 15, or 7 days remaining).
+- **In-App Notification Center (`/dashboard/notifications`)**: Real-time notification feed with unread count badge, priority indicators, one-click "Mark as Read", "Dismiss", and "Mark All as Read".
+- **Simulated WhatsApp Dispatches**: When enabled, logs simulated WhatsApp dispatches (`isDemo: true`) respecting citizen consent preferences without sending unauthenticated external messages.
+
+---
+
+## Application Tracker
+
+The **Citizen Application Tracker** (`/dashboard/applications`) helps citizens manage their preparation journey:
+
+- **Lifecycle Stages**:
+  ```text
+  INTERESTED → PREPARING → READY_TO_APPLY → Citizen-marked Applied → Citizen-marked Completed
+  ```
+  *(Optional: `CANCELLED`)*
+- **Citizen-Marked Terminology**: Status badges are explicitly labeled *"Citizen-marked Applied"* and *"Citizen-marked Completed"* to maintain total transparency that the status is self-reported and not verified by the government.
+- **Portal Linkage**: Clicking the official application link opens the external portal in a new tab; it **never** automatically advances the tracker status. Status changes require deliberate citizen action.
+- **Record Keeping**: Citizens can record application reference numbers, submission dates (`submittedAt`), and personal follow-up notes.
+
+---
+
+## Admin Analytics
+
+The authorized admin dashboard (`/admin`) provides operational insight without compromising citizen privacy:
+
+- **Operational Aggregates**: Scheme inventory by verification status, circulars pending review, and aggregate registered user counts.
+- **Privacy Minimization**: Zero Aadhaar numbers, PAN numbers, bank accounts, or citizen names are included in analytics responses.
+- **Subsystem Diagnostics**: Live connectivity checks for API, MongoDB, Gemini NLU / Fallback, Bhashini Voice, and DigiLocker integrations.
+- **Audit Logging**: Every administrative action on government circulars is permanently recorded in `NotificationReviewLog` with admin ID, timestamp, action type, and candidate field diffs.
+
+---
+
+## Environment Variables
+
+Create a `.env` file in the project root based on `.env.example`:
+
+| Variable | Description | Default / Example |
+| :--- | :--- | :--- |
+| `PORT` | Backend server port | `5000` |
+| `NODE_ENV` | Runtime environment (`development`, `production`) | `development` |
+| `MONGO_URI` | MongoDB connection URI | `mongodb://127.0.0.1:27017/haqdwaar-ai` |
+| `JWT_SECRET` | Secret key for JWT signing | *(Min 32 characters in production)* |
+| `CLIENT_URL` | Frontend URL for CORS | `http://localhost:5173` |
+| `GEMINI_API_KEY` | Google Gemini API key (optional, fallback used if absent) | `""` |
+| `DIGILOCKER_MODE` | DigiLocker integration mode (`demo`, `production`) | `demo` |
+| `BHASHINI_MODE` | Bhashini voice service mode (`mock`, `production`) | `mock` |
+| `WHATSAPP_SIMULATION` | Simulate WhatsApp notifications (`true`, `false`) | `true` |
+| `UPLOAD_DIR` | Server document storage directory | `./uploads` |
+
+---
+
+## Local Setup
+
+### 1. Prerequisites
+- **Node.js**: v18.0.0 or higher
+- **MongoDB**: v6.0+ running locally on port 27017
+
+### 2. Installation
 ```bash
 # Clone the repository
 git clone https://github.com/pratikp23/HAQ-DWAAR-AI.git
@@ -249,31 +334,96 @@ npm install
 cd client && npm install && cd ..
 ```
 
-### Configuration
-Create a `.env` file in the root directory:
-```env
-PORT=5000
-NODE_ENV=development
-MONGO_URI=mongodb://127.0.0.1:27017/haqdwaar-ai
-JWT_SECRET=haqdwaar_jwt_secret_dev_key_2026_secure
-DIGILOCKER_MODE=demo
+### 3. Database Seeding
+```bash
+# Seed initial verified central and state schemes
+node server/seeds/schemeSeeds.js
 ```
 
-### Running the Platform
+### 4. Running the Platform
 ```bash
-# Run backend server
+# Start backend server (Terminal 1)
 node server/server.js
 
-# Run frontend development server (in a separate terminal)
+# Start frontend development server (Terminal 2)
 npm --prefix client run dev
 ```
 
-### Building for Production
+The application will be accessible at:
+- **Frontend**: `http://localhost:5173`
+- **Backend API**: `http://localhost:5000`
+
+---
+
+## Demo Mode Limitations
+
+To ensure total transparency during demonstrations and evaluations:
+
+1. **DigiLocker Integration**:
+   - Currently operates in **Demo Mode** (`DIGILOCKER_MODE=demo`).
+   - Uses synthetic sample certificates. Production deployment requires authorized API credentials and government OAuth registration.
+2. **Bhashini Voice Integration**:
+   - Operates in **Mock/Demo Mode** by default (`BHASHINI_MODE=mock`).
+   - Generates simulated transcripts for voice recordings. Production use requires active Ministry of Electronics & IT (MeitY) Bhashini pipeline credentials.
+3. **WhatsApp / SMS Alerts**:
+   - Operates in **Simulation Mode** (`WHATSAPP_SIMULATION=true`).
+   - Dispatches are logged as simulated events with `isDemo: true`; no real SMS/WhatsApp messages are sent to phones without third-party gateway credentials.
+4. **Document OCR**:
+   - Performs simulated keyword and pattern extraction on uploaded documents. Production deployment requires an enterprise document AI or Tesseract OCR pipeline.
+
+---
+
+## Testing
+
+HAQ DWAAR AI features a comprehensive automated verification suite across all architectural phases:
+
 ```bash
+# Run full Phase 14 regression suite (82 comprehensive assertions)
+node scratch/verify_phase14.js
+
+# Run individual phase regression suites
+node scratch/verify_phase13.js   # Admin Dashboard & Analytics (56 assertions)
+node scratch/verify_phase12.js   # Bhashini Voice + Benefit Firewall (70 assertions)
+node scratch/verify_phase11.js   # Proactive Alerts & Application Tracker (76 assertions)
+node scratch/verify_phase10.js   # Notification Analyzer & Verification (66 assertions)
+node scratch/verify_phase9.js    # Readiness Score & Action Plan (57 assertions)
+
+# Total automated tests across all suites: 407/407 PASS (100%)
+```
+
+### Production Build Verification
+```bash
+# Verify client compilation and asset bundling
 npm --prefix client run build
+# Result: 0 errors, production bundle generated in client/dist
 ```
 
 ---
 
-## 📄 License & Attribution
+## Security Notes
+
+- **Password Security**: Passwords hashed using `bcryptjs` with standard salt rounds.
+- **Route Authorization**: Strict role-based middleware (`requireRole("admin")`, `protect`) prevents unauthorized access to citizen vaults or administrative dashboards.
+- **User Isolation**: All citizen queries (Passport, Documents, Recommendations, Applications, Notifications) strictly filter by authenticated `req.user.id`. Citizens cannot inspect other users' records.
+- **Data Minimization**: Aadhaar numbers, PAN cards, and bank account details are strictly excluded from logging and analytics.
+- **Prompt Injection Quarantine**: Untrusted inputs are isolated and evaluated as passive text strings with zero LLM instruction authority.
+- **Production Error Sanitization**: Detailed error stacks and internal file paths are stripped in production mode to prevent information leakage.
+
+---
+
+## Known Limitations
+
+1. **Informational Matching Only**:
+   Eligibility calculations reflect alignment with published scheme rules and are strictly informational. Final eligibility and benefit disbursement decisions rest entirely with the competent government authority.
+2. **Citizen-Marked Application Status**:
+   Application tracker statuses are updated based on citizen self-reporting. They do not represent real-time integration with state or central back-office government databases.
+3. **Circular Review Throughput**:
+   Uploaded PDF circulars that are purely scanned images without a selectable text layer require manual data entry by administrators until enterprise OCR pipelines are provisioned.
+4. **Offline Mobile Functionality**:
+   The web application is fully responsive and mobile-optimized, but requires active internet connectivity to perform matching and readiness calculations.
+
+---
+
+## License & Attribution
+
 HAQ DWAAR AI is an open civic-tech initiative dedicated to public welfare empowerment across India.

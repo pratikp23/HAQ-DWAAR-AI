@@ -26,9 +26,9 @@ const STAGES = [
   { key: "INTERESTED", label: "Interested" },
   { key: "PREPARING", label: "Preparing Docs" },
   { key: "READY_TO_APPLY", label: "Ready to Apply" },
-  { key: "APPLIED", label: "Applied" },
+  { key: "APPLIED", label: "Citizen-marked Applied" },
   { key: "FOLLOW_UP", label: "Follow Up" },
-  { key: "COMPLETED", label: "Completed" },
+  { key: "COMPLETED", label: "Citizen-marked Completed" },
 ];
 
 export default function ApplicationDetails() {
@@ -246,12 +246,51 @@ export default function ApplicationDetails() {
             })}
           </div>
 
+          {currentStatus === "CANCELLED" && (
+            <div className="p-3.5 rounded-xl bg-slate-100 border border-slate-300 text-xs text-slate-700 flex items-center justify-between">
+              <span className="font-bold flex items-center">
+                <AlertCircle className="w-4 h-4 text-slate-500 mr-2 flex-shrink-0" />
+                This application tracker is currently Cancelled.
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentStatus("INTERESTED");
+                  handleUpdate("INTERESTED");
+                }}
+                className="px-3 py-1 rounded-lg text-xs font-bold bg-white text-slate-800 border border-slate-300 hover:bg-slate-50 transition"
+              >
+                Re-activate Tracker
+              </button>
+            </div>
+          )}
+
           <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 flex items-center space-x-2">
             <CheckCircle2 className="w-4 h-4 text-blue-600 flex-shrink-0" />
             <div>
               <span className="font-bold">Next Action: </span>
               {application.nextAction}
             </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-500 pt-1 border-t border-slate-100">
+            <span className="text-[11px] text-slate-500 leading-tight">
+              Application tracker statuses are self-reported by citizens for personal planning and do not represent government approval or real-time government status.
+            </span>
+            {currentStatus !== "CANCELLED" && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm("Are you sure you want to mark this application as Cancelled?")) {
+                    setCurrentStatus("CANCELLED");
+                    handleUpdate("CANCELLED");
+                  }
+                }}
+                className="text-[11px] text-slate-400 hover:text-rose-600 underline font-semibold whitespace-nowrap self-end sm:self-auto"
+              >
+                Mark as Cancelled
+              </button>
+            )}
           </div>
         </div>
 

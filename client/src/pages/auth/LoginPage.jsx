@@ -183,7 +183,7 @@ export default function LoginPage() {
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label htmlFor="login-email" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 Email Address
               </label>
               <div className="relative rounded-xl shadow-xs">
@@ -191,6 +191,8 @@ export default function LoginPage() {
                   <Mail className="w-4 h-4" />
                 </div>
                 <input
+                  id="login-email"
+                  name="email"
                   type="email"
                   required
                   value={email}
@@ -202,7 +204,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label htmlFor="login-password" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 Password
               </label>
               <div className="relative rounded-xl shadow-xs">
@@ -210,6 +212,8 @@ export default function LoginPage() {
                   <Lock className="w-4 h-4" />
                 </div>
                 <input
+                  id="login-password"
+                  name="password"
                   type="password"
                   required
                   value={password}

@@ -193,7 +193,7 @@ export default function RegisterPage() {
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label htmlFor="register-name" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 Full Name
               </label>
               <div className="relative rounded-xl shadow-xs">
@@ -201,6 +201,8 @@ export default function RegisterPage() {
                   <User className="w-4 h-4" />
                 </div>
                 <input
+                  id="register-name"
+                  name="name"
                   type="text"
                   required
                   value={name}
@@ -212,7 +214,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label htmlFor="register-email" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 Email Address
               </label>
               <div className="relative rounded-xl shadow-xs">
@@ -220,6 +222,8 @@ export default function RegisterPage() {
                   <Mail className="w-4 h-4" />
                 </div>
                 <input
+                  id="register-email"
+                  name="email"
                   type="email"
                   required
                   value={email}
@@ -232,7 +236,7 @@ export default function RegisterPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label htmlFor="register-password" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                   Password
                 </label>
                 <div className="relative rounded-xl shadow-xs">
@@ -240,6 +244,8 @@ export default function RegisterPage() {
                     <Lock className="w-4 h-4" />
                   </div>
                   <input
+                    id="register-password"
+                    name="password"
                     type="password"
                     required
                     value={password}
@@ -251,7 +257,7 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label htmlFor="register-confirm-password" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                   Confirm Password
                 </label>
                 <div className="relative rounded-xl shadow-xs">
@@ -259,6 +265,8 @@ export default function RegisterPage() {
                     <Lock className="w-4 h-4" />
                   </div>
                   <input
+                    id="register-confirm-password"
+                    name="confirmPassword"
                     type="password"
                     required
                     value={confirmPassword}
