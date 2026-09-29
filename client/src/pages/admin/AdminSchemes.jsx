@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 import { 
   getSchemes, 
   createScheme, 
@@ -15,16 +16,29 @@ import {
   ArrowLeft, 
   AlertCircle,
   ExternalLink,
-  Layers
+  Layers,
+  LogOut
 } from "lucide-react";
 
 export default function AdminSchemes() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
   const [schemes, setSchemes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/", { replace: true });
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
 
   // New Scheme Form Modal state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -159,13 +173,23 @@ export default function AdminSchemes() {
             </Link>
           </div>
 
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition-colors"
-          >
-            <Plus className="w-4 h-4 mr-1" />
-            Add Scheme
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="inline-flex items-center px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition-colors"
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              Add Scheme
+            </button>
+            <button
+              onClick={handleLogout}
+              className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold text-rose-300 hover:text-white hover:bg-rose-600/30 border border-rose-400/30 transition-colors"
+              title="Sign Out"
+            >
+              <LogOut className="w-3.5 h-3.5 mr-1" />
+              <span>Log Out</span>
+            </button>
+          </div>
         </div>
       </header>
 

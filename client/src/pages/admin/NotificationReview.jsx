@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 import {
   getNotificationById,
   analyzeNotification,
@@ -29,12 +30,23 @@ import {
   Clock,
   ExternalLink,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  LogOut
 } from "lucide-react";
 
 export default function NotificationReview() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/", { replace: true });
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -306,6 +318,14 @@ export default function NotificationReview() {
             >
               <RefreshCw className={`w-3.5 h-3.5 mr-1 ${analyzing ? "animate-spin" : ""}`} />
               Re-analyze
+            </button>
+            <button
+              onClick={handleLogout}
+              className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold text-rose-300 hover:text-white hover:bg-rose-600/30 border border-rose-400/30 transition"
+              title="Sign Out"
+            >
+              <LogOut className="w-3.5 h-3.5 mr-1" />
+              Sign Out
             </button>
           </div>
         </div>

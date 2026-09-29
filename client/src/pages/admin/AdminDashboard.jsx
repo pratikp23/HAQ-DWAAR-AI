@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 import {
   LayoutDashboard,
   Shield,
@@ -21,7 +22,8 @@ import {
   Filter,
   BarChart2,
   FileCheck,
-  AlertCircle
+  AlertCircle,
+  LogOut
 } from "lucide-react";
 
 import {
@@ -55,11 +57,23 @@ const RANGE_OPTIONS = [
 ];
 
 export default function AdminDashboard() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
   const [range, setRange] = useState("all");
   const [activeTab, setActiveTab] = useState("all");
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/", { replace: true });
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+  };
 
   // Analytics states
   const [overview, setOverview] = useState(null);
@@ -211,9 +225,17 @@ export default function AdminDashboard() {
           </div>
 
           <div className="flex items-center space-x-2">
-            <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 shrink-0">
+            <span className="hidden sm:inline-block px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 shrink-0">
               Admin Console
             </span>
+            <button
+              onClick={handleLogout}
+              className="inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-bold text-rose-300 hover:text-white hover:bg-rose-600/30 border border-rose-400/30 transition-colors shrink-0"
+              title="Sign Out"
+            >
+              <LogOut className="w-3.5 h-3.5 mr-1" />
+              <span>Log Out</span>
+            </button>
           </div>
         </div>
       </header>

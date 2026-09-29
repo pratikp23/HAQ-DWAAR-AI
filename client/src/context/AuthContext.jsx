@@ -61,11 +61,11 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const register = useCallback(async (name, email, password) => {
+  const register = useCallback(async (name, email, password, role = "citizen") => {
     setLoading(true);
     setAuthError(null);
     try {
-      const response = await registerUser({ name, email, password });
+      const response = await registerUser({ name, email, password, role });
       const { user: authenticatedUser, token: authToken } = response.data;
       setUser(authenticatedUser);
       setToken(authToken);

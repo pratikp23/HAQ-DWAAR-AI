@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 import {
   uploadNotification,
   getNotifications,
@@ -24,11 +25,22 @@ import {
   Eye,
   Layers,
   Sparkles,
-  Info
+  Info,
+  LogOut
 } from "lucide-react";
 
 export default function AdminNotifications() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/", { replace: true });
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
 
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -177,9 +189,17 @@ export default function AdminNotifications() {
           </div>
 
           <div className="flex items-center space-x-2">
-            <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+            <span className="hidden sm:inline-block px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
               Admin Console
             </span>
+            <button
+              onClick={handleLogout}
+              className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold text-rose-300 hover:text-white hover:bg-rose-600/30 border border-rose-400/30 transition-colors"
+              title="Sign Out"
+            >
+              <LogOut className="w-3.5 h-3.5 mr-1" />
+              <span>Log Out</span>
+            </button>
           </div>
         </div>
       </header>

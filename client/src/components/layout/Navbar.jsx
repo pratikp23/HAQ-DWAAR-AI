@@ -10,7 +10,8 @@ import {
   Briefcase,
   Globe,
   ChevronDown,
-  Check
+  Check,
+  LogOut
 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useLanguage } from "../../context/LanguageContext";
@@ -21,7 +22,7 @@ export default function Navbar() {
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const { language, setLanguage, t, languages } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
@@ -55,6 +56,15 @@ export default function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/", { replace: true });
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
 
   const isHomePage = location.pathname === "/";
 
@@ -234,12 +244,21 @@ export default function Navbar() {
                 )}
 
                 <Link
-                  to={user?.role === "admin" ? "/admin/schemes" : "/dashboard"}
+                  to={user?.role === "admin" ? "/admin" : "/dashboard"}
                   className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-extrabold bg-[#240b49] hover:bg-[#1e0a3c] text-white shadow-xs transition"
                 >
                   <UserCheck className="w-4 h-4 mr-1.5" />
                   {user?.role === "admin" ? t("adminConsole", "Admin Console") : t("myDashboard", "My Dashboard")}
                 </Link>
+
+                <button
+                  onClick={handleLogout}
+                  className="inline-flex items-center px-3 py-2 rounded-xl text-xs font-extrabold text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-rose-200 transition"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-3.5 h-3.5 mr-1" />
+                  <span>Log Out</span>
+                </button>
               </>
             ) : (
               <>
@@ -349,15 +368,26 @@ export default function Navbar() {
 
           <div className="pt-3 border-t border-slate-100 space-y-2">
             {isAuthenticated ? (
-              <>
+              <div className="space-y-2">
                 <Link
-                  to={user?.role === "admin" ? "/admin/schemes" : "/dashboard"}
+                  to={user?.role === "admin" ? "/admin" : "/dashboard"}
                   onClick={() => setMobileMenuOpen(false)}
                   className="block w-full text-center px-4 py-2.5 rounded-xl text-xs font-extrabold bg-[#240b49] text-white shadow-xs"
                 >
                   {user?.role === "admin" ? t("adminConsole", "Admin Console") : t("myDashboard", "My Dashboard")}
                 </Link>
-              </>
+
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleLogout();
+                  }}
+                  className="w-full flex items-center justify-center px-4 py-2.5 rounded-xl text-xs font-extrabold text-rose-600 bg-rose-50 border border-rose-200 hover:bg-rose-100 transition"
+                >
+                  <LogOut className="w-4 h-4 mr-1.5" />
+                  <span>Log Out ({user?.name || user?.email})</span>
+                </button>
+              </div>
             ) : (
               <div className="grid grid-cols-2 gap-2">
                 <Link
