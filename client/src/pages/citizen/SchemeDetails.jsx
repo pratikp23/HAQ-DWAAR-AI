@@ -4,6 +4,7 @@ import { getSchemeById } from "../../services/schemeApi";
 import { evaluateScheme } from "../../services/matchingApi";
 import { getSchemeDocumentChecklist } from "../../services/documentApi";
 import { useAuth } from "../../hooks/useAuth";
+import { useLanguage } from "../../context/LanguageContext";
 import Navbar from "../../components/layout/Navbar";
 import Footer from "../../components/layout/Footer";
 import {
@@ -22,13 +23,16 @@ import {
   FileText,
   Lock,
   ArrowRight,
-  Info
+  Info,
+  Clock
 } from "lucide-react";
+import { getApplications, createApplication } from "../../services/applicationApi";
 
 export default function SchemeDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
+  const { t } = useLanguage();
 
   const [scheme, setScheme] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -42,6 +46,10 @@ export default function SchemeDetails() {
   // Document checklist state (for authenticated users)
   const [checklist, setChecklist] = useState(null);
   const [loadingChecklist, setLoadingChecklist] = useState(false);
+
+  // Application Tracking state (for authenticated users)
+  const [trackingApp, setTrackingApp] = useState(null);
+  const [trackingLoading, setTrackingLoading] = useState(false);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -72,9 +80,44 @@ export default function SchemeDetails() {
       }
     };
 
+    const fetchTracking = async () => {
+      if (!isAuthenticated) return;
+      try {
+        const res = await getApplications();
+        if (res?.data) {
+          const found = res.data.find(
+            (a) => (a.schemeId?._id || a.schemeId) === id
+          );
+          if (found) setTrackingApp(found);
+        }
+      } catch (err) {
+        console.warn("Could not load application tracker:", err.message);
+      }
+    };
+
     fetchDetails();
     fetchChecklist();
+    fetchTracking();
   }, [id, isAuthenticated]);
+
+  const handleStartTracking = async () => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+    setTrackingLoading(true);
+    try {
+      const res = await createApplication({ schemeId: id });
+      if (res?.data) {
+        setTrackingApp(res.data);
+        navigate(`/dashboard/applications/${res.data._id}`);
+      }
+    } catch (err) {
+      console.error("Failed to start tracking application:", err);
+    } finally {
+      setTrackingLoading(false);
+    }
+  };
 
   const handleCheckMatch = async () => {
     if (!isAuthenticated) {
@@ -134,7 +177,7 @@ export default function SchemeDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col">
+    <div className="min-h-screen bg-[#f7f5fa] text-[#0f172a] flex flex-col">
       <Navbar />
 
       {/* Breadcrumb / Top Sub-Bar */}
@@ -142,13 +185,13 @@ export default function SchemeDetails() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-12 flex items-center justify-between text-xs">
           <Link
             to={isAuthenticated ? "/dashboard/schemes" : "/browse-schemes"}
-            className="inline-flex items-center font-semibold text-slate-600 hover:text-slate-900 transition"
+            className="inline-flex items-center font-bold text-slate-700 hover:text-[#240b49] transition"
           >
             <ArrowLeft className="w-4 h-4 mr-1.5" />
             Back to {isAuthenticated ? "Dashboard Schemes" : "Browse Schemes"}
           </Link>
           <div className="flex items-center space-x-2 text-xs">
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-300">
               <ShieldCheck className="w-3.5 h-3.5 mr-1 text-emerald-600" />
               Verified Official Data
             </span>
@@ -160,33 +203,39 @@ export default function SchemeDetails() {
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-6">
         
         {/* Title Card */}
-        <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+        <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-bold px-3 py-1 rounded-full bg-blue-100 text-blue-800 uppercase tracking-wide">
+            <span className="text-xs font-black px-3.5 py-1 rounded-full bg-[#240b49]/10 text-[#240b49] border border-[#240b49]/20 uppercase tracking-wide">
               {scheme.category}
             </span>
-            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700">
+            <span className="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-700">
               State: {scheme.state}
             </span>
-            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700">
+            <span className="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-700">
               Application: {scheme.applicationMethod}
             </span>
+            {(scheme.applicationDeadline || scheme.deadline) && (
+              <span className="text-xs font-bold px-3 py-1 rounded-full bg-amber-50 text-amber-900 border border-amber-300 inline-flex items-center">
+                <Clock className="w-3.5 h-3.5 mr-1 text-amber-700" />
+                Deadline: {new Date(scheme.applicationDeadline || scheme.deadline).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+              </span>
+            )}
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
             {scheme.name}
           </h1>
 
-          <p className="text-sm text-slate-600 leading-relaxed">
+          <p className="text-sm font-medium text-slate-600 leading-relaxed">
             {scheme.fullDescription || scheme.shortDescription}
           </p>
 
           {/* Benefit Highlight Box */}
-          <div className="p-4 bg-blue-50/80 rounded-xl border border-blue-200 text-sm space-y-1">
-            <span className="font-bold text-blue-900 block text-xs uppercase tracking-wider">
+          <div className="p-4 bg-[#f8f5fd] rounded-xl border border-[#e2d9f3] text-sm space-y-1">
+            <span className="font-black text-[#240b49] block text-xs uppercase tracking-wider">
               Official Benefit Summary
             </span>
-            <p className="text-blue-950 font-medium leading-relaxed">{scheme.benefitSummary}</p>
+            <p className="text-slate-900 font-semibold leading-relaxed">{scheme.benefitSummary}</p>
           </div>
         </div>
 
@@ -194,23 +243,41 @@ export default function SchemeDetails() {
         {/* PERSONALIZED MATCH ENGINE WIDGET / CONVERSION CALLOUT     */}
         {/* ======================================================== */}
         {isAuthenticated ? (
-          <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white p-6 sm:p-7 rounded-2xl border border-blue-900 shadow-md space-y-5">
+          <div className="bg-gradient-to-r from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] text-white p-6 sm:p-8 rounded-2xl border border-[#591d8f]/30 shadow-lg space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="space-y-1">
-                <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-blue-600/30 text-blue-300 border border-blue-400/20 text-xs font-semibold">
-                  <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+              <div className="space-y-2">
+                <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#ea580c]/20 text-[#ffedd5] border border-[#ea580c]/50 text-xs font-bold">
+                  <Sparkles className="w-3.5 h-3.5 text-[#fb923c]" />
                   <span>Deterministic Profile Matching</span>
                 </div>
-                <h2 className="text-lg sm:text-xl font-bold tracking-tight">Check Against My Profile</h2>
-                <p className="text-xs text-blue-200">
+                <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">Check Against My Profile</h2>
+                <p className="text-xs sm:text-sm text-[#e2e8f0] font-medium leading-relaxed">
                   Deterministically compare your Benefit Passport against this scheme's verified rule conditions.
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
+              <div className="flex flex-wrap items-center gap-2.5 flex-shrink-0">
+                {trackingApp ? (
+                  <Link
+                    to={`/dashboard/applications/${trackingApp._id}`}
+                    className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl font-bold text-xs bg-[#591d8f] hover:bg-[#481775] text-white shadow-md transition-all whitespace-nowrap"
+                  >
+                    <CheckCircle2 className="w-4 h-4 mr-1.5 text-emerald-400" />
+                    Tracking ({trackingApp.status})
+                  </Link>
+                ) : (
+                  <button
+                    onClick={handleStartTracking}
+                    disabled={trackingLoading}
+                    className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl font-bold text-xs bg-[#591d8f] hover:bg-[#481775] text-white border border-[#591d8f] shadow-md transition-all whitespace-nowrap disabled:opacity-50 cursor-pointer"
+                  >
+                    <Clock className="w-4 h-4 mr-1.5" />
+                    {trackingLoading ? "Saving..." : "Track This Scheme"}
+                  </button>
+                )}
                 <Link
                   to={`/dashboard/readiness/${scheme._id}`}
-                  className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-md transition-colors whitespace-nowrap"
+                  className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-bold text-xs bg-[#ea580c] hover:bg-[#c2410c] text-white shadow-md transition-all whitespace-nowrap cursor-pointer"
                 >
                   <FileCheck2 className="w-4 h-4 mr-1.5" />
                   Check Application Readiness →
@@ -658,20 +725,43 @@ export default function SchemeDetails() {
             </p>
           </div>
 
-          {scheme.officialApplicationUrl ? (
-            <a
-              href={scheme.officialApplicationUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-md transition-colors flex-shrink-0 whitespace-nowrap"
-            >
-              Apply on Official Portal <ExternalLink className="w-4 h-4 ml-2" />
-            </a>
-          ) : (
-            <div className="p-3 bg-slate-800 rounded-xl border border-slate-700 text-xs text-slate-400">
-              Official application link is not currently available in our verified scheme data.
-            </div>
-          )}
+          <div className="flex flex-wrap items-center gap-3 flex-shrink-0">
+            {isAuthenticated && (
+              trackingApp ? (
+                <Link
+                  to={`/dashboard/applications/${trackingApp._id}`}
+                  className="inline-flex items-center justify-center px-4 py-3 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow transition whitespace-nowrap"
+                >
+                  <CheckCircle2 className="w-4 h-4 mr-1.5 text-indigo-200" />
+                  View Tracker ({trackingApp.status})
+                </Link>
+              ) : (
+                <button
+                  onClick={handleStartTracking}
+                  disabled={trackingLoading}
+                  className="inline-flex items-center justify-center px-4 py-3 rounded-xl text-xs sm:text-sm font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition whitespace-nowrap disabled:opacity-50"
+                >
+                  <Clock className="w-4 h-4 mr-1.5 text-blue-300" />
+                  {trackingLoading ? "Saving..." : "Track This Application"}
+                </button>
+              )
+            )}
+
+            {scheme.officialApplicationUrl ? (
+              <a
+                href={scheme.officialApplicationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center px-6 py-3 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-md transition-colors whitespace-nowrap"
+              >
+                Apply on Official Portal <ExternalLink className="w-4 h-4 ml-2" />
+              </a>
+            ) : (
+              <div className="p-3 bg-slate-800 rounded-xl border border-slate-700 text-xs text-slate-400">
+                Official application link is not currently available in our verified scheme data.
+              </div>
+            )}
+          </div>
         </div>
 
       </main>

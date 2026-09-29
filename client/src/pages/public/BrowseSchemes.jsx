@@ -117,40 +117,40 @@ export default function BrowseSchemes() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900">
+    <div className="min-h-screen bg-[#f7f5fa] flex flex-col text-slate-900">
       <Navbar />
 
       {/* Hero Header */}
-      <section className="bg-gradient-to-b from-blue-900 to-slate-900 text-white py-12 px-4 sm:px-6 lg:px-8 border-b border-blue-950">
+      <section className="bg-gradient-to-b from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] text-white py-12 px-4 sm:px-6 lg:px-8 border-b border-purple-950">
         <div className="max-w-5xl mx-auto space-y-4 text-center sm:text-left">
-          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-semibold">
-            <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+          <div className="inline-flex items-center space-x-1.5 px-3.5 py-1 rounded-full bg-purple-500/20 text-purple-200 border border-purple-400/30 text-xs font-bold">
+            <ShieldCheck className="w-3.5 h-3.5 text-purple-300" />
             <span>Public Scheme Directory • Verified Official Data</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-black tracking-tight">
             Discover Government Schemes
           </h1>
-          <p className="text-sm sm:text-base text-slate-300 max-w-3xl leading-relaxed">
+          <p className="text-sm sm:text-base text-purple-100 max-w-3xl leading-relaxed font-semibold">
             Explore verified government welfare programs, review structured eligibility criteria and required documents, and access direct official government application portals without middlemen.
           </p>
 
           {/* Personalized Journey Callout Banner */}
-          <div className="mt-4 p-4 rounded-xl bg-blue-800/40 border border-blue-400/30 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+          <div className="mt-4 p-4 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
             <div className="flex items-center space-x-2.5">
               <Sparkles className="w-5 h-5 text-amber-300 flex-shrink-0" />
               <div>
-                <span className="font-bold text-white block">
+                <span className="font-extrabold text-white text-sm block">
                   Want personalized matching & document readiness checks?
                 </span>
-                <span className="text-blue-200 text-[11px]">
+                <span className="text-purple-200 text-xs font-medium">
                   Build a free Benefit Passport to deterministically evaluate your profile against all schemes.
                 </span>
               </div>
             </div>
             <Link
               to="/register"
-              className="inline-flex items-center px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold whitespace-nowrap shadow transition"
+              className="inline-flex items-center px-4 py-2.5 rounded-xl bg-[#ea580c] hover:bg-[#c2410c] text-white font-extrabold whitespace-nowrap shadow-xs transition"
             >
               Get Personalized Match <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
             </Link>

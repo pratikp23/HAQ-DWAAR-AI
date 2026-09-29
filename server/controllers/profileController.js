@@ -278,6 +278,18 @@ export const updateProfile = async (req, res, next) => {
         typeof preferences.whatsappConsent === "boolean"
           ? preferences.whatsappConsent
           : false,
+      deadlineAlerts:
+        typeof preferences.deadlineAlerts === "boolean"
+          ? preferences.deadlineAlerts
+          : true,
+      documentExpiryAlerts:
+        typeof preferences.documentExpiryAlerts === "boolean"
+          ? preferences.documentExpiryAlerts
+          : true,
+      applicationFollowUpAlerts:
+        typeof preferences.applicationFollowUpAlerts === "boolean"
+          ? preferences.applicationFollowUpAlerts
+          : true,
       preferredLanguage: sanitizeString(preferences.preferredLanguage) || "Hindi/English",
     };
 

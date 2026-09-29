@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 import Scheme from "../models/Scheme.js";
 import UserProfile from "../models/UserProfile.js";
 import { evaluateScheme } from "../services/matchingService.js";
+import {
+  validateSchemeForCitizen,
+  validateMatchExplanation,
+} from "../services/benefitFirewallService.js";
 
 /**
  * @route   POST /api/matching/evaluate
@@ -29,8 +33,8 @@ export const evaluateSchemeMatch = async (req, res, next) => {
     }
 
     // 1. Fetch the scheme
-    const scheme = await Scheme.findById(schemeId).select("-__v");
-    if (!scheme) {
+    const rawScheme = await Scheme.findById(schemeId).select("-__v");
+    if (!rawScheme) {
       return res.status(404).json({
         success: false,
         message: "Scheme not found.",
@@ -38,14 +42,21 @@ export const evaluateSchemeMatch = async (req, res, next) => {
       });
     }
 
-    // Citizens can strictly evaluate only VERIFIED schemes
-    if (scheme.verificationStatus !== "VERIFIED") {
+    // Benefit Firewall: Citizens can strictly evaluate only VERIFIED schemes
+    const firewallCheck = validateSchemeForCitizen(rawScheme);
+    if (!firewallCheck.safe || !firewallCheck.data) {
       return res.status(404).json({
         success: false,
         message: "Scheme not available or currently under verification.",
         code: "SCHEME_NOT_ACCESSIBLE",
+        firewall: {
+          safe: false,
+          blockedClaims: firewallCheck.blockedClaims,
+        },
       });
     }
+
+    const scheme = firewallCheck.data;
 
     // 2. Fetch authenticated citizen's Benefit Passport
     const profileDoc = await UserProfile.findOne({ userId: req.user.id });
@@ -53,6 +64,7 @@ export const evaluateSchemeMatch = async (req, res, next) => {
 
     // 3. Run deterministic evaluation
     const evaluation = evaluateScheme(profile, scheme);
+    const validatedExplanation = validateMatchExplanation(evaluation.explanation, scheme);
 
     return res.status(200).json({
       success: true,
@@ -78,7 +90,13 @@ export const evaluateSchemeMatch = async (req, res, next) => {
         matchScore: evaluation.matchScore,
         stats: evaluation.stats,
         ruleResults: evaluation.ruleResults,
-        explanation: evaluation.explanation,
+        explanation: validatedExplanation,
+        firewall: {
+          safe: true,
+          source: firewallCheck.source,
+          verifiedFields: firewallCheck.verifiedFields,
+          disclaimer: firewallCheck.disclaimer,
+        },
       },
     });
   } catch (error) {
@@ -105,12 +123,19 @@ export const getRecommendations = async (req, res, next) => {
       query.category = category.toUpperCase();
     }
 
-    const schemes = await Scheme.find(query).select("-__v");
+    const rawSchemes = await Scheme.find(query).select("-__v");
 
-    // 3. Evaluate each scheme deterministically
-    const recommendations = schemes.map((scheme) => {
+    // 3. Benefit Firewall: Validate each scheme strictly
+    const recommendations = [];
+    for (const rawScheme of rawSchemes) {
+      const firewallCheck = validateSchemeForCitizen(rawScheme);
+      if (!firewallCheck.safe || !firewallCheck.data) continue;
+
+      const scheme = firewallCheck.data;
       const evaluation = evaluateScheme(profile, scheme);
-      return {
+      const validatedExplanation = validateMatchExplanation(evaluation.explanation, scheme);
+
+      recommendations.push({
         schemeId: scheme._id,
         name: scheme.name,
         shortDescription: scheme.shortDescription,
@@ -124,12 +149,18 @@ export const getRecommendations = async (req, res, next) => {
         classification: evaluation.classification,
         matchScore: evaluation.matchScore,
         stats: evaluation.stats,
-        topReasons: evaluation.explanation.matchedReasons.slice(0, 3),
-        missingInformationCount: evaluation.explanation.missingInformation.length,
-        missingFields: evaluation.explanation.missingInformation,
-        explanation: evaluation.explanation,
-      };
-    });
+        topReasons: validatedExplanation.matchedReasons.slice(0, 3),
+        missingInformationCount: validatedExplanation.missingInformation.length,
+        missingFields: validatedExplanation.missingInformation,
+        explanation: validatedExplanation,
+        firewall: {
+          safe: true,
+          source: firewallCheck.source,
+          verifiedFields: firewallCheck.verifiedFields,
+          disclaimer: firewallCheck.disclaimer,
+        },
+      });
+    }
 
     // 4. Sort recommendations by deterministic match score descending
     // (Informational ordering based on profile information, never a government ranking)

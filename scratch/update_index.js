@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+import fs from 'fs';
+
+const htmlContent = `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -14,4 +16,7 @@
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
-</html>
+</html>`;
+
+fs.writeFileSync('client/index.html', htmlContent, 'utf8');
+console.log('client/index.html successfully updated');

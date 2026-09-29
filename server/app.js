@@ -15,6 +15,9 @@ import documentRoutes from "./routes/documentRoutes.js";
 import digilockerRoutes from "./routes/digilockerRoutes.js";
 import readinessRoutes from "./routes/readinessRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import applicationTrackerRoutes from "./routes/applicationTrackerRoutes.js";
+import citizenNotificationRoutes from "./routes/citizenNotificationRoutes.js";
+import bhashiniRoutes from "./routes/bhashiniRoutes.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
 const app = express();
@@ -54,6 +57,9 @@ app.use("/api/documents", documentRoutes);
 app.use("/api/digilocker", digilockerRoutes);
 app.use("/api/readiness", readinessRoutes);
 app.use("/api/admin/notifications", notificationRoutes);
+app.use("/api/applications", applicationTrackerRoutes);
+app.use("/api/notifications", citizenNotificationRoutes);
+app.use("/api/bhashini", bhashiniRoutes);
 
 // Catch-all 404 handler
 app.use(notFoundHandler);

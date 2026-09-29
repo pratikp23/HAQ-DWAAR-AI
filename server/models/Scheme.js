@@ -166,10 +166,21 @@ const schemeSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    applicationDeadline: {
+      type: Date,
+      default: null,
+    },
     hasDeadline: {
       type: Boolean,
       default: false,
     },
+    structuredDeadlines: [
+      {
+        label: { type: String, trim: true },
+        date: { type: Date },
+        description: { type: String, trim: true },
+      },
+    ],
     verificationStatus: {
       type: String,
       enum: {
@@ -190,6 +201,19 @@ const schemeSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Synchronize deadline and applicationDeadline
+schemeSchema.pre("save", function (next) {
+  if (this.applicationDeadline && !this.deadline) {
+    this.deadline = this.applicationDeadline;
+  } else if (this.deadline && !this.applicationDeadline) {
+    this.applicationDeadline = this.deadline;
+  }
+  if (this.deadline || this.applicationDeadline) {
+    this.hasDeadline = true;
+  }
+  next();
+});
 
 // Text search index on name, description, and tags
 schemeSchema.index({ name: "text", shortDescription: "text", tags: "text" });

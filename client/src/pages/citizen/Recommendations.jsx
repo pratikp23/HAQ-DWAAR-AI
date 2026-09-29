@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getRecommendations } from "../../services/matchingApi";
+import Navbar from "../../components/layout/Navbar";
+import { useLanguage } from "../../context/LanguageContext";
 import {
   Sparkles,
   CheckCircle,
@@ -18,6 +20,7 @@ import {
 } from "lucide-react";
 
 export default function Recommendations() {
+  const { t } = useLanguage();
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -59,62 +62,33 @@ export default function Recommendations() {
   const potentialCount = recommendations.filter((r) => r.classification === "POTENTIAL_MATCH").length;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-16">
-      {/* Top Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Link to="/dashboard" className="flex items-center space-x-2">
-              <div className="w-9 h-9 rounded-lg bg-blue-800 text-white flex items-center justify-center font-bold text-lg shadow-sm">
-                ह
-              </div>
-              <span className="text-xl font-extrabold tracking-tight text-slate-900">
-                HaqDwaar <span className="text-blue-700">AI</span>
-              </span>
-            </Link>
-          </div>
-
-          <div className="flex items-center space-x-3">
-            <Link
-              to="/dashboard/benefit-passport"
-              className="inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
-            >
-              <FileText className="w-3.5 h-3.5 mr-1.5 text-blue-600" />
-              Benefit Passport ({profileCompleteness}%)
-            </Link>
-            <Link
-              to="/dashboard"
-              className="text-xs font-semibold text-blue-700 hover:text-blue-800"
-            >
-              Dashboard →
-            </Link>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#f7f5fa] text-[#0f172a] pb-16">
+      {/* Universal GovTech Top Navigation */}
+      <Navbar />
 
       {/* Main Content Area */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
         {/* Page Hero Banner */}
-        <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-2xl p-6 sm:p-8 text-white shadow-md relative overflow-hidden">
-          <div className="max-w-3xl space-y-2">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-700/60 border border-blue-400/30 text-xs font-medium">
-              <Sparkles className="w-3.5 h-3.5 text-blue-300" />
-              <span>Personalized Matching Engine</span>
+        <div className="bg-gradient-to-r from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] rounded-2xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden border border-[#591d8f]/30">
+          <div className="max-w-3xl space-y-3">
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-[#ea580c]/20 border border-[#ea580c]/50 text-xs font-bold text-[#ffedd5]">
+              <Sparkles className="w-3.5 h-3.5 text-[#fb923c]" />
+              <span>{t("topRecommendedTitle", "Personalized Matching Engine")}</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              Benefits For You
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+              {t("benefitsForYou", "Benefits & Entitlements For You")}
             </h1>
-            <p className="text-blue-100 text-sm leading-relaxed">
-              Based on the information in your Benefit Passport. Every match is evaluated deterministically against authentic government scheme criteria.
+            <p className="text-[#e2e8f0] text-sm font-medium leading-relaxed">
+              {t("benefitsSubtitle", "Based on the information in your Benefit Passport. Every match is evaluated deterministically against authentic government scheme criteria.")}
             </p>
           </div>
 
           {/* Informational Disclaimer Card */}
-          <div className="mt-4 p-3 bg-blue-950/70 border border-blue-400/30 rounded-xl text-xs text-blue-200 flex items-start space-x-2 max-w-2xl">
-            <Info className="w-4 h-4 flex-shrink-0 text-blue-300 mt-0.5" />
+          <div className="mt-5 p-3.5 bg-[#140628]/80 border border-[#591d8f]/50 rounded-xl text-xs text-[#cbd5e1] flex items-start space-x-2.5 max-w-2xl font-medium">
+            <Info className="w-4 h-4 flex-shrink-0 text-[#fb923c] mt-0.5" />
             <p>
-              Ordering is arranged <span className="font-semibold text-white">based on your profile information</span> and deterministic rule checks. This is an informational profile match and does not represent an eligibility probability or government approval.
+              Ordering is arranged <span className="font-bold text-white">based on your profile information</span> and deterministic rule checks. This is an informational profile match and does not represent an eligibility probability or government approval.
             </p>
           </div>
         </div>
@@ -124,45 +98,45 @@ export default function Recommendations() {
           <div className="flex items-center space-x-2 overflow-x-auto pb-1">
             <button
               onClick={() => setFilterType("ALL")}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm ${
                 filterType === "ALL"
-                  ? "bg-blue-800 text-white shadow-sm"
+                  ? "bg-[#240b49] text-white shadow-md ring-2 ring-[#591d8f]/30"
                   : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
               }`}
             >
-              All Matches ({recommendations.length})
+              {t("allMatches", "All Matches")} ({recommendations.length})
             </button>
             <button
               onClick={() => setFilterType("MATCHED")}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center space-x-1.5 ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 shadow-sm ${
                 filterType === "MATCHED"
-                  ? "bg-emerald-700 text-white shadow-sm"
+                  ? "bg-emerald-700 text-white shadow-md ring-2 ring-emerald-400/30"
                   : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
               }`}
             >
               <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Matches Profile ({matchedCount})</span>
+              <span>{t("matchedFilter", "Matches Profile")} ({matchedCount})</span>
             </button>
             <button
               onClick={() => setFilterType("POTENTIAL")}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center space-x-1.5 ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 shadow-sm ${
                 filterType === "POTENTIAL"
-                  ? "bg-amber-600 text-white shadow-sm"
+                  ? "bg-amber-600 text-white shadow-md ring-2 ring-amber-400/30"
                   : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
               }`}
             >
               <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
-              <span>Potential Matches ({potentialCount})</span>
+              <span>{t("potentialFilter", "Potential Matches")} ({potentialCount})</span>
             </button>
           </div>
 
           <button
             onClick={fetchRecs}
             disabled={loading}
-            className="inline-flex items-center self-start sm:self-auto px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-sm transition-colors"
+            className="inline-flex items-center self-start sm:self-auto px-4 py-2 rounded-xl text-xs font-bold bg-white hover:bg-slate-100 text-slate-800 border border-slate-200 shadow-sm transition-all"
           >
             <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${loading ? "animate-spin" : ""}`} />
-            Check Again
+            {t("checkAgain", "Check Again")}
           </button>
         </div>
 
@@ -396,44 +370,44 @@ export default function Recommendations() {
                     )}
 
                     {/* Bottom Action Footer */}
-                    <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 text-xs">
+                    <div className="pt-3 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 text-xs">
                       <button
                         onClick={() => toggleExpand(rec.schemeId)}
-                        className="inline-flex items-center font-semibold text-blue-700 hover:text-blue-800"
+                        className="inline-flex items-center font-bold text-[#240b49] hover:text-[#591d8f] transition-colors"
                       >
                         {isExpanded ? (
                           <>
-                            Hide "Why This Match?" <ChevronUp className="w-4 h-4 ml-1" />
+                            {t("hideWhyThisMatch", "Hide Match Details")} <ChevronUp className="w-4 h-4 ml-1" />
                           </>
                         ) : (
                           <>
-                            Why This Match? <ChevronDown className="w-4 h-4 ml-1" />
+                            {t("whyThisMatch", "Why This Match?")} <ChevronDown className="w-4 h-4 ml-1" />
                           </>
                         )}
                       </button>
 
-                      <div className="flex items-center space-x-3">
+                      <div className="flex items-center space-x-2.5">
                         {rec.officialApplicationUrl && (
                           <a
                             href={rec.officialApplicationUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center text-slate-600 hover:text-slate-800 font-medium"
+                            className="inline-flex items-center text-slate-600 hover:text-slate-900 font-semibold px-2.5 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
                           >
-                            Official Portal <ExternalLink className="w-3 h-3 ml-1" />
+                            {t("officialPortal", "Official Portal")} <ExternalLink className="w-3 h-3 ml-1" />
                           </a>
                         )}
                         <Link
                           to={`/dashboard/readiness/${rec.schemeId}`}
-                          className="inline-flex items-center px-3 py-1.5 rounded-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-2xs transition-colors"
+                          className="inline-flex items-center px-3.5 py-2 rounded-xl font-bold bg-[#ea580c] hover:bg-[#c2410c] text-white shadow-sm transition-all text-xs"
                         >
-                          Check Readiness →
+                          {t("checkReadiness", "Check Readiness")} →
                         </Link>
                         <Link
                           to={`/dashboard/schemes/${rec.schemeId}`}
-                          className="inline-flex items-center px-3.5 py-1.5 rounded-lg font-semibold bg-slate-900 hover:bg-slate-800 text-white shadow-sm transition-colors"
+                          className="inline-flex items-center px-4 py-2 rounded-xl font-bold bg-[#240b49] hover:bg-[#1e0a3c] text-white shadow-sm transition-all text-xs"
                         >
-                          Details <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                          {t("details", "Details")} <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                         </Link>
                       </div>
                     </div>

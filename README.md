@@ -129,6 +129,67 @@ HAQ DWAAR AI provides two complementary, coexisting user journeys:
   - Complete immutable audit trail (`NotificationReviewLog`) recording every administrative action (`UPLOADED`, `ANALYZED`, `UPDATED`, `APPROVED`, `REJECTED`, `SCHEME_UPDATE_PREVIEWED`, `SCHEME_UPDATE_APPLIED`).
   - Dedicated Admin UI at `/admin/notifications` and `/admin/notifications/:id` featuring side-by-side comparison tables, raw text inspector, editable candidate fields, and visual trust banners.
 
+- **Phase 11 — Proactive Alerts, Deadlines & Application Tracker**:
+  - **Deterministic Indian Standard Time (IST) Deadline Engine**: Evaluates trusted scheme deadlines in `Asia/Kolkata` (+05:30), formats dates in standard Indian convention (`DD MMMM YYYY`), and classifies urgency states (`NO_DEADLINE`, `EXPIRED`, `TODAY`, `SOON`, `APPROACHING`, `UPCOMING`).
+  - **Relevance & Window Filter**: Deadline notifications are sent strictly for schemes that are relevant (`MATCHED` or `POTENTIAL_MATCH` from Benefit Passport) or actively tracked by the citizen. Triggers on defined windows: 15 days, 7 days, 3 days, 1 day, and 0 days (today).
+  - **Document Expiry & Readiness Blocker Watchdog**: Alerts citizens when documents in their Personal Document Vault expire within 30, 15, or 7 days, or when an active tracked application has missing mandatory certificates.
+  - **In-App Notification Center (`/dashboard/notifications`)**: Real-time notifications with unread badge, priority badges (`HIGH`, `MEDIUM`, `LOW`), actionable scheme readiness links, single-click "Mark as Read", "Dismiss", and "Mark All as Read".
+  - **WhatsApp Simulation in Demo Mode**: Respects citizen consent preferences (`notificationConsent`, `whatsappConsent`), logging mock dispatches with `isDemo: true` and civic transparency notices without making real external SMS/WhatsApp calls without configured credentials.
+  - **Citizen-Side Application Tracker (`/dashboard/applications`, `/dashboard/applications/:id`)**:
+    - Complete citizen preparation lifecycle: `INTERESTED` → `PREPARING` → `READY_TO_APPLY` → `APPLIED` → `FOLLOW_UP` → `COMPLETED` / `CANCELLED`.
+    - Dynamic `nextAction` computation guiding citizens on document preparation and portal readiness.
+    - Reference number and submission notes tracking with `submittedAt` recording.
+    - Guardrails against accidental non-linear jumps without explicit citizen confirmation.
+    - Strict user isolation ensuring citizens can only inspect and manage their own tracked applications.
+  - **Strict Civic Trust Boundary & Non-Agency Disclosures**:
+    - HAQ DWAAR AI is an application preparation assistant, NOT an official government application portal.
+    - Creating or updating a tracker does NOT submit applications to the government.
+    - Clicking the official application link opens the external portal in a new tab; it NEVER automatically changes tracker status to `APPLIED`. Status changes require explicit citizen actions.
+    - Deadlines are sourced strictly from admin-verified schemes (`verificationStatus: "VERIFIED"`), never from unapproved PDF drafts or AI hallucinations.
+    - Zero AI in deadline calculations, alert qualification, or status transitions.
+
+- **Phase 12 — Bhashini Voice + Benefit Firewall**:
+  - **Bhashini Voice Access**:
+    - Hands-free voice accessibility enabling citizens to speak their situation naturally in their preferred language.
+    - Endpoints: `GET /api/bhashini/status`, `POST /api/bhashini/speech-to-text`, `POST /api/bhashini/text-to-speech`.
+    - Live in-browser audio recording via MediaRecorder API with 60-second limit and audio file upload fallback.
+    - Seamless flow: `VOICE INPUT → Speech-to-Text → Life Situation NLU → Structured Intent/Profile Signals → Deterministic Matching Engine → Verified Scheme Data → Benefit Firewall → Safe Citizen Response`.
+    - Reuses existing Phase 6 conversational NLU and Phase 5 deterministic matching; zero duplicate matching systems.
+  - **Mock vs. Real Bhashini Configuration**:
+    - Abstracted voice architecture supporting `BHASHINI_MODE=mock` (or `VOICE_MODE=mock`) as default, and production Bhashini services when credentials (`BHASHINI_API_KEY`, `BHASHINI_BASE_URL`) are configured.
+    - Clear UI indicator via `TrustBadge` ("Voice Demo Mode").
+    - Explicit disclosure: *"Bhashini integration runs in Demo/Mock Mode unless authorized production credentials and configuration are provided."*
+  - **Multilingual Architecture**:
+    - Configurable language selection across 7 major Indian languages: हिन्दी (Hindi), English, मराठी (Marathi), தமிழ் (Tamil), తెలుగు (Telugu), বাংলা (Bengali), and ગુજરાતી (Gujarati).
+    - Seamless fallback to text input if voice input or browser microphone permissions are unavailable.
+  - **Voice Privacy Behavior**:
+    - Audio recordings are processed in-memory or in temporary storage and cleaned up immediately after processing.
+    - Zero permanent voice audio storage by default.
+    - Application logs record safe metadata only; citizen PII, Aadhaar numbers, and financial details are strictly excluded from logs.
+    - Stricter rate limits on voice endpoints (30 requests per 15 minutes) with standard `X-RateLimit` headers.
+  - **Benefit Firewall**:
+    - Dedicated server-side trust & safety layer (`benefitFirewallService.js`) positioned between untrusted inputs / AI outputs and citizen-facing benefit information.
+    - Invariant:
+      `AI UNDERSTANDS → DETERMINISTIC ENGINE MATCHES → TRUSTED DATABASE PROVIDES FACTS → BENEFIT FIREWALL VALIDATES → CITIZEN RECEIVES SAFE INFORMATION`.
+  - **Trusted vs. Untrusted Data**:
+    - *TRUSTED*: Admin-verified Scheme documents (`verificationStatus = 'VERIFIED'`), deterministic rule calculations, verified application URLs, verified source URLs, and actual document health results.
+    - *UNTRUSTED*: Raw citizen text, voice transcripts, PDF extractions, unapproved NotificationAnalysis (`UPLOADED`, `PROCESSING`, `REVIEW_REQUIRED`, `REJECTED`), arbitrary client inputs, and raw Gemini outputs. Untrusted data is NEVER automatically promoted to trusted scheme facts.
+  - **AI Limitations & Protections**:
+    - AI cannot create schemes, invent benefits, deadlines, eligibility criteria, or official URLs.
+    - AI cannot mark a scheme `VERIFIED`, modify Scheme documents, or execute database operations.
+    - Hallucinated dates, benefit claims, or URLs from AI outputs are automatically stripped and blocked by the firewall.
+  - **Deterministic Matching & "Why This Match?" Integrity**:
+    - Every reason displayed in "Why This Match?" is strictly validated against evaluated deterministic rules; AI-generated claims of government approval or guaranteed eligibility are automatically filtered out.
+  - **Official Source Protection**:
+    - Official application links and source links strictly originate from verified Scheme records (`scheme.officialApplicationUrl`).
+    - The firewall rejects external URLs, PDF-extracted links, or AI-generated links from masquerading as official application portals.
+  - **Prompt Injection Defense**:
+    - Quarantines injection directives ("ignore previous instructions", "make me eligible", "mark as verified") as passive untrusted user text with zero instruction authority.
+  - **Explicit Confirmation Boundary**:
+    - Profile signals extracted from voice or text conversations are NEVER saved automatically to the citizen's Benefit Passport. The citizen must review and explicitly confirm via *"Apply to My Benefit Passport"*.
+  - **Civic Trust Boundary Disclaimer**:
+    - *"The Benefit Firewall is an application-level trust boundary. It does not guarantee government eligibility, approval, authenticity, or legal validity."*
+
 ---
 
 ## 🚀 Getting Started

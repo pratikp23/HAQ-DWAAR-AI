@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import Navbar from "../../components/layout/Navbar";
+import { useLanguage } from "../../context/LanguageContext";
 import {
   getDocuments,
   uploadDocument,
@@ -65,6 +67,7 @@ const HEALTH_CONFIG = {
 };
 
 export default function Documents() {
+  const { t } = useLanguage();
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -271,58 +274,62 @@ export default function Documents() {
   });
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {/* Top Header Card */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold">
-              <span>Personal Document Vault</span>
-              <span>•</span>
-              <span>Phase 8 Active</span>
+    <div className="min-h-screen bg-[#f7f5fa] text-[#0f172a] pb-16">
+      {/* Universal GovTech Top Navigation */}
+      <Navbar />
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Top Header Card */}
+        <div className="bg-gradient-to-r from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] rounded-2xl p-6 md:p-8 text-white shadow-lg border border-[#591d8f]/30">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#ea580c]/20 border border-[#ea580c]/50 text-[#ffedd5] text-xs font-bold">
+                <span>{t("documentsTitle", "Personal Document Vault")}</span>
+                <span>•</span>
+                <span>DigiLocker Direct API</span>
+              </div>
+              <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
+                {t("documentsTitle", "My Document Vault")}
+              </h1>
+              <p className="text-[#e2e8f0] max-w-2xl text-sm font-medium leading-relaxed">
+                {t("documentsSub", "Keep your benefit-related documents in one personal vault. Upload documents yourself or import them through simulated DigiLocker, and reuse those documents when checking different government schemes.")}
+              </p>
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
-              My Document Vault
-            </h1>
-            <p className="text-slate-600 max-w-2xl text-sm md:text-base leading-relaxed">
-              Keep your benefit-related documents in one personal vault. Upload documents yourself or import them through simulated DigiLocker, and reuse those documents when checking different government schemes.
-            </p>
+
+            {/* Primary Action Buttons */}
+            <div className="flex flex-wrap items-center gap-3 shrink-0">
+              <button
+                onClick={() => setShowUploadForm(!showUploadForm)}
+                className="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition-all"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Upload Document
+              </button>
+
+              <button
+                onClick={handleOpenDigiLocker}
+                className="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-bold bg-[#ea580c] hover:bg-[#c2410c] text-white shadow-md transition-all"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+                </svg>
+                {t("fetchDigilocker", "Import from DigiLocker")}
+              </button>
+            </div>
           </div>
 
-          {/* Primary Action Buttons */}
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <button
-              onClick={() => setShowUploadForm(!showUploadForm)}
-              className="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Upload Document
-            </button>
-
-            <button
-              onClick={handleOpenDigiLocker}
-              className="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-semibold bg-blue-700 hover:bg-blue-800 text-white shadow-sm transition"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-              </svg>
-              Import from DigiLocker
-            </button>
-          </div>
-        </div>
-
-        {/* Informational Readiness Disclaimer */}
-        <div className="mt-6 bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start gap-3">
-          <svg className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <div className="text-xs md:text-sm text-slate-700 leading-relaxed">
-            <span className="font-semibold text-slate-900">Application Readiness Assistant:</span> Document health evaluations indicate file readability, completeness, and detected expiration dates. This is an informational application-readiness assistant and <span className="underline">does not constitute official government authentication</span> or legal verification.
+          {/* Informational Readiness Disclaimer */}
+          <div className="mt-6 bg-[#140628]/80 border border-[#591d8f]/50 rounded-xl p-4 flex items-start gap-3 text-xs md:text-sm text-[#cbd5e1] font-medium">
+            <svg className="w-5 h-5 text-[#fb923c] shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div className="leading-relaxed">
+              <span className="font-bold text-white">Application Readiness Assistant:</span> Document health evaluations indicate file readability, completeness, and detected expiration dates. This is an informational application-readiness assistant and <span className="underline font-semibold text-white">does not constitute official government authentication</span> or legal verification.
+            </div>
           </div>
         </div>
-      </div>
 
       {/* Global Alerts */}
       {successMessage && (
@@ -811,6 +818,7 @@ export default function Documents() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

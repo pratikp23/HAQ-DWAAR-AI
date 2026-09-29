@@ -127,6 +127,9 @@ const userProfileSchema = new mongoose.Schema(
       notificationConsent: { type: Boolean, default: true },
       whatsappConsent: { type: Boolean, default: false },
       preferredLanguage: { type: String, default: "Hindi/English" },
+      deadlineAlerts: { type: Boolean, default: true },
+      documentExpiryAlerts: { type: Boolean, default: true },
+      applicationFollowUpAlerts: { type: Boolean, default: true },
     },
     profileCompleteness: {
       type: Number,

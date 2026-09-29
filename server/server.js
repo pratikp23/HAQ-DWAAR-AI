@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import app from "./app.js";
 import { connectDB } from "./config/db.js";
+import { startDeadlineScheduler } from "./jobs/deadlineAlertJob.js";
 
 // Load environment variables
 dotenv.config();
@@ -9,6 +10,11 @@ const PORT = process.env.PORT || 5000;
 
 // Initialize Database connection
 connectDB();
+
+// Initialize proactive deadline scheduler
+if (process.env.NODE_ENV !== "test") {
+  startDeadlineScheduler();
+}
 
 // Start Express HTTP Server
 const server = app.listen(PORT, () => {

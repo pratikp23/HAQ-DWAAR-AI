@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Scheme from "../models/Scheme.js";
+import { validateSchemeForCitizen } from "../services/benefitFirewallService.js";
 
 /**
  * @route   GET /api/schemes
@@ -51,9 +52,16 @@ export const getSchemes = async (req, res, next) => {
 
     const query = conditions.length > 0 ? { $and: conditions } : {};
 
-    const schemes = await Scheme.find(query)
+    const rawSchemes = await Scheme.find(query)
       .select("-__v")
       .sort({ createdAt: -1 });
+
+    const schemes = !isAdmin
+      ? rawSchemes
+          .map((s) => validateSchemeForCitizen(s))
+          .filter((res) => res.safe && res.data)
+          .map((res) => res.data)
+      : rawSchemes;
 
     return res.status(200).json({
       success: true,
@@ -85,9 +93,9 @@ export const getSchemeById = async (req, res, next) => {
       });
     }
 
-    const scheme = await Scheme.findById(id).select("-__v");
+    const rawScheme = await Scheme.findById(id).select("-__v");
 
-    if (!scheme) {
+    if (!rawScheme) {
       return res.status(404).json({
         success: false,
         message: "Scheme not found.",
@@ -95,13 +103,35 @@ export const getSchemeById = async (req, res, next) => {
       });
     }
 
-    // Unauthenticated visitors and citizens cannot view unverified or archived schemes
     const isAdmin = req.user && req.user.role === "admin";
-    if (!isAdmin && scheme.verificationStatus !== "VERIFIED") {
-      return res.status(404).json({
-        success: false,
-        message: "Scheme not available or currently under verification.",
-        code: "SCHEME_NOT_ACCESSIBLE",
+
+    // Non-admins must pass Benefit Firewall validation
+    if (!isAdmin) {
+      const firewallCheck = validateSchemeForCitizen(rawScheme);
+      if (!firewallCheck.safe || !firewallCheck.data) {
+        return res.status(404).json({
+          success: false,
+          message: "Scheme not available or currently under verification.",
+          code: "SCHEME_NOT_ACCESSIBLE",
+          firewall: {
+            safe: false,
+            blockedClaims: firewallCheck.blockedClaims,
+          },
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "Scheme details retrieved successfully.",
+        data: {
+          scheme: firewallCheck.data,
+          firewall: {
+            safe: true,
+            source: firewallCheck.source,
+            verifiedFields: firewallCheck.verifiedFields,
+            disclaimer: firewallCheck.disclaimer,
+          },
+        },
       });
     }
 
@@ -109,7 +139,7 @@ export const getSchemeById = async (req, res, next) => {
       success: true,
       message: "Scheme details retrieved successfully.",
       data: {
-        scheme,
+        scheme: rawScheme,
       },
     });
   } catch (error) {

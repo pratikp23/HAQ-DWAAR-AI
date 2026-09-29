@@ -13,16 +13,23 @@ import Recommendations from "./pages/citizen/Recommendations";
 import LifeSituation from "./pages/citizen/LifeSituation";
 import Documents from "./pages/citizen/Documents";
 import Readiness from "./pages/citizen/Readiness";
+import Applications from "./pages/citizen/Applications";
+import ApplicationDetails from "./pages/citizen/ApplicationDetails";
+import Notifications from "./pages/citizen/Notifications";
 import AdminSchemes from "./pages/admin/AdminSchemes";
 import AdminNotifications from "./pages/admin/AdminNotifications";
 import NotificationReview from "./pages/admin/NotificationReview";
 import ProtectedRoute from "./components/common/ProtectedRoute";
+import ErrorBoundary from "./components/common/ErrorBoundary";
+import { LanguageProvider } from "./context/LanguageContext";
 
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
+      <LanguageProvider>
+        <BrowserRouter>
+          <ErrorBoundary>
+            <Routes>
           {/* Public Functional Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/browse-schemes" element={<BrowseSchemes />} />
@@ -101,6 +108,30 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/dashboard/applications"
+            element={
+              <ProtectedRoute>
+                <Applications />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/applications/:id"
+            element={
+              <ProtectedRoute>
+                <ApplicationDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/notifications"
+            element={
+              <ProtectedRoute>
+                <Notifications />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Authenticated Admin Routes */}
           <Route
@@ -131,7 +162,9 @@ function App() {
           {/* Catch-all */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </ErrorBoundary>
       </BrowserRouter>
+    </LanguageProvider>
     </AuthProvider>
   );
 }

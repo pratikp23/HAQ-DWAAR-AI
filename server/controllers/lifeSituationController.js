@@ -4,6 +4,12 @@ import { analyzeLifeSituation } from "../services/aiService.js";
 import { evaluateScheme } from "../services/matchingService.js";
 import { calculateProfileCompleteness } from "../utils/completenessCalculator.js";
 import { inputAnalyzeSchema, applySignalsSchema } from "../validators/lifeSituationValidator.js";
+import {
+  inspectCitizenInput,
+  sanitizeAIResponse,
+  validateSchemeForCitizen,
+  validateMatchExplanation,
+} from "../services/benefitFirewallService.js";
 
 /**
  * @route   POST /api/life-situation/analyze
@@ -24,6 +30,9 @@ export const analyzeSituation = async (req, res, next) => {
 
     const { text } = parsedInput.data;
 
+    // Benefit Firewall: Inspect input for prompt injections
+    const inspection = inspectCitizenInput(text);
+
     // 2. Fetch authenticated citizen's existing Benefit Passport (read-only context)
     const profileDoc = await UserProfile.findOne({ userId: req.user.id });
     const profile = profileDoc ? profileDoc.toObject() : null;
@@ -31,13 +40,22 @@ export const analyzeSituation = async (req, res, next) => {
     // 3. Run AI NLU analysis (or deterministic fallback)
     const { analysis, source } = await analyzeLifeSituation(text, profile);
 
+    // Benefit Firewall: Sanitize AI output before returning to citizen
+    const sanitizedResult = sanitizeAIResponse(analysis);
+
     // 4. Return structured JSON without mutating database
     return res.status(200).json({
       success: true,
       message: "Life situation analyzed successfully.",
       data: {
-        analysis,
+        analysis: sanitizedResult.data || analysis,
         source,
+        firewall: {
+          safe: sanitizedResult.safe,
+          isPromptInjectionDetected: inspection.isInjectionAttempt,
+          blockedClaims: sanitizedResult.blockedClaims,
+          disclaimer: sanitizedResult.disclaimer,
+        },
       },
     });
   } catch (error) {
@@ -100,12 +118,19 @@ export const previewMatchingWithSignals = async (req, res, next) => {
     };
 
     // 3. Fetch strictly VERIFIED schemes only
-    const schemes = await Scheme.find({ verificationStatus: "VERIFIED" }).select("-__v");
+    const rawSchemes = await Scheme.find({ verificationStatus: "VERIFIED" }).select("-__v");
 
-    // 4. Run existing deterministic matching engine
-    const recommendations = schemes.map((scheme) => {
+    // 4. Benefit Firewall: Validate each scheme strictly
+    const recommendations = [];
+    for (const rawScheme of rawSchemes) {
+      const firewallCheck = validateSchemeForCitizen(rawScheme);
+      if (!firewallCheck.safe || !firewallCheck.data) continue;
+
+      const scheme = firewallCheck.data;
       const evaluation = evaluateScheme(mergedProfile, scheme);
-      return {
+      const validatedExplanation = validateMatchExplanation(evaluation.explanation, scheme);
+
+      recommendations.push({
         schemeId: scheme._id,
         name: scheme.name,
         shortDescription: scheme.shortDescription,
@@ -119,12 +144,18 @@ export const previewMatchingWithSignals = async (req, res, next) => {
         classification: evaluation.classification,
         matchScore: evaluation.matchScore,
         stats: evaluation.stats,
-        topReasons: evaluation.explanation.matchedReasons.slice(0, 3),
-        missingInformationCount: evaluation.explanation.missingInformation.length,
-        missingFields: evaluation.explanation.missingInformation,
-        explanation: evaluation.explanation,
-      };
-    });
+        topReasons: validatedExplanation.matchedReasons.slice(0, 3),
+        missingInformationCount: validatedExplanation.missingInformation.length,
+        missingFields: validatedExplanation.missingInformation,
+        explanation: validatedExplanation,
+        firewall: {
+          safe: true,
+          source: firewallCheck.source,
+          verifiedFields: firewallCheck.verifiedFields,
+          disclaimer: firewallCheck.disclaimer,
+        },
+      });
+    }
 
     // 5. Sort by matchScore descending (Informational ordering based on provided signals)
     recommendations.sort((a, b) => b.matchScore - a.matchScore);

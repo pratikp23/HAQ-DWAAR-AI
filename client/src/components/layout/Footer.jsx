@@ -32,21 +32,21 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-slate-900 text-slate-300 border-t border-slate-800 text-xs">
+    <footer className="bg-[#1e0a3c] text-purple-100 border-t border-purple-950 text-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
           
           {/* Brand & Purpose Column */}
           <div className="space-y-3 md:col-span-1">
             <div className="flex items-center space-x-2.5">
-              <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold">
+              <div className="w-8 h-8 rounded-xl bg-[#591d8f] flex items-center justify-center text-white font-bold">
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
                 <span className="font-extrabold text-white text-base tracking-tight">
-                  HAQ DWAAR <span className="text-blue-400">AI</span>
+                  हकद्वार • HAQ DWAAR <span className="text-[#f97316]">AI</span>
                 </span>
-                <p className="text-[10px] text-blue-300 font-semibold tracking-wide">
+                <p className="text-[10px] text-purple-200 font-semibold tracking-wide">
                   Scheme se Application Tak
                 </p>
               </div>

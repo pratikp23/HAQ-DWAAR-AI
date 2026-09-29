@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import Navbar from "../../components/layout/Navbar";
+import { useLanguage } from "../../context/LanguageContext";
 import { getProfile, updateProfile } from "../../services/profileApi";
 import ProfileCompleteness from "../../components/passport/ProfileCompleteness";
 import { 
@@ -14,7 +16,8 @@ import {
   Briefcase, 
   Sprout, 
   HeartHandshake, 
-  Settings
+  Settings,
+  Sparkles
 } from "lucide-react";
 
 const GENDER_OPTIONS = ["Male", "Female", "Transgender", "Other", "Prefer not to say"];
@@ -60,6 +63,7 @@ const AVAILABLE_NEEDS = [
 ];
 
 export default function BenefitPassport() {
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [completeness, setCompleteness] = useState(0);
@@ -303,53 +307,51 @@ export default function BenefitPassport() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-20">
-      {/* Top Bar */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link
-            to="/dashboard"
-            className="inline-flex items-center text-xs font-semibold text-slate-600 hover:text-slate-900"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1.5" />
-            Back to Dashboard
-          </Link>
-          <div className="flex items-center space-x-3">
-            <span className="text-xs font-bold text-slate-700 hidden sm:inline">
-              Passport: {completeness}%
-            </span>
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={saving}
-              className="inline-flex items-center justify-center px-4 py-1.5 rounded-lg text-xs font-semibold text-white bg-blue-700 hover:bg-blue-800 shadow-sm disabled:opacity-50 transition-colors"
-            >
-              {saving ? (
-                <>
-                  <RefreshCw className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="w-3.5 h-3.5 mr-1.5" />
-                  Save Passport
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#f7f5fa] text-[#0f172a] pb-20">
+      {/* Universal GovTech Top Navigation */}
+      <Navbar />
 
       {/* Main Container */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-6 space-y-6">
-        {/* Title & Introduction */}
-        <div className="space-y-1">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Your Benefit Passport
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-600">
-            Keep your profile up to date so HaqDwaar can calculate your eligibility across state and central government schemes.
-          </p>
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-8 space-y-6">
+        {/* Page Hero Banner */}
+        <div className="bg-gradient-to-r from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] rounded-2xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden border border-[#591d8f]/30">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="space-y-2">
+              <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-[#ea580c]/20 border border-[#ea580c]/50 text-xs font-bold text-[#ffedd5]">
+                <Sparkles className="w-3.5 h-3.5 text-[#fb923c]" />
+                <span>{t("benefitPassportTitle", "Citizen Benefit Passport")}</span>
+                <span>•</span>
+                <span>{completeness}% {t("verifiedCount", "Verified")}</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                {t("benefitPassportTitle", "Your Benefit Passport")}
+              </h1>
+              <p className="text-[#e2e8f0] text-sm font-medium leading-relaxed max-w-xl">
+                {t("benefitPassportSub", "Keep your profile up to date so HaqDwaar can calculate your eligibility across state and central government schemes.")}
+              </p>
+            </div>
+
+            <div className="shrink-0 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={saving}
+                className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-[#ea580c] hover:bg-[#c2410c] shadow-md disabled:opacity-50 transition-all cursor-pointer"
+              >
+                {saving ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Passport
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Completeness Card */}
@@ -770,32 +772,32 @@ export default function BenefitPassport() {
           </div>
 
           {/* Bottom Save Bar */}
-          <div className="sticky bottom-4 z-20 bg-white/95 backdrop-blur-sm p-4 rounded-xl border border-slate-200 shadow-lg flex items-center justify-between gap-4">
-            <div className="text-xs text-slate-600 hidden sm:block">
+          <div className="sticky bottom-4 z-20 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-slate-200 shadow-xl flex items-center justify-between gap-4">
+            <div className="text-sm text-slate-700 hidden sm:block">
               <span>Passport Completeness: </span>
-              <span className="font-bold text-slate-900">{completeness}%</span>
+              <span className="font-black text-[#240b49] text-base">{completeness}%</span>
             </div>
 
             <div className="flex items-center space-x-3 w-full sm:w-auto justify-end">
               <Link
                 to="/dashboard"
-                className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 transition-colors"
+                className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 transition-colors"
               >
                 Cancel
               </Link>
               <button
                 type="submit"
                 disabled={saving}
-                className="inline-flex items-center justify-center px-6 py-2 rounded-lg text-xs font-semibold text-white bg-blue-700 hover:bg-blue-800 shadow-sm disabled:opacity-50 transition-colors"
+                className="inline-flex items-center justify-center px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-[#ea580c] hover:bg-[#c2410c] shadow-md disabled:opacity-50 transition-all cursor-pointer"
               >
                 {saving ? (
                   <>
-                    <RefreshCw className="w-4 h-4 mr-1.5 animate-spin" />
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
                     Saving Passport...
                   </>
                 ) : (
                   <>
-                    <Save className="w-4 h-4 mr-1.5" />
+                    <Save className="w-4 h-4 mr-2" />
                     Save Benefit Passport
                   </>
                 )}

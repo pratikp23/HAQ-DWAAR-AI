@@ -174,22 +174,22 @@ export default function HomePage() {
       {/* ======================================================== */}
       {/* 1. HERO SECTION                                          */}
       {/* ======================================================== */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-blue-950 via-slate-900 to-blue-900 text-white py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-b border-blue-900">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] text-white py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-b border-purple-950">
         <div className="max-w-5xl mx-auto text-center space-y-6 relative z-10">
           
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-semibold backdrop-blur-xs">
-            <ShieldCheck className="w-4 h-4 text-blue-400" />
-            <span>HAQ DWAAR AI • Scheme se Application Tak</span>
+          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-purple-500/20 text-purple-200 border border-purple-400/30 text-xs font-bold backdrop-blur-xs">
+            <ShieldCheck className="w-4 h-4 text-purple-300" />
+            <span>हकद्वार • HAQ DWAAR AI • Scheme se Application Tak</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
             Your Transparent Gateway from{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-sky-300 to-blue-200">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-orange-200 to-purple-200">
               Scheme to Application
             </span>
           </h1>
 
-          <p className="text-sm sm:text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed font-normal">
+          <p className="text-sm sm:text-lg text-purple-100 max-w-3xl mx-auto leading-relaxed font-semibold">
             Help citizens discover relevant government benefits, understand why they may match, prepare required documents, and reach the official application portal without confusion or predatory middlemen.
           </p>
 
@@ -197,20 +197,20 @@ export default function HomePage() {
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4">
             <Link
               to="/browse-schemes"
-              className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-xl font-bold text-sm bg-white text-blue-900 hover:bg-slate-100 shadow-md transition transform hover:-translate-y-0.5"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-xl font-extrabold text-sm bg-white text-[#240b49] hover:bg-slate-100 shadow-md transition transform hover:-translate-y-0.5"
             >
-              <Search className="w-4 h-4 mr-2 text-blue-700" />
+              <Search className="w-4 h-4 mr-2 text-[#591d8f]" />
               Browse Schemes
-              <span className="ml-2 text-[10px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">
+              <span className="ml-2 text-[10px] font-bold text-[#591d8f] bg-purple-50 px-2 py-0.5 rounded-full">
                 No Account Needed
               </span>
             </Link>
 
             <Link
               to={isAuthenticated ? "/dashboard" : "/register"}
-              className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-xl font-bold text-sm bg-blue-600 hover:bg-blue-500 text-white shadow-md transition transform hover:-translate-y-0.5 border border-blue-400/40"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-xl font-extrabold text-sm bg-gradient-to-r from-[#ea580c] to-[#f97316] hover:from-[#c2410c] hover:to-[#ea580c] text-white shadow-md transition transform hover:-translate-y-0.5"
             >
-              <Sparkles className="w-4 h-4 mr-2 text-amber-300" />
+              <Sparkles className="w-4 h-4 mr-2 text-amber-200" />
               {isAuthenticated ? "My Dashboard" : "Get Personalized Help"}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Link>

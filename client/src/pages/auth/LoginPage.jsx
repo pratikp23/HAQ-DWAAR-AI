@@ -37,21 +37,21 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#f7f5fa] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link to="/" className="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-slate-800 mb-6">
+        <Link to="/" className="inline-flex items-center text-xs font-bold text-slate-600 hover:text-slate-900 mb-6">
           <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Back to Home
         </Link>
         <div className="flex items-center justify-center space-x-3 mb-2">
-          <div className="w-10 h-10 rounded-lg bg-blue-800 text-white flex items-center justify-center font-bold text-xl shadow-md">
-            ?
+          <div className="w-10 h-10 rounded-xl bg-[#240b49] text-white flex items-center justify-center font-black text-xl shadow-xs">
+            ‡§π
           </div>
-          <span className="text-2xl font-extrabold text-slate-900 tracking-tight">HaqDwaar <span className="text-blue-700">AI</span></span>
+          <span className="text-2xl font-black text-slate-900 tracking-tight">‡§π‡§ï‡§¶‡•ç‡§µ‡§æ‡§∞ ‚Ä¢ HaqDwaar <span className="text-[#591d8f]">AI</span></span>
         </div>
-        <h2 className="mt-2 text-center text-2xl font-bold tracking-tight text-slate-900">
+        <h2 className="mt-2 text-center text-2xl font-black tracking-tight text-slate-900">
           Citizen Login
         </h2>
-        <p className="mt-1 text-center text-sm text-slate-600">
+        <p className="mt-1 text-center text-xs font-semibold text-slate-600">
           Sign in to access your Benefit Passport and track applications
         </p>
       </div>
@@ -98,7 +98,7 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="ïïïïïïïï"
+                  placeholder="ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ"
                   className="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                 />
               </div>
@@ -107,7 +107,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
+              className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-xl shadow-xs text-sm font-black text-white bg-[#240b49] hover:bg-[#1e0a3c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#591d8f] disabled:opacity-50 transition"
             >
               {submitting ? (
                 <>
@@ -124,9 +124,9 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 border-t border-slate-200 pt-4 text-center">
-            <p className="text-xs text-slate-600">
+            <p className="text-xs text-slate-600 font-medium">
               New to HaqDwaar?{" "}
-              <Link to="/register" className="font-semibold text-blue-700 hover:text-blue-800">
+              <Link to="/register" className="font-extrabold text-[#591d8f] hover:underline">
                 Register as a citizen
               </Link>
             </p>

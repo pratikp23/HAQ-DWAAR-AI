@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { getSchemeReadiness } from "../../services/readinessApi";
+import { getApplications, createApplication } from "../../services/applicationApi";
 import { useAuth } from "../../hooks/useAuth";
 import Navbar from "../../components/layout/Navbar";
 import Footer from "../../components/layout/Footer";
@@ -37,6 +38,9 @@ export default function Readiness() {
   const [error, setError] = useState(null);
   const [priorityFilter, setPriorityFilter] = useState("ALL");
 
+  const [trackingApp, setTrackingApp] = useState(null);
+  const [trackingLoading, setTrackingLoading] = useState(false);
+
   const fetchReadiness = async () => {
     setLoading(true);
     setError(null);
@@ -55,11 +59,41 @@ export default function Readiness() {
     }
   };
 
+  const fetchTracking = async () => {
+    try {
+      const res = await getApplications();
+      if (res?.data) {
+        const found = res.data.find(
+          (a) => (a.schemeId?._id || a.schemeId) === schemeId
+        );
+        if (found) setTrackingApp(found);
+      }
+    } catch (err) {
+      console.warn("Could not check tracking status in readiness:", err.message);
+    }
+  };
+
   useEffect(() => {
     if (schemeId) {
       fetchReadiness();
+      fetchTracking();
     }
   }, [schemeId]);
+
+  const handleStartTracking = async () => {
+    setTrackingLoading(true);
+    try {
+      const res = await createApplication({ schemeId });
+      if (res?.data) {
+        setTrackingApp(res.data);
+        navigate(`/dashboard/applications/${res.data._id}`);
+      }
+    } catch (err) {
+      console.error("Failed to start tracking application:", err);
+    } finally {
+      setTrackingLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -251,6 +285,24 @@ export default function Readiness() {
 
             {/* Quick Actions */}
             <div className="flex flex-col sm:flex-row md:flex-col gap-2.5 flex-shrink-0">
+              {trackingApp ? (
+                <Link
+                  to={`/dashboard/applications/${trackingApp._id}`}
+                  className="inline-flex items-center justify-center px-4 py-2 rounded-xl text-xs font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 shadow-2xs transition"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5 mr-2 text-indigo-600" />
+                  Tracked ({trackingApp.status}) →
+                </Link>
+              ) : (
+                <button
+                  onClick={handleStartTracking}
+                  disabled={trackingLoading}
+                  className="inline-flex items-center justify-center px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs transition disabled:opacity-50"
+                >
+                  <Clock className="w-3.5 h-3.5 mr-2" />
+                  {trackingLoading ? "Tracking..." : "Track Application"}
+                </button>
+              )}
               <Link
                 to="/dashboard/documents"
                 className="inline-flex items-center justify-center px-4 py-2 rounded-xl text-xs font-bold bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 shadow-2xs transition"
@@ -713,7 +765,26 @@ export default function Readiness() {
               </p>
             </div>
 
-            <div className="flex-shrink-0">
+            <div className="flex flex-wrap items-center gap-3 flex-shrink-0">
+              {trackingApp ? (
+                <Link
+                  to={`/dashboard/applications/${trackingApp._id}`}
+                  className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow transition whitespace-nowrap"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
+                  Tracker: {trackingApp.status}
+                </Link>
+              ) : (
+                <button
+                  onClick={handleStartTracking}
+                  disabled={trackingLoading}
+                  className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition whitespace-nowrap disabled:opacity-50"
+                >
+                  <Clock className="w-3.5 h-3.5 mr-1.5 text-blue-300" />
+                  {trackingLoading ? "Tracking..." : "Track Application"}
+                </button>
+              )}
+
               {scheme.officialApplicationUrl ? (
                 <a
                   href={scheme.officialApplicationUrl}

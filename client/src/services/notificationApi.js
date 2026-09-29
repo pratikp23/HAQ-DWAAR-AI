@@ -88,3 +88,53 @@ export const previewSchemeUpdate = async (id, schemeId) => {
 export const applySchemeUpdate = async (id, payload) => {
   return await api.post(`/admin/notifications/${id}/apply-scheme-update`, payload);
 };
+
+// =========================================================================
+// CITIZEN IN-APP NOTIFICATIONS (Phase 11)
+// =========================================================================
+
+/**
+ * Get current citizen notifications
+ * @param {Object} params - { status, type, page, limit }
+ */
+export const getCitizenNotifications = async (params = {}) => {
+  return await api.get("/notifications", { params });
+};
+
+/**
+ * Get unread notification count for badge
+ */
+export const getUnreadCount = async () => {
+  return await api.get("/notifications/unread-count");
+};
+
+/**
+ * Mark a single notification as read
+ * @param {string} id - Notification ID
+ */
+export const markNotificationAsRead = async (id) => {
+  return await api.put(`/notifications/${id}/read`);
+};
+
+/**
+ * Dismiss a notification
+ * @param {string} id - Notification ID
+ */
+export const dismissNotification = async (id) => {
+  return await api.put(`/notifications/${id}/dismiss`);
+};
+
+/**
+ * Mark all notifications as read for current user
+ */
+export const markAllNotificationsAsRead = async () => {
+  return await api.put("/notifications/read-all");
+};
+
+/**
+ * Trigger proactive alert cycle (Development & Testing)
+ */
+export const triggerAlertCycle = async () => {
+  return await api.post("/notifications/trigger-alert-cycle");
+};
+
