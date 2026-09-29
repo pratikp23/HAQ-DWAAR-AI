@@ -38,10 +38,10 @@ import NotificationReview from "./pages/admin/NotificationReview";
 
 function App() {
   return (
-    <AuthProvider>
-      <LanguageProvider>
-        <BrowserRouter>
-          <ErrorBoundary>
+    <ErrorBoundary>
+      <AuthProvider>
+        <LanguageProvider>
+          <BrowserRouter>
             <Routes>
               {/* ======================================================== */}
               {/* 1. PUBLIC SHELL (Unauthenticated & Information Discovery) */}
@@ -103,10 +103,10 @@ function App() {
                 <Route path="/admin/notifications/:id" element={<NotificationReview />} />
               </Route>
             </Routes>
-          </ErrorBoundary>
-        </BrowserRouter>
-      </LanguageProvider>
-    </AuthProvider>
+          </BrowserRouter>
+        </LanguageProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

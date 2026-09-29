@@ -73,4 +73,36 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  /* Civic Infinite Marquee */
+  @keyframes marquee-linear {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-marquee-linear {
+    display: flex;
+    width: max-content;
+    animation: marquee-linear 55s linear infinite;
+    will-change: transform;
+  }
+
+  .marquee-hover-pause:hover .animate-marquee-linear {
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-marquee-linear {
+      animation: none !important;
+      transform: none !important;
+    }
+    .marquee-fallback-scroll {
+      overflow-x: auto;
+      scroll-behavior: smooth;
+    }
+  }
 }

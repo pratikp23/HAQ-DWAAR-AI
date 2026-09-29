@@ -3,10 +3,9 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { getSchemeById } from "../../services/schemeApi";
 import { evaluateScheme } from "../../services/matchingApi";
 import { getSchemeDocumentChecklist } from "../../services/documentApi";
+import { getApplications, createApplication } from "../../services/applicationApi";
 import { useAuth } from "../../hooks/useAuth";
 import { useLanguage } from "../../context/LanguageContext";
-import Navbar from "../../components/layout/Navbar";
-import Footer from "../../components/layout/Footer";
 import {
   ShieldCheck,
   Building,
@@ -24,9 +23,12 @@ import {
   Lock,
   ArrowRight,
   Info,
-  Clock
+  Clock,
+  Check,
+  Layers,
+  FileQuestion,
+  FileCode
 } from "lucide-react";
-import { getApplications, createApplication } from "../../services/applicationApi";
 
 export default function SchemeDetails() {
   const { id } = useParams();
@@ -141,632 +143,528 @@ export default function SchemeDetails() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col">
-        <Navbar />
-        <div className="flex-1 flex flex-col items-center justify-center p-4 space-y-3 text-slate-600">
-          <RefreshCw className="w-8 h-8 text-blue-700 animate-spin" />
-          <p className="text-sm font-medium">Loading verified scheme specifications...</p>
-        </div>
-        <Footer />
+      <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 space-y-3 text-[#4b5563]">
+        <RefreshCw className="w-8 h-8 text-[#ea580c] animate-spin" />
+        <p className="text-xs font-black">Loading verified scheme specifications...</p>
       </div>
     );
   }
 
   if (error || !scheme) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col">
-        <Navbar />
-        <div className="flex-1 flex items-center justify-center p-4">
-          <div className="max-w-md w-full bg-white p-6 rounded-2xl border border-red-200 text-center space-y-4 shadow-sm">
-            <AlertCircle className="w-10 h-10 text-red-600 mx-auto" />
-            <h2 className="text-lg font-bold text-slate-900">Scheme Unavailable</h2>
-            <p className="text-xs text-slate-600">
-              {error || "The requested scheme could not be found or is not yet verified."}
-            </p>
-            <Link
-              to="/browse-schemes"
-              className="inline-flex items-center text-xs font-semibold text-blue-700 hover:text-blue-800"
-            >
-              ← Back to Scheme Directory
-            </Link>
-          </div>
+      <div className="max-w-xl mx-auto px-4 py-16 text-center">
+        <div className="bg-white p-8 rounded-3xl border border-red-200 shadow-sm space-y-4">
+          <AlertCircle className="w-10 h-10 text-red-600 mx-auto" />
+          <h2 className="text-lg font-black text-[#0f172a]">Scheme Specifications Unavailable</h2>
+          <p className="text-xs text-[#4b5563] leading-relaxed">
+            {error || "The requested government scheme could not be found or has not yet been verified."}
+          </p>
+          <Link
+            to="/browse-schemes"
+            className="inline-flex items-center text-xs font-black text-[#591d8f] hover:text-[#2b0f4c] underline"
+          >
+            ← Back to Scheme Directory
+          </Link>
         </div>
-        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f5fa] text-[#0f172a] flex flex-col">
-      <Navbar />
+    <div className="bg-[#f7f5fa] text-[#0f172a] min-h-screen py-6 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto space-y-6">
 
-      {/* Breadcrumb / Top Sub-Bar */}
-      <div className="bg-white border-b border-slate-200">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-12 flex items-center justify-between text-xs">
+        {/* ======================================================== */}
+        {/* 1. TOP BREADCRUMB & METADATA STRIP (Section 20)           */}
+        {/* ======================================================== */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
           <Link
             to={isAuthenticated ? "/dashboard/schemes" : "/browse-schemes"}
-            className="inline-flex items-center font-bold text-slate-700 hover:text-[#240b49] transition"
+            className="inline-flex items-center font-black text-[#4b5563] hover:text-[#2b0f4c] transition"
           >
             <ArrowLeft className="w-4 h-4 mr-1.5" />
-            Back to {isAuthenticated ? "Dashboard Schemes" : "Browse Schemes"}
+            <span>Back to {isAuthenticated ? "Dashboard Schemes" : "Browse Schemes"}</span>
           </Link>
-          <div className="flex items-center space-x-2 text-xs">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-300">
+
+          <div className="flex items-center space-x-2">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-black bg-emerald-50 text-emerald-800 border border-emerald-200">
               <ShieldCheck className="w-3.5 h-3.5 mr-1 text-emerald-600" />
               Verified Official Data
             </span>
           </div>
         </div>
-      </div>
 
-      {/* Main Container */}
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-6">
-        
-        {/* Title Card */}
-        <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-black px-3.5 py-1 rounded-full bg-[#240b49]/10 text-[#240b49] border border-[#240b49]/20 uppercase tracking-wide">
-              {scheme.category}
-            </span>
-            <span className="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-700">
-              State: {scheme.state}
-            </span>
-            <span className="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-700">
-              Application: {scheme.applicationMethod}
-            </span>
-            {(scheme.applicationDeadline || scheme.deadline) && (
-              <span className="text-xs font-bold px-3 py-1 rounded-full bg-amber-50 text-amber-900 border border-amber-300 inline-flex items-center">
-                <Clock className="w-3.5 h-3.5 mr-1 text-amber-700" />
-                Deadline: {new Date(scheme.applicationDeadline || scheme.deadline).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-              </span>
-            )}
-          </div>
+        {/* ======================================================== */}
+        {/* 2. SCHEME DETAILS HERO CARD (Section 21)                  */}
+        {/* ======================================================== */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e9e1f5] shadow-xs">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            {/* Left Hero Details */}
+            <div className="lg:col-span-7 space-y-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[10px] font-black px-3 py-1 rounded-full bg-purple-50 text-[#2b0f4c] border border-purple-200 uppercase tracking-wide">
+                  {scheme.category}
+                </span>
+                <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-[#fbf9fe] text-[#4b5563] border border-[#e9e1f5]">
+                  {scheme.state}
+                </span>
+                {(scheme.applicationDeadline || scheme.deadline) && (
+                  <span className="text-[10px] font-bold px-3 py-1 rounded-full bg-amber-50 text-amber-900 border border-amber-200 inline-flex items-center">
+                    <Clock className="w-3 h-3 mr-1 text-amber-700" />
+                    Deadline: {new Date(scheme.applicationDeadline || scheme.deadline).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                  </span>
+                )}
+              </div>
 
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
-            {scheme.name}
-          </h1>
+              <h1 className="text-2xl sm:text-3xl font-black text-[#0f172a] tracking-tight leading-tight">
+                {scheme.name}
+              </h1>
 
-          <p className="text-sm font-medium text-slate-600 leading-relaxed">
-            {scheme.fullDescription || scheme.shortDescription}
-          </p>
+              <p className="text-xs sm:text-sm text-[#4b5563] leading-relaxed font-medium">
+                {scheme.shortDescription}
+              </p>
 
-          {/* Benefit Highlight Box */}
-          <div className="p-4 bg-[#f8f5fd] rounded-xl border border-[#e2d9f3] text-sm space-y-1">
-            <span className="font-black text-[#240b49] block text-xs uppercase tracking-wider">
-              Official Benefit Summary
-            </span>
-            <p className="text-slate-900 font-semibold leading-relaxed">{scheme.benefitSummary}</p>
+              {/* Action Buttons */}
+              <div className="pt-2 flex flex-wrap items-center gap-3">
+                {scheme.officialApplicationUrl && (
+                  <a
+                    href={scheme.officialApplicationUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center px-6 py-3 rounded-2xl bg-[#ea580c] hover:bg-[#c2410c] text-white text-xs sm:text-sm font-black shadow-xs transition"
+                  >
+                    <span>Visit Official Portal</span>
+                    <ExternalLink className="w-4 h-4 ml-2" />
+                  </a>
+                )}
+
+                {isAuthenticated ? (
+                  <button
+                    onClick={handleCheckMatch}
+                    disabled={evaluating}
+                    className="inline-flex items-center justify-center px-5 py-3 rounded-2xl bg-[#2b0f4c] hover:bg-[#1e0a3c] text-white text-xs sm:text-sm font-black shadow-xs transition cursor-pointer disabled:opacity-50"
+                  >
+                    {evaluating ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                        Evaluating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 mr-2 text-amber-300" />
+                        {evaluation ? "Re-Check Against My Profile" : "Check Against My Profile"}
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <Link
+                    to="/register"
+                    className="inline-flex items-center justify-center px-5 py-3 rounded-2xl bg-white text-[#2b0f4c] border-2 border-[#e9e1f5] hover:border-[#2b0f4c] text-xs sm:text-sm font-black transition"
+                  >
+                    <Sparkles className="w-4 h-4 mr-2 text-[#ea580c]" />
+                    <span>Create Passport to Check Match</span>
+                  </Link>
+                )}
+              </div>
+            </div>
+
+            {/* Right Hero: Application Snapshot Card (Section 21) */}
+            <div className="lg:col-span-5 bg-[#fbf9fe] rounded-2xl p-5 border border-[#e9e1f5] space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-[#e9e1f5]">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#ea580c]">
+                  Snapshot
+                </span>
+                <span className="text-[10px] font-black text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  Verified ✓
+                </span>
+              </div>
+
+              <div className="space-y-2.5 text-xs text-[#4b5563]">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold">Application Method:</span>
+                  <strong className="text-[#0f172a] uppercase">{scheme.applicationMethod || "ONLINE"}</strong>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold">Required Documents:</span>
+                  <strong className="text-[#0f172a]">{scheme.requiredDocuments?.length || 0} Certificates</strong>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold">Applicable Geography:</span>
+                  <strong className="text-[#0f172a]">{scheme.state || "All-India"}</strong>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold">Issuing Authority:</span>
+                  <strong className="text-[#0f172a] text-right truncate max-w-[180px]">{scheme.sourceName || "Official Ministry"}</strong>
+                </div>
+              </div>
+
+              {scheme.officialApplicationUrl && (
+                <div className="pt-2 border-t border-[#e9e1f5]">
+                  <a
+                    href={scheme.officialApplicationUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full text-center py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-[#0f172a] border border-[#e9e1f5] font-black text-xs inline-flex items-center justify-center transition"
+                  >
+                    <span>Visit Official Portal</span>
+                    <ExternalLink className="w-3.5 h-3.5 ml-1.5 text-[#ea580c]" />
+                  </a>
+                </div>
+              )}
+            </div>
+
           </div>
         </div>
 
         {/* ======================================================== */}
-        {/* PERSONALIZED MATCH ENGINE WIDGET / CONVERSION CALLOUT     */}
+        {/* 3. DETERMINISTIC PROFILE EVALUATION RESULTS (When run)    */}
         {/* ======================================================== */}
-        {isAuthenticated ? (
-          <div className="bg-gradient-to-r from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] text-white p-6 sm:p-8 rounded-2xl border border-[#591d8f]/30 shadow-lg space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="space-y-2">
-                <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#ea580c]/20 text-[#ffedd5] border border-[#ea580c]/50 text-xs font-bold">
-                  <Sparkles className="w-3.5 h-3.5 text-[#fb923c]" />
-                  <span>Deterministic Profile Matching</span>
+        {isAuthenticated && evaluation && (
+          <div className="bg-gradient-to-br from-[#1e0a3c] via-[#240b49] to-[#2b0f4c] text-white p-6 sm:p-7 rounded-3xl border border-[#591d8f]/30 shadow-md space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/10">
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-wider text-[#fb923c] block">
+                  Deterministic Profile Evaluation
+                </span>
+                <div className="mt-1">
+                  {evaluation.classification === "MATCHED" && (
+                    <span className="inline-flex items-center px-3 py-1 rounded-full font-black text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                      <CheckCircle2 className="w-4 h-4 mr-1.5 text-emerald-400" />
+                      Matches Profile Criteria
+                    </span>
+                  )}
+                  {evaluation.classification === "POTENTIAL_MATCH" && (
+                    <span className="inline-flex items-center px-3 py-1 rounded-full font-black text-xs bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                      <AlertTriangle className="w-4 h-4 mr-1.5 text-amber-400" />
+                      Potential Match — Details Needed
+                    </span>
+                  )}
+                  {evaluation.classification === "NOT_MATCHED" && (
+                    <span className="inline-flex items-center px-3 py-1 rounded-full font-black text-xs bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                      <XCircle className="w-4 h-4 mr-1.5 text-rose-400" />
+                      Criteria Not Met in Profile
+                    </span>
+                  )}
                 </div>
-                <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">Check Against My Profile</h2>
-                <p className="text-xs sm:text-sm text-[#e2e8f0] font-medium leading-relaxed">
-                  Deterministically compare your Benefit Passport against this scheme's verified rule conditions.
-                </p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2.5 flex-shrink-0">
-                {trackingApp ? (
-                  <Link
-                    to={`/dashboard/applications/${trackingApp._id}`}
-                    className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl font-bold text-xs bg-[#591d8f] hover:bg-[#481775] text-white shadow-md transition-all whitespace-nowrap"
-                  >
-                    <CheckCircle2 className="w-4 h-4 mr-1.5 text-emerald-400" />
-                    Tracking ({trackingApp.status})
-                  </Link>
-                ) : (
-                  <button
-                    onClick={handleStartTracking}
-                    disabled={trackingLoading}
-                    className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl font-bold text-xs bg-[#591d8f] hover:bg-[#481775] text-white border border-[#591d8f] shadow-md transition-all whitespace-nowrap disabled:opacity-50 cursor-pointer"
-                  >
-                    <Clock className="w-4 h-4 mr-1.5" />
-                    {trackingLoading ? "Saving..." : "Track This Scheme"}
-                  </button>
-                )}
-                <Link
-                  to={`/dashboard/readiness/${scheme._id}`}
-                  className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-bold text-xs bg-[#ea580c] hover:bg-[#c2410c] text-white shadow-md transition-all whitespace-nowrap cursor-pointer"
-                >
-                  <FileCheck2 className="w-4 h-4 mr-1.5" />
-                  Check Application Readiness →
-                </Link>
-                <button
-                  onClick={handleCheckMatch}
-                  disabled={evaluating}
-                  className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl font-bold text-xs bg-white/10 hover:bg-white/20 text-white border border-white/20 shadow-md transition-colors flex-shrink-0 disabled:opacity-50 whitespace-nowrap"
-                >
-                  {evaluating ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                      Evaluating...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4 mr-2 text-blue-300" />
-                      {evaluation ? "Re-evaluate Match" : "Check Profile Match"}
-                    </>
-                  )}
-                </button>
+              <div className="sm:text-right">
+                <span className="text-[10px] uppercase font-bold text-purple-200 block">
+                  Match Score
+                </span>
+                <div className="text-2xl font-black text-white">
+                  {evaluation.matchScore}
+                  <span className="text-xs font-normal text-purple-300">/100</span>
+                </div>
               </div>
             </div>
 
-            {evalError && (
-              <div className="p-3 bg-red-950/80 border border-red-500/40 rounded-xl text-xs text-red-200">
-                {evalError}
-              </div>
-            )}
+            <p className="text-xs sm:text-sm text-purple-100 font-medium leading-relaxed">
+              {evaluation.explanation?.summary}
+            </p>
 
-            {/* Evaluation Results Card */}
-            {evaluation && (
-              <div className="bg-white/10 backdrop-blur-sm p-5 rounded-xl border border-white/15 space-y-4 text-xs">
-                {/* Header metrics */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/10">
-                  <div>
-                    <span className="text-[11px] text-blue-200 uppercase font-bold tracking-wider block">
-                      Profile Match Result
-                    </span>
-                    <div className="mt-1">
-                      {evaluation.classification === "MATCHED" && (
-                        <span className="inline-flex items-center px-3 py-1 rounded-full font-bold text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                          <CheckCircle2 className="w-4 h-4 mr-1.5 text-emerald-400" />
-                          Matches Profile Criteria
-                        </span>
-                      )}
-                      {evaluation.classification === "POTENTIAL_MATCH" && (
-                        <span className="inline-flex items-center px-3 py-1 rounded-full font-bold text-xs bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                          <AlertTriangle className="w-4 h-4 mr-1.5 text-amber-400" />
-                          Potential Match — Details Needed
-                        </span>
-                      )}
-                      {evaluation.classification === "NOT_MATCHED" && (
-                        <span className="inline-flex items-center px-3 py-1 rounded-full font-bold text-xs bg-rose-500/20 text-rose-300 border border-rose-500/40">
-                          <XCircle className="w-4 h-4 mr-1.5 text-rose-400" />
-                          Criteria Not Met in Profile
-                        </span>
-                      )}
-                    </div>
-                  </div>
+            {/* Why This Match Breakdown */}
+            <div className="space-y-2 pt-1 text-xs">
+              <span className="font-black text-white block uppercase tracking-wider text-[11px]">
+                Why this match?
+              </span>
 
-                  <div className="sm:text-right">
-                    <span className="text-[11px] text-blue-200 uppercase font-bold tracking-wider block">
-                      Profile Match Score
-                    </span>
-                    <div className="text-2xl font-black text-white mt-0.5">
-                      {evaluation.matchScore}
-                      <span className="text-xs font-normal text-blue-300">/100</span>
-                    </div>
+              {evaluation.explanation?.matchedReasons?.map((m, i) => (
+                <div key={i} className="flex items-start space-x-2 text-purple-100">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+                  <span>{m}</span>
+                </div>
+              ))}
+
+              {evaluation.explanation?.missingInformation?.map((m, i) => (
+                <div key={i} className="flex items-start space-x-2 text-amber-200">
+                  <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
+                  <div className="flex-1">
+                    <span>{m}</span>
+                    <Link
+                      to="/dashboard/benefit-passport"
+                      className="text-amber-300 underline font-bold ml-1.5 hover:text-white"
+                    >
+                      Update Benefit Passport →
+                    </Link>
                   </div>
                 </div>
+              ))}
 
-                {/* Summary */}
-                <p className="text-slate-200 leading-relaxed font-medium">
-                  {evaluation.explanation?.summary}
-                </p>
-
-                {/* Rule stats pill strip */}
-                <div className="flex flex-wrap gap-2 text-[11px]">
-                  <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-300">
-                    Total Rules: <strong>{evaluation.stats?.totalRules}</strong>
-                  </span>
-                  <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300">
-                    Passed: <strong>{evaluation.stats?.passedRules}</strong>
-                  </span>
-                  {evaluation.stats?.missingRules > 0 && (
-                    <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300">
-                      Missing Info: <strong>{evaluation.stats?.missingRules}</strong>
-                    </span>
-                  )}
-                  {evaluation.stats?.failedRules > 0 && (
-                    <span className="px-2.5 py-1 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300">
-                      Unsatisfied: <strong>{evaluation.stats?.failedRules}</strong>
-                    </span>
-                  )}
+              {evaluation.explanation?.failedConditions?.map((m, i) => (
+                <div key={i} className="flex items-start space-x-2 text-rose-200">
+                  <XCircle className="w-4 h-4 text-rose-400 mt-0.5 shrink-0" />
+                  <span>{m}</span>
                 </div>
+              ))}
+            </div>
 
-                {/* Detailed Breakdown */}
-                <div className="space-y-2.5 pt-2">
-                  <span className="text-xs font-bold text-white block uppercase tracking-wider">
-                    Why this match?
-                  </span>
-
-                  {evaluation.explanation?.matchedReasons?.map((m, i) => (
-                    <div key={i} className="flex items-start space-x-2 text-slate-200">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
-                      <span>{m}</span>
-                    </div>
-                  ))}
-
-                  {evaluation.explanation?.missingInformation?.map((m, i) => (
-                    <div key={i} className="flex items-start space-x-2 text-amber-200">
-                      <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
-                      <div className="flex-1">
-                        <span>{m}</span>{" "}
-                        <Link
-                          to="/dashboard/benefit-passport"
-                          className="text-blue-300 hover:text-blue-100 font-semibold underline ml-1"
-                        >
-                          Update Passport →
-                        </Link>
-                      </div>
-                    </div>
-                  ))}
-
-                  {evaluation.explanation?.failedConditions?.map((m, i) => (
-                    <div key={i} className="flex items-start space-x-2 text-rose-200">
-                      <XCircle className="w-4 h-4 text-rose-400 mt-0.5 flex-shrink-0" />
-                      <span>{m}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Disclaimer */}
-                <div className="p-3 bg-black/30 rounded-lg text-[11px] text-blue-200/90 leading-relaxed border border-white/10 flex items-start space-x-2">
-                  <Info className="w-4 h-4 flex-shrink-0 text-blue-400 mt-0.5" />
-                  <p>
-                    <strong>Informational Profile Match:</strong> This evaluation reflects how your saved Benefit Passport compares with published scheme rules. It does not constitute a legal or government eligibility decision. Final eligibility is determined solely by the issuing government department.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          /* Public Visitor Conversion Banner */
-          <div className="bg-gradient-to-r from-blue-900 via-slate-900 to-blue-950 text-white p-6 sm:p-7 rounded-2xl border border-blue-800 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
-            <div className="space-y-1.5 max-w-2xl">
-              <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-xs font-semibold">
-                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                <span>Personalized Citizen Journey</span>
-              </div>
-              <h2 className="text-lg sm:text-xl font-bold tracking-tight text-white">
-                Check Your Eligibility with Benefit Passport
-              </h2>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Log in or create a free profile to evaluate this scheme against your demographic, education, and income details without guesswork or AI hallucinations.
+            <div className="p-3 bg-black/30 rounded-2xl text-[11px] text-purple-200 leading-relaxed border border-white/10 flex items-start space-x-2">
+              <Info className="w-4 h-4 shrink-0 text-purple-300 mt-0.5" />
+              <p>
+                <strong>Informational profile match:</strong> This evaluation reflects how your saved Benefit Passport compares with published scheme rules. It does not constitute a legal government decision.
               </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full md:w-auto">
-              <Link
-                to="/register"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow transition whitespace-nowrap"
-              >
-                Create Benefit Passport <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-              </Link>
-              <Link
-                to="/login"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-white/10 hover:bg-white/15 border border-white/20 transition whitespace-nowrap"
-              >
-                Log In
-              </Link>
             </div>
           </div>
         )}
 
-        {/* Eligibility Details */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-          <div className="flex items-center space-x-2.5 pb-2 border-b border-slate-100">
-            <HelpCircle className="w-5 h-5 text-blue-700" />
-            <h2 className="font-bold text-slate-900 text-base">Eligibility Criteria</h2>
+        {/* ======================================================== */}
+        {/* 4. ABOUT THIS SCHEME & BENEFITS (Section 22)             */}
+        {/* ======================================================== */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* About This Scheme Card */}
+          <div className="bg-white rounded-3xl p-6 border border-[#e9e1f5] shadow-xs space-y-3">
+            <div className="flex items-center space-x-2 pb-2 border-b border-[#e9e1f5]">
+              <FileText className="w-4 h-4 text-[#591d8f]" />
+              <h2 className="text-sm font-black text-[#0f172a] uppercase tracking-wider">
+                About This Scheme
+              </h2>
+            </div>
+            <p className="text-xs sm:text-sm text-[#4b5563] leading-relaxed">
+              {scheme.fullDescription || scheme.shortDescription}
+            </p>
+            {scheme.targetAudience?.length > 0 && (
+              <div className="pt-2">
+                <span className="text-[10px] font-black uppercase tracking-wider text-[#64748b] block mb-1">
+                  Target Beneficiaries
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {scheme.targetAudience.map((aud, i) => (
+                    <span key={i} className="text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-[#fbf9fe] text-[#0f172a] border border-[#e9e1f5]">
+                      {aud}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
-          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-200">
+          {/* Benefits Card */}
+          <div className="bg-white rounded-3xl p-6 border border-[#e9e1f5] shadow-xs space-y-3">
+            <div className="flex items-center space-x-2 pb-2 border-b border-[#e9e1f5]">
+              <Sparkles className="w-4 h-4 text-[#ea580c]" />
+              <h2 className="text-sm font-black text-[#0f172a] uppercase tracking-wider">
+                Official Benefits
+              </h2>
+            </div>
+            <div className="p-4 bg-[#fbf9fe] rounded-2xl border border-[#e9e1f5] text-xs sm:text-sm text-[#0f172a] font-semibold leading-relaxed">
+              {scheme.benefitSummary}
+            </div>
+          </div>
+        </div>
+
+        {/* ======================================================== */}
+        {/* 5. ELIGIBILITY SECTION (Section 23)                      */}
+        {/* ======================================================== */}
+        <div className="bg-white rounded-3xl p-6 sm:p-7 border border-[#e9e1f5] shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-[#e9e1f5]">
+            <div className="flex items-center space-x-2">
+              <HelpCircle className="w-5 h-5 text-[#2b0f4c]" />
+              <h2 className="text-base font-black text-[#0f172a]">
+                Eligibility Criteria
+              </h2>
+            </div>
+            <span className="text-[11px] text-[#64748b] font-semibold">
+              Published Criteria Guidelines
+            </span>
+          </div>
+
+          <p className="text-xs sm:text-sm text-[#4b5563] leading-relaxed bg-[#fbf9fe] p-4 rounded-2xl border border-[#e9e1f5]">
             {scheme.eligibilitySummary}
           </p>
 
+          {/* Structured Criteria Rules */}
           {scheme.rules && scheme.rules.length > 0 && (
             <div className="space-y-2 pt-2">
-              <span className="text-xs font-bold text-slate-700 block">Structured Criteria Rules:</span>
-              <ul className="space-y-2 text-xs">
+              <span className="text-xs font-black text-[#0f172a] uppercase tracking-wider block">
+                Structured Rules:
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {scheme.rules.map((rule, idx) => (
-                  <li key={idx} className="flex items-start space-x-2 text-slate-700">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    <span>{rule.label}</span>
-                  </li>
+                  <div key={idx} className="p-3 bg-[#fbf9fe] rounded-xl border border-[#e9e1f5] flex items-start space-x-2.5 text-xs text-[#0f172a]">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+                    <div>
+                      <span className="font-bold">{rule.label}</span>
+                      {rule.mandatory && (
+                        <span className="ml-2 text-[10px] uppercase font-black text-purple-900 bg-purple-100 px-1.5 py-0.2 rounded">
+                          Mandatory
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           )}
         </div>
 
         {/* ======================================================== */}
-        {/* REQUIRED DOCUMENTS SECTION                                */}
+        {/* 6. REQUIRED DOCUMENTS (Section 24)                       */}
         {/* ======================================================== */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
-            <div className="flex items-center space-x-2.5">
+        <div className="bg-white rounded-3xl p-6 sm:p-7 border border-[#e9e1f5] shadow-xs space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#e9e1f5]">
+            <div className="flex items-center space-x-2">
               <FileCheck2 className="w-5 h-5 text-emerald-600" />
               <div>
-                <h2 className="font-bold text-slate-900 text-base">Required Documents</h2>
-                <p className="text-xs text-slate-500">
-                  {isAuthenticated 
-                    ? "Cross-referenced against your Citizen Document Vault" 
-                    : "Checklist of mandatory certificates required for official application"}
+                <h2 className="text-base font-black text-[#0f172a]">
+                  Required Documents
+                </h2>
+                <p className="text-[11px] text-[#64748b]">
+                  Certificates required to prepare for official application submission
                 </p>
               </div>
             </div>
 
-            {isAuthenticated ? (
-              <div className="flex items-center gap-2">
-                <Link
-                  to={`/dashboard/readiness/${scheme._id}`}
-                  className="inline-flex items-center text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg border border-blue-200 transition"
-                >
-                  Check Readiness & Plan →
-                </Link>
-                <Link
-                  to="/dashboard/documents"
-                  className="inline-flex items-center text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg border border-emerald-200 transition"
-                >
-                  + Manage Vault
-                </Link>
-              </div>
-            ) : (
+            {isAuthenticated && (
               <Link
-                to="/register"
-                className="inline-flex items-center text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg border border-blue-200 transition"
+                to={`/dashboard/readiness/${scheme._id}`}
+                className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-black bg-purple-50 text-[#2b0f4c] border border-purple-200 hover:bg-purple-100 transition self-start sm:self-auto"
               >
-                Prepare Documents with HAQ DWAAR AI →
+                Check Application Readiness →
               </Link>
             )}
           </div>
 
-          {/* If Authenticated & Checklist Available */}
-          {isAuthenticated && checklist && (
-            <div className="space-y-4">
+          {/* Clean Document Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            {scheme.requiredDocuments?.map((doc, idx) => (
               <div
-                className={`p-4 rounded-xl border flex items-center justify-between text-xs ${
-                  checklist.isReadyForApplication
-                    ? "bg-emerald-50 border-emerald-200 text-emerald-900"
-                    : "bg-amber-50 border-amber-200 text-amber-900"
-                }`}
+                key={idx}
+                className="bg-[#fbf9fe] rounded-2xl p-4 border border-[#e9e1f5] flex flex-col justify-between space-y-2"
               >
-                <div className="flex items-center space-x-2">
-                  {checklist.isReadyForApplication ? (
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-                  ) : (
-                    <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0" />
-                  )}
-                  <div>
-                    <span className="font-bold block">
-                      {checklist.isReadyForApplication
-                        ? "All Mandatory Documents Available in Vault"
-                        : `${checklist.missing?.length || 0} Mandatory Document(s) Missing in Vault`}
-                    </span>
-                    <span className="text-[11px] opacity-80">
-                      {checklist.totalAvailable} of {checklist.totalRequired} required certificates ready
-                    </span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <FileText className="w-4 h-4 text-[#591d8f] shrink-0" />
+                    <span className="text-xs font-black text-[#0f172a]">{doc.documentType}</span>
                   </div>
+                  {doc.mandatory ? (
+                    <span className="text-[10px] uppercase font-black text-amber-900 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-200">
+                      Mandatory
+                    </span>
+                  ) : (
+                    <span className="text-[10px] uppercase font-bold text-[#64748b] bg-slate-100 px-2 py-0.5 rounded-full">
+                      Optional
+                    </span>
+                  )}
+                </div>
+                {doc.guidance && (
+                  <p className="text-[11px] text-[#64748b] leading-relaxed">
+                    {doc.guidance}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="p-3.5 bg-purple-50/50 rounded-2xl border border-purple-100 flex items-start space-x-2 text-[11px] text-[#4b5563]">
+            <Lock className="w-4 h-4 text-[#591d8f] shrink-0 mt-0.5" />
+            <p>
+              <strong>Personal Document Vault:</strong> Certificates are stored securely in your private vault through manual file uploads or supported DigiLocker Demo imports. HAQ DWAAR AI does not share documents with third parties.
+            </p>
+          </div>
+        </div>
+
+        {/* ======================================================== */}
+        {/* 7. HOW TO APPLY (Section 25)                             */}
+        {/* ======================================================== */}
+        <div className="bg-white rounded-3xl p-6 sm:p-7 border border-[#e9e1f5] shadow-xs space-y-5">
+          <div className="pb-2 border-b border-[#e9e1f5]">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#ea580c] block">
+              Application Sequence
+            </span>
+            <h2 className="text-base font-black text-[#0f172a]">
+              How to Apply
+            </h2>
+          </div>
+
+          <div className="space-y-3">
+            {[
+              { num: "01", title: "Review requirements", desc: "Inspect published eligibility criteria and ensure your profile matches." },
+              { num: "02", title: "Prepare required documents", desc: "Organize mandatory certificates in your Personal Document Vault." },
+              { num: "03", title: "Check application readiness if signed in", desc: "Verify that all mandatory documents and criteria pass health checks." },
+              { num: "04", title: "Continue to the official application portal", desc: "Access the authentic authorized government portal via the link below." },
+              { num: "05", title: "Complete the application on the official portal", desc: "Fill in the official government application form and submit directly." },
+            ].map((step, idx) => (
+              <div
+                key={idx}
+                className="p-3.5 bg-[#fbf9fe] rounded-2xl border border-[#e9e1f5] flex items-start space-x-3.5"
+              >
+                <span className="w-7 h-7 rounded-xl bg-orange-100 text-[#ea580c] flex items-center justify-center font-black text-xs shrink-0 mt-0.5">
+                  {step.num}
+                </span>
+                <div>
+                  <h3 className="text-xs sm:text-sm font-black text-[#0f172a]">
+                    {step.title}
+                  </h3>
+                  <p className="text-[11px] text-[#64748b] mt-0.5 leading-relaxed">
+                    {step.desc}
+                  </p>
                 </div>
               </div>
-
-              {/* Available Documents */}
-              {checklist.available?.length > 0 && (
-                <div className="space-y-2">
-                  <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider block">
-                    Available in Your Vault ({checklist.available.length})
-                  </span>
-                  <div className="space-y-2">
-                    {checklist.available.map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="p-3 bg-emerald-50/50 rounded-xl border border-emerald-200/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
-                      >
-                        <div className="flex items-start space-x-2.5">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
-                          <div>
-                            <div className="font-bold text-slate-800 flex items-center gap-2">
-                              <span>{item.requiredDocumentType}</span>
-                              {item.mandatory && (
-                                <span className="text-[10px] uppercase font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded">
-                                  Mandatory
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-slate-500 text-[11px] mt-0.5">
-                              File: <span className="font-medium text-slate-700">{item.userDocument?.originalFileName}</span>
-                              {item.userDocument?.maskedDocumentNumber && (
-                                <span> • ID: {item.userDocument.maskedDocumentNumber}</span>
-                              )}
-                              <span className={`ml-2 px-1.5 py-0.5 rounded text-[10px] font-semibold border ${
-                                item.userDocument?.source === 'DIGILOCKER'
-                                  ? 'bg-blue-50 text-blue-700 border-blue-200'
-                                  : 'bg-slate-100 text-slate-600 border-slate-200'
-                              }`}>
-                                {item.userDocument?.source === 'DIGILOCKER' ? 'Source: DigiLocker Demo' : 'Source: Uploaded'}
-                              </span>
-                            </p>
-                          </div>
-                        </div>
-
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border self-start sm:self-auto ${
-                          item.userDocument?.healthStatus === 'VALID' 
-                            ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                            : 'bg-amber-100 text-amber-800 border-amber-300'
-                        }`}>
-                          {item.userDocument?.healthStatus === 'VALID' ? 'Valid & Readable' : item.userDocument?.healthStatus}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Missing Documents */}
-              {checklist.missing?.length > 0 && (
-                <div className="space-y-2">
-                  <span className="text-xs font-bold text-red-800 uppercase tracking-wider block">
-                    Missing Mandatory Documents ({checklist.missing.length})
-                  </span>
-                  <div className="space-y-2">
-                    {checklist.missing.map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="p-3 bg-red-50/50 rounded-xl border border-red-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
-                      >
-                        <div className="flex items-start space-x-2.5">
-                          <XCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
-                          <div>
-                            <div className="font-bold text-slate-800 flex items-center gap-2">
-                              <span>{item.requiredDocumentType}</span>
-                              <span className="text-[10px] uppercase font-bold text-red-800 bg-red-100 px-1.5 py-0.5 rounded">
-                                Required
-                              </span>
-                            </div>
-                            {item.guidance && (
-                              <p className="text-slate-500 text-[11px] mt-0.5">{item.guidance}</p>
-                            )}
-                          </div>
-                        </div>
-
-                        <Link
-                          to="/dashboard/documents"
-                          className="inline-flex items-center text-[11px] font-bold text-blue-700 hover:text-blue-900 underline self-start sm:self-auto"
-                        >
-                          Upload or Import →
-                        </Link>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Standard Document Checklist (for public or when checklist is not loaded) */}
-          {(!isAuthenticated || !checklist) && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              {scheme.requiredDocuments?.map((doc, idx) => (
-                <div key={idx} className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-800">{doc.documentType}</span>
-                    {doc.mandatory ? (
-                      <span className="text-[10px] uppercase font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">
-                        Mandatory
-                      </span>
-                    ) : (
-                      <span className="text-[10px] uppercase font-semibold text-slate-500 bg-slate-200 px-2 py-0.5 rounded">
-                        Optional
-                      </span>
-                    )}
-                  </div>
-                  {doc.guidance && (
-                    <p className="text-slate-500 text-[11px] leading-relaxed">{doc.guidance}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Dual source notice */}
-          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-start space-x-2 text-[11px] text-slate-600">
-            <Lock className="w-4 h-4 text-slate-500 flex-shrink-0 mt-0.5" />
-            <p>
-              <strong>Personal Document Vault:</strong> HAQ DWAAR AI lets citizens store certificates locally through <strong>manual file uploads</strong> or <strong>simulated DigiLocker demo import</strong>. DigiLocker provides documents that are available in the integration; any unavailable documents can simply be uploaded manually.
-            </p>
-          </div>
-        </div>
-
-        {/* Official Source & Verification Card */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-          <div className="flex items-center space-x-2.5 pb-2 border-b border-slate-100">
-            <Building className="w-5 h-5 text-slate-700" />
-            <h2 className="font-bold text-slate-900 text-base">Official Government Source</h2>
+            ))}
           </div>
 
-          <div className="space-y-2 text-xs text-slate-600">
-            <p>
-              <strong className="text-slate-800">Source Authority:</strong> {scheme.sourceName}
-            </p>
-            <p>
-              <strong className="text-slate-800">Source Classification:</strong> {scheme.sourceType?.replace("_", " ")}
-            </p>
-            <p>
-              <strong className="text-slate-800">Last Verified Date:</strong>{" "}
-              {scheme.sourceLastVerified ? new Date(scheme.sourceLastVerified).toLocaleDateString() : "Verified"}
-            </p>
-            <p className="pt-1">
-              <a
-                href={scheme.officialSourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-700 hover:text-blue-800 font-semibold inline-flex items-center"
-              >
-                View Official Notification / Government Portal <ExternalLink className="w-3.5 h-3.5 ml-1" />
-              </a>
-            </p>
-          </div>
-        </div>
-
-        {/* ======================================================== */}
-        {/* DIRECT OFFICIAL APPLICATION PORTAL CALLOUT CARD           */}
-        {/* ======================================================== */}
-        <div className="bg-slate-900 text-white p-6 sm:p-7 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 shadow-sm border border-slate-800">
-          <div className="space-y-1.5 max-w-xl">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400 block">
-              Official Application Channel
-            </span>
-            <h3 className="font-bold text-base sm:text-lg text-white">
-              Ready to proceed with your application?
-            </h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Submit your formal application directly through the authorized government portal. HAQ DWAAR AI does not submit applications on your behalf.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3 flex-shrink-0">
-            {isAuthenticated && (
-              trackingApp ? (
-                <Link
-                  to={`/dashboard/applications/${trackingApp._id}`}
-                  className="inline-flex items-center justify-center px-4 py-3 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow transition whitespace-nowrap"
-                >
-                  <CheckCircle2 className="w-4 h-4 mr-1.5 text-indigo-200" />
-                  View Tracker ({trackingApp.status})
-                </Link>
-              ) : (
-                <button
-                  onClick={handleStartTracking}
-                  disabled={trackingLoading}
-                  className="inline-flex items-center justify-center px-4 py-3 rounded-xl text-xs sm:text-sm font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition whitespace-nowrap disabled:opacity-50"
-                >
-                  <Clock className="w-4 h-4 mr-1.5 text-blue-300" />
-                  {trackingLoading ? "Saving..." : "Track This Application"}
-                </button>
-              )
-            )}
-
+          {/* Final Direct Portal CTA */}
+          <div className="pt-2 text-center">
             {scheme.officialApplicationUrl ? (
               <a
                 href={scheme.officialApplicationUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-6 py-3 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-md transition-colors whitespace-nowrap"
+                className="inline-flex items-center justify-center px-7 py-3.5 rounded-2xl bg-[#ea580c] hover:bg-[#c2410c] text-white font-black text-xs sm:text-sm shadow-md transition"
               >
-                Apply on Official Portal <ExternalLink className="w-4 h-4 ml-2" />
+                <span>Continue to Official Application Portal</span>
+                <ExternalLink className="w-4 h-4 ml-2" />
               </a>
             ) : (
-              <div className="p-3 bg-slate-800 rounded-xl border border-slate-700 text-xs text-slate-400">
-                Official application link is not currently available in our verified scheme data.
-              </div>
+              <span className="text-xs text-[#64748b] italic">
+                Official application portal URL is currently pending government notification update.
+              </span>
             )}
           </div>
         </div>
 
-      </main>
+        {/* ======================================================== */}
+        {/* 8. OFFICIAL SOURCES (Section 26)                         */}
+        {/* ======================================================== */}
+        <div className="bg-white rounded-3xl p-6 sm:p-7 border border-[#e9e1f5] shadow-xs space-y-4">
+          <div className="flex items-center space-x-2 pb-2 border-b border-[#e9e1f5]">
+            <Building className="w-4 h-4 text-[#2b0f4c]" />
+            <h2 className="text-sm font-black text-[#0f172a] uppercase tracking-wider">
+              Official Government Source
+            </h2>
+          </div>
 
-      <Footer />
+          <div className="space-y-2 text-xs text-[#4b5563]">
+            <p>
+              <strong className="text-[#0f172a]">Source Authority:</strong> {scheme.sourceName || "Authorized Government Ministry"}
+            </p>
+            <p>
+              <strong className="text-[#0f172a]">Source Classification:</strong> {scheme.sourceType?.replace("_", " ") || "Government Gazette / Portal"}
+            </p>
+            <p>
+              <strong className="text-[#0f172a]">Last Verified:</strong>{" "}
+              {scheme.sourceLastVerified ? new Date(scheme.sourceLastVerified).toLocaleDateString("en-IN") : "Verified"}
+            </p>
+
+            {scheme.officialSourceUrl && (
+              <p className="pt-2">
+                <a
+                  href={scheme.officialSourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#591d8f] hover:text-[#2b0f4c] font-black inline-flex items-center underline"
+                >
+                  <span>View Official Gazette / Notification Circular</span>
+                  <ExternalLink className="w-3.5 h-3.5 ml-1" />
+                </a>
+              </p>
+            )}
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }

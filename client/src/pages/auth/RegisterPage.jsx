@@ -12,9 +12,9 @@ import {
   Sparkles,
   ShieldCheck,
   CheckCircle2,
-  BadgeCheck,
-  FileCheck,
-  HeartHandshake
+  Check,
+  HeartHandshake,
+  Fingerprint
 } from "lucide-react";
 
 export default function RegisterPage() {
@@ -57,7 +57,6 @@ export default function RegisterPage() {
     setSubmitting(true);
     try {
       await register(name.trim(), email.trim(), password, role);
-      // Route user to appropriate portal based on selected role
       if (role === "admin") {
         navigate("/admin", { replace: true });
       } else {
@@ -71,241 +70,243 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f5fa] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-lg">
-        <Link to="/" className="inline-flex items-center text-xs font-bold text-slate-600 hover:text-slate-900 mb-6">
-          <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Back to Home
-        </Link>
-        <div className="flex items-center justify-center space-x-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-[#240b49] text-white flex items-center justify-center font-black text-xl shadow-xs">
-            ह
+    <div className="bg-[#f7f5fa] min-h-[calc(100vh-4rem)] flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl w-full bg-white rounded-3xl border border-[#e9e1f5] shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-12">
+        
+        {/* ======================================================== */}
+        {/* LEFT PANEL: Deep Plum Brand Panel (Section 29)           */}
+        {/* ======================================================== */}
+        <div className="md:col-span-5 bg-gradient-to-br from-[#1e0a3c] via-[#240b49] to-[#2b0f4c] text-white p-8 sm:p-10 flex flex-col justify-between space-y-8">
+          <div className="space-y-6">
+            <Link to="/" className="inline-flex items-center text-xs font-bold text-purple-200 hover:text-white transition">
+              <ArrowLeft className="w-3.5 h-3.5 mr-1.5" /> Back to Home
+            </Link>
+
+            <div>
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#7c3aed] via-[#5f259f] to-[#3b0764] ring-2 ring-purple-300/30 text-white flex items-center justify-center font-black shadow-lg shadow-purple-950/40 mb-3">
+                <Fingerprint className="w-6 h-6 text-white" strokeWidth={2.4} />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+                HAQ DWAAR <span className="text-[#ea580c]">AI</span>
+              </h2>
+              <p className="text-xs text-purple-200 font-semibold tracking-wide mt-0.5">
+                Scheme se Application Tak
+              </p>
+            </div>
+
+            {/* Small Benefit Journey */}
+            <div className="space-y-4 pt-2">
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#fb923c] block">
+                Benefit Journey
+              </span>
+
+              <div className="space-y-3 text-xs text-purple-100">
+                <div className="flex items-start space-x-3">
+                  <span className="w-5 h-5 rounded-full bg-purple-500/20 text-[#fb923c] flex items-center justify-center font-black text-[10px] shrink-0 mt-0.5 border border-purple-400/30">
+                    1
+                  </span>
+                  <div>
+                    <strong className="text-white block">Discover</strong>
+                    <span className="text-[11px] text-purple-300">Find potentially relevant schemes without middlemen</span>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <span className="w-5 h-5 rounded-full bg-purple-500/20 text-[#fb923c] flex items-center justify-center font-black text-[10px] shrink-0 mt-0.5 border border-purple-400/30">
+                    2
+                  </span>
+                  <div>
+                    <strong className="text-white block">Prepare</strong>
+                    <span className="text-[11px] text-purple-300">Organize certificates in your personal vault</span>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <span className="w-5 h-5 rounded-full bg-purple-500/20 text-[#fb923c] flex items-center justify-center font-black text-[10px] shrink-0 mt-0.5 border border-purple-400/30">
+                    3
+                  </span>
+                  <div>
+                    <strong className="text-white block">Apply</strong>
+                    <span className="text-[11px] text-purple-300">Reach the official portal with verified readiness</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <span className="text-2xl font-black text-slate-900 tracking-tight">
-            हकद्वार • HaqDwaar <span className="text-[#591d8f]">AI</span>
-          </span>
+
+          {/* Muted Disclaimer (Section 30) */}
+          <div className="pt-4 border-t border-purple-900/60 text-[11px] text-purple-300/80 leading-relaxed">
+            HAQ DWAAR AI is an assistance platform and is not a government portal.
+          </div>
         </div>
-        <h2 className="mt-2 text-center text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
-          {role === "citizen" ? "Create Citizen Account" : "Register as Scheme Officer"}
-        </h2>
-        <p className="mt-1 text-center text-xs sm:text-sm font-semibold text-slate-600">
-          {role === "citizen"
-            ? "Set up your Benefit Passport to discover personalized government welfare schemes"
-            : "Platform administrator account for scheme verification and gazette analysis"}
-        </p>
-      </div>
 
-      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-lg">
-        <div className="bg-white py-8 px-6 shadow-sm border border-slate-200 rounded-3xl sm:px-10 space-y-6">
+        {/* ======================================================== */}
+        {/* RIGHT PANEL: Registration Form (Section 29)              */}
+        {/* ======================================================== */}
+        <div className="md:col-span-7 p-8 sm:p-10 flex flex-col justify-between space-y-6">
+          <div className="space-y-5">
+            <div>
+              <h1 className="text-2xl font-black text-[#0f172a] tracking-tight">
+                Create your Benefit Passport
+              </h1>
+              <p className="text-xs text-[#64748b] mt-1 font-semibold leading-relaxed">
+                Create an account to personalize benefit discovery, manage documents and track applications.
+              </p>
+            </div>
 
-          {/* Role Selection Tabs */}
-          <div>
-            <label className="block text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-2.5">
-              Select Account Purpose
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {/* Citizen Card */}
+            {/* Role Purpose Toggle */}
+            <div className="grid grid-cols-2 p-1 bg-[#fbf9fe] rounded-2xl border border-[#e9e1f5]">
               <button
                 type="button"
                 onClick={() => setRole("citizen")}
-                className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-2 ${
+                className={`py-2 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center space-x-1.5 cursor-pointer ${
                   role === "citizen"
-                    ? "border-purple-600 bg-purple-50/60 ring-2 ring-purple-600/20"
-                    : "border-slate-200 hover:border-slate-300 bg-slate-50/50"
+                    ? "bg-white text-[#2b0f4c] shadow-xs border border-[#e9e1f5]"
+                    : "text-[#64748b] hover:text-[#0f172a]"
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <div className={`p-2 rounded-xl ${role === "citizen" ? "bg-[#240b49] text-white" : "bg-slate-200 text-slate-700"}`}>
-                    <Sparkles className="w-4 h-4" />
-                  </div>
-                  {role === "citizen" && (
-                    <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-200 text-[#591d8f]">
-                      Active
-                    </span>
-                  )}
-                </div>
-                <div>
-                  <div className="text-sm font-black text-slate-900">Citizen / Beneficiary</div>
-                  <div className="text-xs text-slate-500 mt-0.5">
-                    For individuals seeking personalized benefits &amp; application tracking
-                  </div>
-                </div>
+                <Sparkles className="w-3.5 h-3.5 text-[#ea580c]" />
+                <span>Citizen</span>
               </button>
 
-              {/* Admin Card */}
               <button
                 type="button"
                 onClick={() => setRole("admin")}
-                className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-2 ${
+                className={`py-2 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center space-x-1.5 cursor-pointer ${
                   role === "admin"
-                    ? "border-purple-600 bg-purple-50/60 ring-2 ring-purple-600/20"
-                    : "border-slate-200 hover:border-slate-300 bg-slate-50/50"
+                    ? "bg-white text-[#2b0f4c] shadow-xs border border-[#e9e1f5]"
+                    : "text-[#64748b] hover:text-[#0f172a]"
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <div className={`p-2 rounded-xl ${role === "admin" ? "bg-[#240b49] text-white" : "bg-slate-200 text-slate-700"}`}>
-                    <ShieldCheck className="w-4 h-4" />
-                  </div>
-                  {role === "admin" && (
-                    <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-200 text-[#591d8f]">
-                      Active
-                    </span>
-                  )}
-                </div>
-                <div>
-                  <div className="text-sm font-black text-slate-900">Official / Admin</div>
-                  <div className="text-xs text-slate-500 mt-0.5">
-                    For officers managing verified schemes, gazettes, &amp; platform health
-                  </div>
-                </div>
+                <ShieldCheck className="w-3.5 h-3.5 text-[#591d8f]" />
+                <span>Administrator</span>
               </button>
             </div>
+
+            {formError && (
+              <div className="p-3.5 bg-red-50 border border-red-200 rounded-2xl flex items-start space-x-2.5 text-red-800 text-xs">
+                <AlertCircle className="w-4 h-4 text-red-600 mt-0.5 shrink-0" />
+                <span>{formError}</span>
+              </div>
+            )}
+
+            <form className="space-y-3.5" onSubmit={handleSubmit}>
+              <div>
+                <label htmlFor="register-name" className="block text-xs font-bold text-[#4b5563] uppercase tracking-wider mb-1">
+                  Full Name
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#94a3b8]">
+                    <User className="w-4 h-4" />
+                  </div>
+                  <input
+                    id="register-name"
+                    name="name"
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder={role === "citizen" ? "e.g. Ramesh Kumar" : "e.g. Officer Sharma"}
+                    className="block w-full pl-10 pr-3.5 py-2.5 border border-[#e9e1f5] rounded-2xl text-xs sm:text-sm bg-[#fbf9fe] focus:bg-white text-[#0f172a] placeholder-[#94a3b8] focus:outline-none focus:ring-2 focus:ring-[#591d8f] focus:border-transparent transition-all"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="register-email" className="block text-xs font-bold text-[#4b5563] uppercase tracking-wider mb-1">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#94a3b8]">
+                    <Mail className="w-4 h-4" />
+                  </div>
+                  <input
+                    id="register-email"
+                    name="email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={role === "citizen" ? "citizen@example.com" : "officer@haqdwaar.gov.in"}
+                    className="block w-full pl-10 pr-3.5 py-2.5 border border-[#e9e1f5] rounded-2xl text-xs sm:text-sm bg-[#fbf9fe] focus:bg-white text-[#0f172a] placeholder-[#94a3b8] focus:outline-none focus:ring-2 focus:ring-[#591d8f] focus:border-transparent transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label htmlFor="register-password" className="block text-xs font-bold text-[#4b5563] uppercase tracking-wider mb-1">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#94a3b8]">
+                      <Lock className="w-4 h-4" />
+                    </div>
+                    <input
+                      id="register-password"
+                      name="password"
+                      type="password"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Min 6 characters"
+                      className="block w-full pl-10 pr-3.5 py-2.5 border border-[#e9e1f5] rounded-2xl text-xs sm:text-sm bg-[#fbf9fe] focus:bg-white text-[#0f172a] placeholder-[#94a3b8] focus:outline-none focus:ring-2 focus:ring-[#591d8f] focus:border-transparent transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="register-confirm-password" className="block text-xs font-bold text-[#4b5563] uppercase tracking-wider mb-1">
+                    Confirm Password
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#94a3b8]">
+                      <Lock className="w-4 h-4" />
+                    </div>
+                    <input
+                      id="register-confirm-password"
+                      name="confirmPassword"
+                      type="password"
+                      required
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Re-enter password"
+                      className="block w-full pl-10 pr-3.5 py-2.5 border border-[#e9e1f5] rounded-2xl text-xs sm:text-sm bg-[#fbf9fe] focus:bg-white text-[#0f172a] placeholder-[#94a3b8] focus:outline-none focus:ring-2 focus:ring-[#591d8f] focus:border-transparent transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full mt-2 flex justify-center items-center py-3.5 px-4 rounded-2xl shadow-xs text-xs sm:text-sm font-black text-white bg-gradient-to-r from-[#ea580c] to-[#f97316] hover:from-[#c2410c] hover:to-[#ea580c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ea580c] disabled:opacity-50 transition cursor-pointer"
+              >
+                {submitting ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    Creating Account...
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    <span>Create Benefit Passport</span>
+                  </>
+                )}
+              </button>
+            </form>
           </div>
 
-          {/* Role-Specific Benefit Callout */}
-          {role === "citizen" ? (
-            <div className="p-3.5 bg-emerald-50/80 border border-emerald-200 rounded-2xl text-xs text-emerald-950 space-y-1.5">
-              <div className="flex items-center space-x-1.5 font-bold text-emerald-800">
-                <HeartHandshake className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Personalized Benefit Discovery Guarantee</span>
-              </div>
-              <p className="leading-relaxed text-[11px] text-emerald-900">
-                Your Citizen Account connects to your private <strong>Benefit Passport</strong> to match you with central and state schemes tailored strictly to your location, occupation, caste category, and annual income.
-              </p>
-            </div>
-          ) : (
-            <div className="p-3.5 bg-amber-50/80 border border-amber-200 rounded-2xl text-xs text-amber-950 space-y-1.5">
-              <div className="flex items-center space-x-1.5 font-bold text-amber-800">
-                <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
-                <span>Administrator Trust Boundary</span>
-              </div>
-              <p className="leading-relaxed text-[11px] text-amber-900">
-                Administrator accounts have authority to publish verified schemes and review gazette circulars. Sensitive citizen PII is strictly protected and hidden by our Data Minimization engine.
-              </p>
-            </div>
-          )}
-
-          {formError && (
-            <div className="p-3.5 bg-red-50 border border-red-200 rounded-2xl flex items-start space-x-2.5 text-red-800 text-xs">
-              <AlertCircle className="w-4 h-4 text-red-600 mt-0.5 shrink-0" />
-              <span>{formError}</span>
-            </div>
-          )}
-
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="register-name" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Full Name
-              </label>
-              <div className="relative rounded-xl shadow-xs">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <User className="w-4 h-4" />
-                </div>
-                <input
-                  id="register-name"
-                  name="name"
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder={role === "citizen" ? "e.g. Ramesh Kumar" : "e.g. Officer Sharma"}
-                  className="block w-full pl-10 pr-3.5 py-2.5 border border-slate-300 rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#591d8f] focus:border-transparent"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="register-email" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Email Address
-              </label>
-              <div className="relative rounded-xl shadow-xs">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Mail className="w-4 h-4" />
-                </div>
-                <input
-                  id="register-email"
-                  name="email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={role === "citizen" ? "e.g. citizen@example.com" : "e.g. officer@haqdwaar.gov.in"}
-                  className="block w-full pl-10 pr-3.5 py-2.5 border border-slate-300 rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#591d8f] focus:border-transparent"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label htmlFor="register-password" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Password
-                </label>
-                <div className="relative rounded-xl shadow-xs">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                    <Lock className="w-4 h-4" />
-                  </div>
-                  <input
-                    id="register-password"
-                    name="password"
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Min 6 characters"
-                    className="block w-full pl-10 pr-3.5 py-2.5 border border-slate-300 rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#591d8f] focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="register-confirm-password" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Confirm Password
-                </label>
-                <div className="relative rounded-xl shadow-xs">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                    <Lock className="w-4 h-4" />
-                  </div>
-                  <input
-                    id="register-confirm-password"
-                    name="confirmPassword"
-                    type="password"
-                    required
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Re-enter password"
-                    className="block w-full pl-10 pr-3.5 py-2.5 border border-slate-300 rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#591d8f] focus:border-transparent"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full mt-3 flex justify-center items-center py-3 px-4 border border-transparent rounded-xl shadow-xs text-sm font-black text-white bg-[#240b49] hover:bg-[#1e0a3c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#591d8f] disabled:opacity-50 transition"
-            >
-              {submitting ? (
-                <>
-                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                  Creating Account...
-                </>
-              ) : (
-                <>
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  {role === "citizen" ? "Register Citizen (Discover Benefits)" : "Register Administrator (Operations)"}
-                </>
-              )}
-            </button>
-          </form>
-
-          <div className="pt-4 border-t border-slate-200 text-center">
-            <p className="text-xs text-slate-600 font-medium">
+          <div className="pt-4 border-t border-[#e9e1f5] text-center">
+            <p className="text-xs text-[#64748b] font-semibold">
               Already registered?{" "}
-              <Link to="/login" className="font-extrabold text-[#591d8f] hover:underline">
+              <Link to="/login" className="font-black text-[#591d8f] hover:underline">
                 Sign in to your account
               </Link>
             </p>
           </div>
         </div>
+
       </div>
     </div>
   );

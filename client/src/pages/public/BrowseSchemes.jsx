@@ -13,14 +13,14 @@ import {
   Sparkles,
   Info,
   SlidersHorizontal,
-  X
+  X,
+  Compass
 } from "lucide-react";
 import { getSchemes } from "../../services/schemeApi";
-import Navbar from "../../components/layout/Navbar";
-import Footer from "../../components/layout/Footer";
+import { useAuth } from "../../hooks/useAuth";
 
 const CATEGORIES = [
-  { id: "ALL", label: "All Sectors" },
+  { id: "ALL", label: "All Categories" },
   { id: "STUDENT", label: "Students & Education" },
   { id: "KISAN", label: "Kisan & Agriculture" },
   { id: "EMPLOYMENT", label: "Employment & Livelihood" },
@@ -48,7 +48,15 @@ const STATES = [
   "Telangana"
 ];
 
+const APPLICATION_METHODS = [
+  { id: "ALL", label: "All Application Methods" },
+  { id: "ONLINE", label: "Online Only" },
+  { id: "OFFLINE", label: "Offline / Center" },
+  { id: "HYBRID", label: "Hybrid / Both" }
+];
+
 export default function BrowseSchemes() {
+  const { isAuthenticated } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialCategory = searchParams.get("category") || "ALL";
 
@@ -59,6 +67,7 @@ export default function BrowseSchemes() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedState, setSelectedState] = useState("All-India");
+  const [selectedMethod, setSelectedMethod] = useState("ALL");
 
   const fetchSchemes = async () => {
     setLoading(true);
@@ -76,11 +85,16 @@ export default function BrowseSchemes() {
       }
 
       const res = await getSchemes(params);
-      if (res?.data?.schemes) {
-        setSchemes(res.data.schemes);
-      } else {
-        setSchemes([]);
+      let list = res?.data?.schemes || [];
+
+      // Filter by application method if chosen
+      if (selectedMethod && selectedMethod !== "ALL") {
+        list = list.filter(
+          (s) => (s.applicationMethod || "").toUpperCase() === selectedMethod.toUpperCase()
+        );
       }
+
+      setSchemes(list);
     } catch (err) {
       setError(err.message || "Failed to load verified schemes.");
       setSchemes([]);
@@ -91,7 +105,7 @@ export default function BrowseSchemes() {
 
   useEffect(() => {
     fetchSchemes();
-  }, [selectedCategory, selectedState]);
+  }, [selectedCategory, selectedState, selectedMethod]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -112,148 +126,169 @@ export default function BrowseSchemes() {
     setSearchTerm("");
     setSelectedCategory("ALL");
     setSelectedState("All-India");
+    setSelectedMethod("ALL");
     searchParams.delete("category");
     setSearchParams(searchParams);
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f5fa] flex flex-col text-slate-900">
-      <Navbar />
-
-      {/* Hero Header */}
-      <section className="bg-gradient-to-b from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] text-white py-12 px-4 sm:px-6 lg:px-8 border-b border-purple-950">
-        <div className="max-w-5xl mx-auto space-y-4 text-center sm:text-left">
-          <div className="inline-flex items-center space-x-1.5 px-3.5 py-1 rounded-full bg-purple-500/20 text-purple-200 border border-purple-400/30 text-xs font-bold">
-            <ShieldCheck className="w-3.5 h-3.5 text-purple-300" />
-            <span>Public Scheme Directory • Verified Official Data</span>
+    <div className="bg-[#f7f5fa] text-[#0f172a] min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+        
+        {/* ======================================================== */}
+        {/* 1. BROWSE PAGE HEADER (Section 17)                       */}
+        {/* ======================================================== */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e9e1f5] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-purple-50 text-[#2b0f4c] border border-purple-200 text-xs font-black">
+              <Compass className="w-3.5 h-3.5 text-[#ea580c]" />
+              <span>EXPLORE SCHEMES</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0f172a] tracking-tight">
+              Explore Government Schemes
+            </h1>
+            <p className="text-xs sm:text-sm text-[#4b5563] max-w-2xl font-medium leading-relaxed">
+              Find schemes based on category, state and application information. All verified against official central and state government notifications.
+            </p>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl font-black tracking-tight">
-            Discover Government Schemes
-          </h1>
-          <p className="text-sm sm:text-base text-purple-100 max-w-3xl leading-relaxed font-semibold">
-            Explore verified government welfare programs, review structured eligibility criteria and required documents, and access direct official government application portals without middlemen.
-          </p>
-
-          {/* Personalized Journey Callout Banner */}
-          <div className="mt-4 p-4 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-            <div className="flex items-center space-x-2.5">
-              <Sparkles className="w-5 h-5 text-amber-300 flex-shrink-0" />
-              <div>
-                <span className="font-extrabold text-white text-sm block">
-                  Want personalized matching & document readiness checks?
-                </span>
-                <span className="text-purple-200 text-xs font-medium">
-                  Build a free Benefit Passport to deterministically evaluate your profile against all schemes.
-                </span>
-              </div>
+          {/* Right informational card */}
+          <div className="bg-[#fbf9fe] rounded-2xl p-4 border border-[#e9e1f5] shrink-0 sm:max-w-xs space-y-1">
+            <div className="flex items-center space-x-2 text-xs font-black text-[#2b0f4c]">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>Public Discovery</span>
             </div>
-            <Link
-              to="/register"
-              className="inline-flex items-center px-4 py-2.5 rounded-xl bg-[#ea580c] hover:bg-[#c2410c] text-white font-extrabold whitespace-nowrap shadow-xs transition"
-            >
-              Get Personalized Match <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-            </Link>
+            <p className="text-[11px] text-[#4b5563] font-semibold leading-relaxed">
+              No account required to browse schemes, review criteria, or access official application portals.
+            </p>
           </div>
         </div>
-      </section>
 
-      {/* Main Content & Search Filters */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-6">
-        
-        {/* Search & State Filter Bar */}
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+        {/* ======================================================== */}
+        {/* 2. SEARCH / FILTER UI (Section 18)                       */}
+        {/* ======================================================== */}
+        <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#e9e1f5] shadow-xs space-y-4">
           <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row items-center gap-3">
             <div className="relative flex-1 w-full">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+              <Search className="w-4 h-4 text-[#64748b] absolute left-4 top-3.5 pointer-events-none" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search schemes by name, department, benefit keywords, or tags..."
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                placeholder="Search schemes by name, department, or keywords..."
+                aria-label="Search schemes"
+                className="w-full pl-11 pr-10 py-3 rounded-2xl border border-[#e9e1f5] text-xs sm:text-sm bg-[#fbf9fe] focus:bg-white text-[#0f172a] placeholder-[#94a3b8] focus:outline-none focus:ring-2 focus:ring-[#591d8f] focus:border-transparent transition-all"
               />
               {searchTerm && (
                 <button
                   type="button"
                   onClick={() => setSearchTerm("")}
-                  className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3.5 top-3.5 text-[#94a3b8] hover:text-[#0f172a] cursor-pointer"
+                  aria-label="Clear search input"
                 >
                   <X className="w-4 h-4" />
                 </button>
               )}
             </div>
 
-            <div className="flex items-center space-x-2 w-full sm:w-auto">
+            <button
+              type="submit"
+              className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-[#ea580c] hover:bg-[#c2410c] text-white font-black text-xs sm:text-sm shadow-xs transition cursor-pointer whitespace-nowrap"
+            >
+              Search Schemes
+            </button>
+          </form>
+
+          {/* Select dropdowns for States & Application Methods */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div>
+              <label htmlFor="state-filter" className="block text-[11px] font-black text-[#4b5563] uppercase tracking-wider mb-1">
+                State / Location
+              </label>
               <select
+                id="state-filter"
                 value={selectedState}
                 onChange={(e) => setSelectedState(e.target.value)}
-                className="w-full sm:w-48 py-2.5 px-3 rounded-xl border border-slate-300 text-xs sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="w-full py-2.5 px-3.5 rounded-xl border border-[#e9e1f5] text-xs font-bold text-[#0f172a] bg-[#fbf9fe] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#591d8f]"
               >
                 {STATES.map((st) => (
                   <option key={st} value={st}>
-                    {st === "All-India" ? "📍 All-India Schemes" : `📍 ${st}`}
+                    {st === "All-India" ? "All-India Schemes" : st}
                   </option>
                 ))}
               </select>
-
-              <button
-                type="submit"
-                className="px-5 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs sm:text-sm shadow-xs transition whitespace-nowrap"
-              >
-                Search
-              </button>
             </div>
-          </form>
+
+            <div>
+              <label htmlFor="method-filter" className="block text-[11px] font-black text-[#4b5563] uppercase tracking-wider mb-1">
+                Application Method
+              </label>
+              <select
+                id="method-filter"
+                value={selectedMethod}
+                onChange={(e) => setSelectedMethod(e.target.value)}
+                className="w-full py-2.5 px-3.5 rounded-xl border border-[#e9e1f5] text-xs font-bold text-[#0f172a] bg-[#fbf9fe] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#591d8f]"
+              >
+                {APPLICATION_METHODS.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
           {/* Category Filter Pills */}
-          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mr-1 flex items-center">
-              <Filter className="w-3 h-3 mr-1" /> Sector:
+          <div className="pt-3 border-t border-[#e9e1f5] flex flex-wrap items-center gap-2">
+            <span className="text-[11px] font-black text-[#64748b] uppercase tracking-wider mr-1">
+              Sector:
             </span>
             {CATEGORIES.map((cat) => (
               <button
                 key={cat.id}
                 type="button"
                 onClick={() => handleCategoryChange(cat.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   selectedCategory === cat.id
-                    ? "bg-blue-700 text-white shadow-xs"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
+                    ? "bg-[#2b0f4c] text-white shadow-xs"
+                    : "bg-[#fbf9fe] text-[#4b5563] border border-[#e9e1f5] hover:border-[#2b0f4c]/40 hover:text-[#0f172a]"
                 }`}
               >
                 {cat.label}
               </button>
             ))}
 
-            {(selectedCategory !== "ALL" || selectedState !== "All-India" || searchTerm) && (
+            {(selectedCategory !== "ALL" || selectedState !== "All-India" || selectedMethod !== "ALL" || searchTerm) && (
               <button
+                type="button"
                 onClick={clearFilters}
-                className="text-xs font-semibold text-rose-600 hover:text-rose-800 ml-auto inline-flex items-center"
+                className="text-xs font-black text-[#ea580c] hover:underline ml-auto cursor-pointer"
               >
-                Reset Filters
+                Clear Filters
               </button>
             )}
           </div>
         </div>
 
-        {/* Schemes Results Count */}
-        <div className="flex items-center justify-between text-xs text-slate-600">
+        {/* Results Counter Bar */}
+        <div className="flex items-center justify-between text-xs text-[#64748b] px-1 font-semibold">
           <p>
-            Showing <strong className="text-slate-900">{schemes.length}</strong> verified schemes
+            Showing <strong className="text-[#0f172a]">{schemes.length}</strong> verified government schemes
             {selectedCategory !== "ALL" && ` in ${selectedCategory}`}
             {selectedState !== "All-India" && ` for ${selectedState}`}
+            {selectedMethod !== "ALL" && ` (${selectedMethod})`}
           </p>
-          <span className="text-[11px] text-slate-500 hidden sm:inline-block">
-            All schemes are verified against published government notifications.
+          <span className="hidden sm:inline text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 text-[11px] font-bold">
+            <ShieldCheck className="w-3 h-3 inline mr-1" />
+            Verified Against Official Circulars
           </span>
         </div>
 
         {/* Loading State */}
         {loading && (
-          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-3">
-            <RefreshCw className="w-7 h-7 text-blue-700 animate-spin mx-auto" />
-            <p className="text-xs font-semibold text-slate-600">
+          <div className="bg-white rounded-3xl border border-[#e9e1f5] p-16 text-center space-y-3">
+            <RefreshCw className="w-8 h-8 text-[#ea580c] animate-spin mx-auto" />
+            <p className="text-xs font-black text-[#4b5563]">
               Loading verified government schemes...
             </p>
           </div>
@@ -261,118 +296,113 @@ export default function BrowseSchemes() {
 
         {/* Error State */}
         {error && !loading && (
-          <div className="bg-red-50 border border-red-200 text-red-800 p-6 rounded-2xl text-center space-y-2">
-            <p className="font-bold text-sm">Unable to retrieve schemes</p>
-            <p className="text-xs">{error}</p>
+          <div className="bg-red-50 border border-red-200 text-red-900 p-8 rounded-3xl text-center space-y-3">
+            <p className="font-black text-sm">Unable to retrieve schemes</p>
+            <p className="text-xs text-red-700 max-w-md mx-auto">{error}</p>
             <button
               onClick={fetchSchemes}
-              className="mt-2 px-4 py-1.5 rounded-lg bg-red-600 text-white text-xs font-semibold hover:bg-red-700"
+              className="mt-2 px-5 py-2 rounded-xl bg-red-700 text-white text-xs font-black hover:bg-red-800 transition cursor-pointer"
             >
               Retry
             </button>
           </div>
         )}
 
-        {/* Empty State */}
+        {/* Empty State (Section 19) */}
         {!loading && !error && schemes.length === 0 && (
-          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-3">
-            <FileText className="w-10 h-10 text-slate-400 mx-auto" />
-            <h3 className="font-bold text-slate-800 text-base">No Matching Schemes Found</h3>
-            <p className="text-xs text-slate-500 max-w-md mx-auto">
-              We couldn't find any verified schemes matching your criteria. Try adjusting your search query or removing filters.
+          <div className="bg-white rounded-3xl border border-[#e9e1f5] p-16 text-center space-y-4">
+            <FileText className="w-12 h-12 text-[#94a3b8] mx-auto" />
+            <h2 className="text-base font-black text-[#0f172a]">
+              No schemes found
+            </h2>
+            <p className="text-xs text-[#64748b] max-w-md mx-auto leading-relaxed">
+              We couldn't find any verified government schemes matching your current criteria. Try adjusting your search query or clearing your filters.
             </p>
             <button
+              type="button"
               onClick={clearFilters}
-              className="px-4 py-2 rounded-xl bg-blue-700 text-white font-bold text-xs hover:bg-blue-800 transition"
+              className="px-6 py-2.5 rounded-2xl bg-[#2b0f4c] text-white font-black text-xs hover:bg-[#1e0a3c] transition shadow-xs cursor-pointer"
             >
-              Show All Verified Schemes
+              Clear Filters
             </button>
           </div>
         )}
 
-        {/* Scheme Cards Grid */}
+        {/* ======================================================== */}
+        {/* 3. BROWSE RESULTS GRID (Section 19)                      */}
+        {/* ======================================================== */}
         {!loading && !error && schemes.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {schemes.map((scheme) => (
               <div
                 key={scheme._id}
-                className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-xs hover:shadow-md transition flex flex-col justify-between space-y-4"
+                className="bg-white rounded-3xl p-5 sm:p-6 border border-[#e9e1f5] shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4"
               >
                 <div className="space-y-3">
-                  {/* Category & State Badges */}
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 uppercase tracking-wide">
+                  {/* Category & Verified Badges */}
+                  <div className="flex items-center justify-between gap-1.5">
+                    <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-purple-50 text-[#2b0f4c] border border-purple-200 uppercase tracking-wide">
                       {scheme.category}
                     </span>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
-                      {scheme.state}
-                    </span>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
-                      {scheme.applicationMethod}
-                    </span>
-                    <span className="ml-auto inline-flex items-center text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                      <ShieldCheck className="w-3 h-3 mr-0.5 text-emerald-600" /> Verified
+                    <span className="inline-flex items-center text-[10px] font-black text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                      <ShieldCheck className="w-3 h-3 mr-1 text-emerald-600" /> Verified ✓
                     </span>
                   </div>
 
-                  {/* Title & Short Description */}
-                  <div>
-                    <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight leading-snug line-clamp-2">
-                      {scheme.name}
-                    </h3>
-                    <p className="text-xs text-slate-600 mt-1.5 leading-relaxed line-clamp-3">
-                      {scheme.shortDescription}
-                    </p>
-                  </div>
+                  {/* Scheme Name */}
+                  <h2 className="text-base font-black text-[#0f172a] leading-snug line-clamp-2">
+                    {scheme.name}
+                  </h2>
+
+                  {/* Short Description */}
+                  <p className="text-xs text-[#4b5563] leading-relaxed line-clamp-2">
+                    {scheme.shortDescription}
+                  </p>
 
                   {/* Benefit Summary Box */}
-                  <div className="p-3 bg-blue-50/70 rounded-xl border border-blue-100 text-xs">
-                    <span className="font-bold text-blue-900 block text-[10px] uppercase tracking-wider mb-0.5">
-                      Benefit Overview
+                  <div className="p-3 bg-[#fbf9fe] rounded-2xl border border-[#e9e1f5] text-xs space-y-1">
+                    <span className="font-black text-[#2b0f4c] block text-[10px] uppercase tracking-wider">
+                      Benefit
                     </span>
-                    <p className="text-blue-950 font-medium line-clamp-2 leading-relaxed">
+                    <p className="text-[#0f172a] font-semibold line-clamp-2 leading-relaxed">
                       {scheme.benefitSummary}
                     </p>
                   </div>
 
-                  {/* Criteria and Docs count pill */}
-                  <div className="flex items-center space-x-3 text-[11px] text-slate-500 pt-1">
-                    <span className="flex items-center">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 mr-1" />
-                      {scheme.rules?.length || 0} Criteria Rules
+                  {/* Meta Strip */}
+                  <div className="flex items-center justify-between text-[11px] font-bold text-[#64748b] pt-1">
+                    <span className="uppercase text-[#2b0f4c] font-black">
+                      {scheme.applicationMethod || "ONLINE"}
                     </span>
-                    <span>•</span>
-                    <span className="flex items-center">
-                      <FileText className="w-3.5 h-3.5 text-slate-500 mr-1" />
-                      {scheme.requiredDocuments?.length || 0} Required Docs
+                    <span>
+                      {scheme.state || "All-India"}
+                    </span>
+                    <span>
+                      {scheme.requiredDocuments?.length || 0} Docs
                     </span>
                   </div>
                 </div>
 
-                {/* Card Action Buttons */}
-                <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center gap-2">
+                {/* Card Actions */}
+                <div className="pt-3 border-t border-[#e9e1f5] flex items-center justify-between gap-2">
                   <Link
                     to={`/schemes/${scheme._id}`}
-                    className="w-full sm:flex-1 text-center px-4 py-2 rounded-xl text-xs font-bold bg-blue-700 hover:bg-blue-800 text-white shadow-xs transition"
+                    className="inline-flex items-center text-xs font-black text-[#2b0f4c] hover:text-[#ea580c] transition"
                   >
-                    View Scheme Details
+                    View Scheme →
                   </Link>
 
-                  {scheme.officialApplicationUrl ? (
+                  {scheme.officialApplicationUrl && (
                     <a
                       href={scheme.officialApplicationUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full sm:w-auto inline-flex items-center justify-center px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition"
-                      title="Opens authorized government application portal in new tab"
+                      className="inline-flex items-center text-[11px] font-bold text-[#64748b] hover:text-[#0f172a] bg-[#fbf9fe] hover:bg-slate-100 px-2.5 py-1 rounded-xl border border-[#e9e1f5] transition"
+                      title="Opens authorized official government application portal in new tab"
                     >
-                      <span>Apply on Portal</span>
-                      <ExternalLink className="w-3.5 h-3.5 ml-1 text-slate-500" />
+                      <span>Official Portal</span>
+                      <ExternalLink className="w-3 h-3 ml-1 text-[#64748b]" />
                     </a>
-                  ) : (
-                    <span className="text-[10px] text-slate-400 italic">
-                      Official portal link pending verification
-                    </span>
                   )}
                 </div>
               </div>
@@ -380,9 +410,7 @@ export default function BrowseSchemes() {
           </div>
         )}
 
-      </main>
-
-      <Footer />
+      </div>
     </div>
   );
 }

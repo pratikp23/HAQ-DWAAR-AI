@@ -1,21 +1,13 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { ShieldCheck, Globe } from "lucide-react";
 import PublicNavbar from "../components/layout/PublicNavbar";
 import Footer from "../components/layout/Footer";
 import { LayoutContext } from "../context/LayoutContext";
 import { useLanguage } from "../context/LanguageContext";
+import LanguageSelector from "../components/common/LanguageSelector";
 
 /**
- * HAQ DWAAR AI — Public Layout Shell
- * 
- * Top status strip
- * ↓
- * Public Navbar
- * ↓
- * Main Content
- * ↓
- * Footer
+ * HAQ DWAAR AI — Public Layout Shell (Civic Information Portal Style)
  */
 export default function PublicLayout({ children }) {
   const { language, setLanguage } = useLanguage();
@@ -23,35 +15,24 @@ export default function PublicLayout({ children }) {
   return (
     <LayoutContext.Provider value={{ inLayout: true, layoutType: "public" }}>
       <div className="min-h-screen bg-[#f7f5fa] text-[#0f172a] flex flex-col font-sans selection:bg-[#2b0f4c] selection:text-white">
-        {/* Top Status Strip */}
-        <div className="bg-[#fbf9fe] border-b border-[#e9e1f5] py-1 px-4 sm:px-6 lg:px-8 text-[11px] text-[#4b5563]">
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
+        
+        {/* Top Civic Information Bar (Full Screen Width) */}
+        <div className="bg-[#fbf9fe] border-b border-[#e9e1f5] py-1.5 px-4 sm:px-8 lg:px-12 xl:px-16 text-[11px] text-[#4b5563]">
+          <div className="w-full flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
-              <span className="font-bold text-[#0f172a]">हकद्वार • HAQ DWAAR AI</span>
-              <span className="hidden sm:inline text-slate-400">|</span>
-              <span className="hidden sm:inline text-[#591d8f] font-semibold">Scheme se Application Tak</span>
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="font-extrabold text-[#0f172a]">HAQ DWAAR AI</span>
+              <span className="text-slate-300">|</span>
+              <span className="text-[#591d8f] font-bold hidden sm:inline">Scheme se Application Tak</span>
+              <span className="text-slate-300 hidden md:inline">•</span>
+              <span className="text-[#64748b] hidden md:inline font-medium">National Citizen Welfare Gateway</span>
             </div>
 
             <div className="flex items-center space-x-3">
-              <span className="hidden md:inline text-slate-500">Citizen Welfare & Entitlement Preparation</span>
-              <div className="flex items-center space-x-1.5 font-bold text-[#0f172a]">
-                <button
-                  type="button"
-                  onClick={() => setLanguage("en")}
-                  className={`hover:text-[#2b0f4c] transition-colors ${language === "en" ? "text-[#ea580c] underline" : "text-[#4b5563]"}`}
-                >
-                  English
-                </button>
-                <span className="text-slate-300">|</span>
-                <button
-                  type="button"
-                  onClick={() => setLanguage("hi")}
-                  className={`hover:text-[#2b0f4c] transition-colors ${language === "hi" ? "text-[#ea580c] underline" : "text-[#4b5563]"}`}
-                >
-                  हिंदी
-                </button>
-              </div>
+              <span className="text-[10px] uppercase font-bold text-[#64748b] hidden md:inline tracking-wider">
+                Language / भाषा:
+              </span>
+              <LanguageSelector />
             </div>
           </div>
         </div>

@@ -1,39 +1,81 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, Globe, ChevronDown, Check, ArrowRight } from "lucide-react";
+import { Menu, X, Globe, ChevronDown, Check, ArrowRight, Sparkles, UserCheck, Compass, BrainCircuit } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useLanguage } from "../../context/LanguageContext";
 import BrandLogo from "./BrandLogo";
 import Button from "../common/Button";
+import LanguageSelector from "../common/LanguageSelector";
 
 /**
- * HAQ DWAAR AI — Public Navbar
+ * HAQ DWAAR AI — Modern Civic Information Portal Navbar (Sections 11 & 12)
+ * 
+ * Desktop:
+ * Left: HAQ DWAAR AI • Scheme se Application Tak
+ * Center: Home, Browse Schemes, Benefits (dropdown), How It Works, About, FAQ
+ * Right: Sign In, [Get Started]
+ * 
+ * Mobile: Accessible sheet drawer collapsing at <= 1023px (768, 414, 390, 375, 320)
  */
 export default function PublicNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const [benefitsDropdownOpen, setBenefitsDropdownOpen] = useState(false);
 
   const { isAuthenticated, user } = useAuth();
   const { language, setLanguage, t, languages } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
+  
   const langRef = useRef(null);
+  const benefitsRef = useRef(null);
+  const drawerRef = useRef(null);
 
-  // Close dropdown on outside click
+  // Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (langRef.current && !langRef.current.contains(e.target)) {
         setLangDropdownOpen(false);
+      }
+      if (benefitsRef.current && !benefitsRef.current.contains(e.target)) {
+        setBenefitsDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Handle Escape key to close mobile drawer & dropdowns
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        if (mobileMenuOpen) setMobileMenuOpen(false);
+        if (langDropdownOpen) setLangDropdownOpen(false);
+        if (benefitsDropdownOpen) setBenefitsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [mobileMenuOpen, langDropdownOpen, benefitsDropdownOpen]);
+
+  // Lock body scroll when mobile drawer is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
+
   const isHomePage = location.pathname === "/";
 
   const handleNavClick = (e, targetHash) => {
     setMobileMenuOpen(false);
+    setBenefitsDropdownOpen(false);
+
     if (targetHash === "top") {
       if (isHomePage) {
         e.preventDefault();
@@ -59,98 +101,104 @@ export default function PublicNavbar() {
 
   const currentLang = languages.find((l) => l.code === language) || languages[0];
 
-  const navLinks = [
-    { label: t("navHome", "Home"), onClick: (e) => handleNavClick(e, "top"), active: isHomePage && !location.hash },
-    { label: t("navBrowseSchemes", "Browse Schemes"), to: "/browse-schemes", active: location.pathname === "/browse-schemes" },
-    { label: t("navHowItWorks", "How It Works"), onClick: (e) => handleNavClick(e, "how-it-works"), active: location.hash === "#how-it-works" },
-    { label: t("navAbout", "About"), onClick: (e) => handleNavClick(e, "about"), active: location.hash === "#about" },
-    { label: t("navFaq", "FAQ"), onClick: (e) => handleNavClick(e, "faq"), active: location.hash === "#faq" },
-  ];
-
   return (
     <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-xs border-b border-[#e9e1f5] shadow-[0_1px_3px_0_rgba(36,11,73,0.03)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Brand */}
+          
+          {/* Brand Logo */}
           <BrandLogo to="/" onClick={(e) => handleNavClick(e, "top")} />
 
-          {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center space-x-1 lg:space-x-1.5">
-            {navLinks.map((item, idx) =>
-              item.to ? (
-                <Link
-                  key={idx}
-                  to={item.to}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${
-                    item.active
-                      ? "bg-purple-50 text-[#2b0f4c] font-extrabold"
-                      : "text-[#4b5563] hover:text-[#0f172a] hover:bg-[#fbf9fe]"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ) : (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={item.onClick}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${
-                    item.active
-                      ? "bg-purple-50 text-[#2b0f4c] font-extrabold"
-                      : "text-[#4b5563] hover:text-[#0f172a] hover:bg-[#fbf9fe]"
-                  }`}
-                >
-                  {item.label}
-                </button>
-              )
-            )}
-          </div>
+          {/* Desktop Navigation Links (Visible at 1024px+) */}
+          <div className="hidden lg:flex items-center space-x-1 xl:space-x-1.5">
+            {/* Home */}
+            <button
+              type="button"
+              onClick={(e) => handleNavClick(e, "top")}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                isHomePage && !location.hash
+                  ? "bg-purple-50 text-[#2b0f4c] font-black"
+                  : "text-[#4b5563] hover:text-[#0f172a] hover:bg-[#fbf9fe]"
+              }`}
+            >
+              {t("navHome", "Home")}
+            </button>
 
-          {/* Right Controls: Language + Sign In + Get Started */}
-          <div className="hidden md:flex items-center space-x-2.5">
-            {/* Language Selector */}
-            <div className="relative" ref={langRef}>
+            {/* Browse Schemes */}
+            <Link
+              to="/browse-schemes"
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${
+                location.pathname === "/browse-schemes"
+                  ? "bg-purple-50 text-[#2b0f4c] font-black"
+                  : "text-[#4b5563] hover:text-[#0f172a] hover:bg-[#fbf9fe]"
+              }`}
+            >
+              {t("navBrowseSchemes", "Browse Schemes")}
+            </Link>
+
+            {/* Benefits Dropdown Menu (Section 12) */}
+            <div className="relative" ref={benefitsRef}>
               <button
                 type="button"
-                onClick={() => setLangDropdownOpen(!langDropdownOpen)}
-                className="inline-flex items-center px-2.5 py-1.5 rounded-xl text-xs font-bold text-[#0f172a] hover:text-[#2b0f4c] bg-[#fbf9fe] hover:bg-[#f7f5fa] border border-[#e9e1f5] transition-colors focus-visible:ring-2 focus-visible:ring-[#591d8f]"
-                aria-label="Change Language"
-                aria-expanded={langDropdownOpen}
+                onClick={() => setBenefitsDropdownOpen(!benefitsDropdownOpen)}
+                className={`inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                  benefitsDropdownOpen
+                    ? "bg-purple-50 text-[#2b0f4c] font-black"
+                    : "text-[#4b5563] hover:text-[#0f172a] hover:bg-[#fbf9fe]"
+                }`}
+                aria-expanded={benefitsDropdownOpen}
               >
-                <Globe className="w-3.5 h-3.5 mr-1 text-[#591d8f]" />
-                <span>{currentLang?.flag} {currentLang?.label}</span>
-                <ChevronDown className="w-3 h-3 ml-1 text-[#4b5563]" />
+                <span>Benefits</span>
+                <ChevronDown className="w-3 h-3 ml-1 text-[#64748b]" />
               </button>
 
-              {langDropdownOpen && (
-                <div className="absolute right-0 mt-1.5 w-44 bg-white rounded-2xl shadow-xl border border-[#e9e1f5] py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
-                  <div className="px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-[#4b5563] border-b border-[#e9e1f5]">
-                    भाषा चुनें (Language)
+              {benefitsDropdownOpen && (
+                <div className="absolute left-0 mt-1.5 w-56 bg-white rounded-2xl shadow-xl border border-[#e9e1f5] py-2 z-50 animate-in fade-in zoom-in-95 duration-100 space-y-1">
+                  <div className="px-3.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-[#64748b] border-b border-[#e9e1f5]">
+                    Personalized Services
                   </div>
-                  {languages.map((l) => (
-                    <button
-                      key={l.code}
-                      type="button"
-                      onClick={() => {
-                        setLanguage(l.code);
-                        setLangDropdownOpen(false);
-                      }}
-                      className={`w-full text-left px-3 py-2 text-xs font-bold flex items-center justify-between hover:bg-purple-50 transition-colors ${
-                        language === l.code ? "text-[#2b0f4c] bg-purple-50/70" : "text-[#4b5563]"
-                      }`}
-                    >
-                      <span className="flex items-center space-x-2">
-                        <span>{l.flag}</span>
-                        <span>{l.label}</span>
-                      </span>
-                      {language === l.code && <Check className="w-3.5 h-3.5 text-[#591d8f]" />}
-                    </button>
-                  ))}
+                  <Link
+                    to="/browse-schemes"
+                    onClick={() => setBenefitsDropdownOpen(false)}
+                    className="flex items-center space-x-2.5 px-3.5 py-2 text-xs font-bold text-[#0f172a] hover:bg-purple-50 transition-colors"
+                  >
+                    <Compass className="w-4 h-4 text-[#ea580c] shrink-0" />
+                    <div>
+                      <div>Find Benefits</div>
+                      <div className="text-[10px] font-normal text-[#64748b]">Explore verified government schemes</div>
+                    </div>
+                  </Link>
+
+                  <Link
+                    to={isAuthenticated ? "/dashboard/life-situation" : "/register"}
+                    onClick={() => setBenefitsDropdownOpen(false)}
+                    className="flex items-center space-x-2.5 px-3.5 py-2 text-xs font-bold text-[#0f172a] hover:bg-purple-50 transition-colors"
+                  >
+                    <BrainCircuit className="w-4 h-4 text-[#591d8f] shrink-0" />
+                    <div>
+                      <div>Life Situation</div>
+                      <div className="text-[10px] font-normal text-[#64748b]">Describe your need in plain words</div>
+                    </div>
+                  </Link>
+
+                  <Link
+                    to={isAuthenticated ? "/dashboard/benefit-passport" : "/register"}
+                    onClick={() => setBenefitsDropdownOpen(false)}
+                    className="flex items-center space-x-2.5 px-3.5 py-2 text-xs font-bold text-[#0f172a] hover:bg-purple-50 transition-colors"
+                  >
+                    <UserCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <div>
+                      <div>Benefit Passport</div>
+                      <div className="text-[10px] font-normal text-[#64748b]">Structured profile for matching</div>
+                    </div>
+                  </Link>
                 </div>
               )}
             </div>
+          </div>
 
-            {/* Auth Buttons */}
+          {/* Desktop Right Controls (Sign In & Get Started) */}
+          <div className="hidden lg:flex items-center space-x-2.5">
             {isAuthenticated ? (
               <Button
                 variant="plum"
@@ -181,92 +229,117 @@ export default function PublicNavbar() {
             )}
           </div>
 
-          {/* Mobile menu trigger */}
-          <div className="flex md:hidden items-center space-x-2">
-            <button
-              onClick={() => {
-                const nextLang = language === "hi" ? "en" : "hi";
-                setLanguage(nextLang);
-              }}
-              className="px-2 py-1 rounded-lg text-xs font-bold bg-[#fbf9fe] text-[#0f172a] border border-[#e9e1f5]"
-            >
-              {currentLang?.flag} {currentLang?.short}
-            </button>
+          {/* Mobile Menu Trigger Button (<= 1023px) */}
+          <div className="flex lg:hidden items-center space-x-2">
+            <LanguageSelector />
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               type="button"
-              className="p-2 rounded-xl text-[#0f172a] hover:bg-purple-50 border border-[#e9e1f5] transition-colors focus-visible:ring-2 focus-visible:ring-[#591d8f]"
-              aria-label="Toggle navigation menu"
+              className="p-2 rounded-xl text-[#0f172a] hover:bg-purple-50 border border-[#e9e1f5] transition-colors focus-visible:ring-2 focus-visible:ring-[#591d8f] cursor-pointer"
+              aria-label={mobileMenuOpen ? "Close menu" : "Open navigation menu"}
               aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-navigation-drawer"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
+
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Accessible Mobile Navigation Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-[#e9e1f5] px-4 pt-3 pb-6 space-y-2 animate-in fade-in duration-100">
-          <div className="space-y-1">
-            {navLinks.map((item, idx) =>
-              item.to ? (
-                <Link
-                  key={idx}
-                  to={item.to}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`block px-3.5 py-2.5 rounded-xl text-sm font-bold ${
-                    item.active
-                      ? "bg-purple-50 text-[#2b0f4c]"
-                      : "text-[#4b5563] hover:bg-[#fbf9fe]"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ) : (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={item.onClick}
-                  className="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-bold text-[#4b5563] hover:bg-[#fbf9fe]"
-                >
-                  {item.label}
-                </button>
-              )
-            )}
-          </div>
-
-          <div className="pt-4 border-t border-[#e9e1f5] space-y-2">
-            {isAuthenticated ? (
-              <Button
-                variant="plum"
-                fullWidth
-                to={user?.role === "admin" ? "/admin" : "/dashboard"}
+        <div
+          id="mobile-navigation-drawer"
+          ref={drawerRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mobile Navigation Menu"
+          className="fixed inset-x-0 top-16 bottom-0 z-50 lg:hidden bg-slate-900/40 backdrop-blur-xs flex flex-col justify-start animate-in fade-in duration-150"
+          onClick={(e) => {
+            if (e.target === drawerRef.current) setMobileMenuOpen(false);
+          }}
+        >
+          <div className="bg-white border-b border-[#e9e1f5] shadow-2xl px-5 pt-4 pb-6 space-y-4 max-h-[calc(100vh-4rem)] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[#e9e1f5]">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-[#4b5563]">
+                Navigation Menu
+              </span>
+              <button
+                type="button"
                 onClick={() => setMobileMenuOpen(false)}
+                className="p-1.5 rounded-lg text-[#4b5563] hover:text-[#0f172a] hover:bg-purple-50 border border-[#e9e1f5] cursor-pointer"
+                aria-label="Close menu"
               >
-                {user?.role === "admin" ? "Admin Console" : "My Dashboard"}
-              </Button>
-            ) : (
-              <>
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-1">
+              <button
+                type="button"
+                onClick={(e) => handleNavClick(e, "top")}
+                className="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-bold text-[#4b5563] hover:bg-[#fbf9fe] hover:text-[#0f172a] cursor-pointer"
+              >
+                Home
+              </button>
+              <Link
+                to="/browse-schemes"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3.5 py-2.5 rounded-xl text-sm font-bold text-[#4b5563] hover:bg-[#fbf9fe] hover:text-[#0f172a]"
+              >
+                Browse Schemes
+              </Link>
+              <Link
+                to={isAuthenticated ? "/dashboard/benefit-passport" : "/register"}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3.5 py-2.5 rounded-xl text-sm font-bold text-[#4b5563] hover:bg-[#fbf9fe] hover:text-[#0f172a]"
+              >
+                Benefit Passport
+              </Link>
+            </div>
+
+            {/* Language toggle in drawer */}
+            <div className="pt-2.5 border-t border-[#e9e1f5] flex items-center justify-between">
+              <span className="text-xs font-bold text-[#4b5563]">भाषा / Language:</span>
+              <LanguageSelector />
+            </div>
+
+            {/* Auth CTA buttons in drawer */}
+            <div className="pt-3 border-t border-[#e9e1f5] space-y-2">
+              {isAuthenticated ? (
                 <Button
-                  variant="secondary"
+                  variant="plum"
                   fullWidth
-                  to="/login"
+                  to={user?.role === "admin" ? "/admin" : "/dashboard"}
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {t("login", "Sign In")}
+                  {user?.role === "admin" ? "Admin Console" : "My Dashboard"}
                 </Button>
-                <Button
-                  variant="orange"
-                  fullWidth
-                  to="/register"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {t("register", "Get Started")}
-                </Button>
-              </>
-            )}
+              ) : (
+                <>
+                  <Button
+                    variant="secondary"
+                    fullWidth
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {t("login", "Sign In")}
+                  </Button>
+                  <Button
+                    variant="orange"
+                    fullWidth
+                    to="/register"
+                    icon={ArrowRight}
+                    iconPosition="right"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {t("register", "Get Started")}
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}
