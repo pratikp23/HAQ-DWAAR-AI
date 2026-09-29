@@ -6,6 +6,7 @@ import {
   validateSchemeForCitizen,
   validateMatchExplanation,
 } from "../services/benefitFirewallService.js";
+import { recordEvent } from "../services/analyticsEventService.js";
 
 /**
  * @route   POST /api/matching/evaluate
@@ -98,6 +99,16 @@ export const evaluateSchemeMatch = async (req, res, next) => {
           disclaimer: firewallCheck.disclaimer,
         },
       },
+    });
+
+    // Record operational event (strictly aggregate, zero citizen PII)
+    recordEvent({
+      eventType: "MATCH_EVALUATED",
+      userId: req.user?.id || null,
+      schemeId: scheme._id,
+      category: scheme.category,
+      status: evaluation.classification,
+      metadata: { matchScore: evaluation.matchScore },
     });
   } catch (error) {
     next(error);

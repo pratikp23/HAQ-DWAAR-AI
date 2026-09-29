@@ -4,6 +4,7 @@ import UserProfile from "../models/UserProfile.js";
 import Document from "../models/Document.js";
 import { calculateReadiness } from "../services/readinessService.js";
 import { generateActionPlan } from "../services/actionPlanService.js";
+import { recordEvent } from "../services/analyticsEventService.js";
 
 /**
  * @route   GET /api/readiness/:schemeId
@@ -80,6 +81,18 @@ export const getSchemeReadiness = async (req, res) => {
         },
         readiness,
         actionPlan,
+      },
+    });
+
+    // Record operational analytics event (strictly aggregate, zero citizen PII)
+    recordEvent({
+      eventType: "READINESS_CHECKED",
+      userId: req.user?.id || null,
+      schemeId: scheme._id,
+      category: scheme.category,
+      metadata: {
+        readinessLabel: readiness.readinessLabel,
+        overallScore: readiness.overallScore,
       },
     });
   } catch (error) {

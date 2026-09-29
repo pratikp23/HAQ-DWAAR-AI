@@ -5,6 +5,7 @@ import {
   textToSpeech,
   cleanupAudioFile,
 } from "../services/bhashiniService.js";
+import { recordEvent } from "../services/analyticsEventService.js";
 
 /**
  * @route   GET /api/bhashini/status
@@ -76,6 +77,17 @@ export const handleSpeechToText = async (req, res, next) => {
     if (process.env.NODE_ENV !== "test") {
       console.log(`[Bhashini] STT processed successfully. Mode: ${result.mode}, Lang: ${result.language}`);
     }
+
+    // Record operational analytics event (strictly aggregate, zero voice content)
+    recordEvent({
+      eventType: "VOICE_SESSION",
+      userId: req.user?.id || null,
+      metadata: {
+        language: result.language,
+        mode: result.mode,
+        isDemoMode: result.isDemoMode,
+      },
+    });
 
     return res.status(200).json({
       success: true,

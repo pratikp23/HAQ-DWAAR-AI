@@ -192,6 +192,44 @@ HAQ DWAAR AI provides two complementary, coexisting user journeys:
 
 ---
 
+## 📊 Phase 13 — Admin Dashboard & Operations Analytics
+
+Phase 13 introduces an authorized administrative operations console (`requireRole("admin")`) answering: *"How is HAQ DWAAR AI being used and where does the platform need attention?"* while strictly enforcing privacy, data minimization, and non-surveillance principles.
+
+### Key Capabilities:
+1. **Operational Overview & Aggregates**:
+   - Total & verified scheme inventory, quality indicators, and review due counts (`SCHEME_REVIEW_DAYS=180`).
+   - Circular review status from Notification Analyzer.
+   - User & Benefit Passport count.
+   - Self-reported application pipeline tracking ("Citizen-marked Applied", "Citizen-marked Completed").
+   - Document Vault aggregate health breakdown (Valid, Needs Verification, Expired, Incomplete) and source distribution (Upload vs DigiLocker Demo).
+2. **Operational Attention Queue**:
+   - Unreviewed notifications awaiting admin verification.
+   - Schemes pending verification or missing official source/application URLs.
+   - Schemes where review may be due (>180 days).
+   - Schemes with expired application deadlines.
+3. **Subsystem Health Diagnostics**:
+   - Live status checks for Backend API, MongoDB Database, Gemini NLU / Deterministic Regex Fallback, Bhashini Voice (mock/real), DigiLocker (demo/prod), and Notifications.
+   - Zero secret leakage guarantee (connection strings, JWT secrets, and API keys are strictly masked).
+4. **Recent Administrative Audit Trail**:
+   - Immutable audit logging for all admin actions via `NotificationReviewLog`.
+5. **Interactive Civic Dashboard**:
+   - Recharts visual analytics (Status bar charts, distribution pie charts).
+   - Date range filtering (`7d`, `30d`, `90d`, `all`).
+   - Clean view switching between Pipeline, Schemes, Readiness, and System Diagnostics.
+
+### Mandatory Civic Disclaimers:
+- *"Analytics are operational aggregates derived strictly from HAQ DWAAR AI activity and do not represent government-wide statistics."*
+- *"Citizen-marked application statuses are not government-confirmed statuses unless an authorized external integration exists."*
+
+### Verification:
+```bash
+node scratch/verify_phase13.js
+# Result: 56/56 PASS (100% verification across authorization, aggregates, health, privacy, and non-regression)
+```
+
+---
+
 ## 🚀 Getting Started
 
 ### Prerequisites

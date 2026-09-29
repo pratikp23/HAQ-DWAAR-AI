@@ -18,6 +18,7 @@ import notificationRoutes from "./routes/notificationRoutes.js";
 import applicationTrackerRoutes from "./routes/applicationTrackerRoutes.js";
 import citizenNotificationRoutes from "./routes/citizenNotificationRoutes.js";
 import bhashiniRoutes from "./routes/bhashiniRoutes.js";
+import adminAnalyticsRoutes from "./routes/adminAnalyticsRoutes.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
 const app = express();
@@ -60,6 +61,7 @@ app.use("/api/admin/notifications", notificationRoutes);
 app.use("/api/applications", applicationTrackerRoutes);
 app.use("/api/notifications", citizenNotificationRoutes);
 app.use("/api/bhashini", bhashiniRoutes);
+app.use("/api/admin/analytics", adminAnalyticsRoutes);
 
 // Catch-all 404 handler
 app.use(notFoundHandler);

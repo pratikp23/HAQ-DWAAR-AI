@@ -19,6 +19,7 @@ import Notifications from "./pages/citizen/Notifications";
 import AdminSchemes from "./pages/admin/AdminSchemes";
 import AdminNotifications from "./pages/admin/AdminNotifications";
 import NotificationReview from "./pages/admin/NotificationReview";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import { LanguageProvider } from "./context/LanguageContext";
@@ -134,6 +135,22 @@ function App() {
           />
 
           {/* Authenticated Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/admin/schemes"
             element={
