@@ -122,7 +122,7 @@ export default function Applications() {
     <div className="min-h-screen bg-[#f7f5fa] flex flex-col text-[#0f172a]">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-6">
+      <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-8 space-y-6">
         {/* GovTech Hero Banner */}
         <div className="bg-gradient-to-r from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] rounded-2xl p-6 sm:p-8 text-white shadow-lg border border-[#591d8f]/30">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">

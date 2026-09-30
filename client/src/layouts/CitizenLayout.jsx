@@ -1,16 +1,19 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import CitizenNavbar from "../components/layout/CitizenNavbar";
+import CitizenFooter from "../components/layout/CitizenFooter";
 import MobileBottomNav from "../components/layout/MobileBottomNav";
 import { LayoutContext } from "../context/LayoutContext";
 
 /**
- * HAQ DWAAR AI — Citizen Layout Shell
+ * HAQ DWAAR AI — Citizen Layout Shell (Authenticated Citizen Experience)
  * 
  * Specialized civic application shell for authenticated citizens:
  * Citizen Navbar
  * ↓
- * Main Content (pb-20 on mobile to prevent bottom nav overlap)
+ * Main Content Area (pb-24 on mobile to prevent MobileBottomNav overlap)
+ * ↓
+ * Citizen Footer (civic trust, direct portals, helplines, non-agency notice)
  * ↓
  * Mobile Bottom Navigation (with raised circular orange voice button)
  */
@@ -21,12 +24,15 @@ export default function CitizenLayout({ children }) {
         {/* Citizen Top Navbar */}
         <CitizenNavbar />
 
-        {/* Main Content Area — includes padding-bottom on mobile for MobileBottomNav clearance */}
-        <main className="flex-1 pb-24 md:pb-12">
+        {/* Main Content Area */}
+        <main className="flex-1 pb-24 lg:pb-12">
           {children || <Outlet />}
         </main>
 
-        {/* Mobile Bottom Navigation Bar (md:hidden) */}
+        {/* Authenticated Citizen Footer */}
+        <CitizenFooter />
+
+        {/* Mobile Fixed Bottom Navigation Bar (lg:hidden) */}
         <MobileBottomNav />
       </div>
     </LayoutContext.Provider>

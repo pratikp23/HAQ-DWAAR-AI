@@ -29,6 +29,7 @@ import {
   FileQuestion,
   FileCode
 } from "lucide-react";
+import PersonalizedActionPlan from "../../components/dashboard/PersonalizedActionPlan";
 
 export default function SchemeDetails() {
   const { id } = useParams();
@@ -171,8 +172,8 @@ export default function SchemeDetails() {
   }
 
   return (
-    <div className="bg-[#f7f5fa] text-[#0f172a] min-h-screen py-6 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div className="bg-[#f7f5fa] text-[#0f172a] min-h-screen py-6 px-4 sm:px-6 lg:px-8 xl:px-10">
+      <div className="w-full space-y-6">
 
         {/* ======================================================== */}
         {/* 1. TOP BREADCRUMB & METADATA STRIP (Section 20)           */}
@@ -566,64 +567,18 @@ export default function SchemeDetails() {
         </div>
 
         {/* ======================================================== */}
-        {/* 7. HOW TO APPLY (Section 25)                             */}
+        {/* 7. PERSONALIZED ACTION PLAN (Scheme se Application Tak)  */}
         {/* ======================================================== */}
-        <div className="bg-white rounded-3xl p-6 sm:p-7 border border-[#e9e1f5] shadow-xs space-y-5">
-          <div className="pb-2 border-b border-[#e9e1f5]">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#ea580c] block">
-              Application Sequence
-            </span>
-            <h2 className="text-base font-black text-[#0f172a]">
-              How to Apply
-            </h2>
-          </div>
-
-          <div className="space-y-3">
-            {[
-              { num: "01", title: "Review requirements", desc: "Inspect published eligibility criteria and ensure your profile matches." },
-              { num: "02", title: "Prepare required documents", desc: "Organize mandatory certificates in your Personal Document Vault." },
-              { num: "03", title: "Check application readiness if signed in", desc: "Verify that all mandatory documents and criteria pass health checks." },
-              { num: "04", title: "Continue to the official application portal", desc: "Access the authentic authorized government portal via the link below." },
-              { num: "05", title: "Complete the application on the official portal", desc: "Fill in the official government application form and submit directly." },
-            ].map((step, idx) => (
-              <div
-                key={idx}
-                className="p-3.5 bg-[#fbf9fe] rounded-2xl border border-[#e9e1f5] flex items-start space-x-3.5"
-              >
-                <span className="w-7 h-7 rounded-xl bg-orange-100 text-[#ea580c] flex items-center justify-center font-black text-xs shrink-0 mt-0.5">
-                  {step.num}
-                </span>
-                <div>
-                  <h3 className="text-xs sm:text-sm font-black text-[#0f172a]">
-                    {step.title}
-                  </h3>
-                  <p className="text-[11px] text-[#64748b] mt-0.5 leading-relaxed">
-                    {step.desc}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Final Direct Portal CTA */}
-          <div className="pt-2 text-center">
-            {scheme.officialApplicationUrl ? (
-              <a
-                href={scheme.officialApplicationUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-7 py-3.5 rounded-2xl bg-[#ea580c] hover:bg-[#c2410c] text-white font-black text-xs sm:text-sm shadow-md transition"
-              >
-                <span>Continue to Official Application Portal</span>
-                <ExternalLink className="w-4 h-4 ml-2" />
-              </a>
-            ) : (
-              <span className="text-xs text-[#64748b] italic">
-                Official application portal URL is currently pending government notification update.
-              </span>
-            )}
-          </div>
-        </div>
+        <section aria-label="Personalized Action Plan" className="w-full">
+          <PersonalizedActionPlan
+            scheme={scheme}
+            user={user}
+            evaluation={evaluation}
+            onSaveApplication={handleStartTracking}
+            isTracking={!!trackingApp}
+            trackingLoading={trackingLoading}
+          />
+        </section>
 
         {/* ======================================================== */}
         {/* 8. OFFICIAL SOURCES (Section 26)                         */}

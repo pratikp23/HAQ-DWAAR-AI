@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { 
   ShieldCheck, 
@@ -11,7 +11,8 @@ import {
   Globe,
   ChevronDown,
   Check,
-  LogOut
+  LogOut,
+  LayoutDashboard
 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useLanguage } from "../../context/LanguageContext";
@@ -181,6 +182,16 @@ export default function Navbar({ forceRender = false }) {
             >
               {t("navFaq", "FAQ")}
             </button>
+
+            {isAuthenticated && (
+              <Link
+                to={user?.role === "admin" ? "/admin" : "/dashboard"}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#591d8f] bg-purple-50 hover:bg-purple-100 transition flex items-center gap-1.5 border border-purple-200"
+              >
+                <LayoutDashboard className="w-3.5 h-3.5 text-[#591d8f]" />
+                <span>{user?.role === "admin" ? "Admin Console" : "Dashboard"}</span>
+              </Link>
+            )}
           </div>
 
           {/* Desktop Right Controls (Language Dropdown + Auth) */}

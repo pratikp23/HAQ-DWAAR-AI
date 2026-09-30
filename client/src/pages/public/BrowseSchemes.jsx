@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { getSchemes } from "../../services/schemeApi";
 import { useAuth } from "../../hooks/useAuth";
+import SchemeImageBanner from "../../components/common/SchemeImageBanner";
 
 const CATEGORIES = [
   { id: "ALL", label: "All Categories" },
@@ -336,22 +337,19 @@ export default function BrowseSchemes() {
             {schemes.map((scheme) => (
               <div
                 key={scheme._id}
-                className="bg-white rounded-3xl p-5 sm:p-6 border border-[#e9e1f5] shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+                className="bg-white rounded-3xl p-4 sm:p-5 border border-[#e9e1f5] shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group"
               >
                 <div className="space-y-3">
-                  {/* Category & Verified Badges */}
-                  <div className="flex items-center justify-between gap-1.5">
-                    <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-purple-50 text-[#2b0f4c] border border-purple-200 uppercase tracking-wide">
-                      {scheme.category}
-                    </span>
-                    <span className="inline-flex items-center text-[10px] font-black text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                      <ShieldCheck className="w-3 h-3 mr-1 text-emerald-600" /> Verified ✓
-                    </span>
-                  </div>
+                  {/* Scheme Visual Image Banner */}
+                  <Link to={`/schemes/${scheme._id}`} className="block">
+                    <SchemeImageBanner scheme={scheme} heightClass="h-36 sm:h-40" />
+                  </Link>
 
                   {/* Scheme Name */}
-                  <h2 className="text-base font-black text-[#0f172a] leading-snug line-clamp-2">
-                    {scheme.name}
+                  <h2 className="text-base font-black text-[#0f172a] leading-snug line-clamp-2 group-hover:text-[#591d8f] transition-colors">
+                    <Link to={`/schemes/${scheme._id}`}>
+                      {scheme.name}
+                    </Link>
                   </h2>
 
                   {/* Short Description */}

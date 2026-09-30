@@ -312,7 +312,7 @@ export default function BenefitPassport() {
       <Navbar />
 
       {/* Main Container */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-8 space-y-6">
+      <main className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 pt-8 pb-12 space-y-6">
         {/* Page Hero Banner */}
         <div className="bg-gradient-to-r from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] rounded-2xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden border border-[#591d8f]/30">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

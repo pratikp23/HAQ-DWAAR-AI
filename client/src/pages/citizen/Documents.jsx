@@ -278,7 +278,7 @@ export default function Documents() {
       {/* Universal GovTech Top Navigation */}
       <Navbar />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-8 space-y-8">
         {/* Top Header Card */}
         <div className="bg-gradient-to-r from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] rounded-2xl p-6 md:p-8 text-white shadow-lg border border-[#591d8f]/30">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">

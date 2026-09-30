@@ -141,7 +141,7 @@ export default function LifeSituation() {
       <Navbar />
 
       {/* Main Container */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+      <main className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-8 space-y-8">
         {/* Hero Section */}
         <div className="bg-gradient-to-r from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] rounded-2xl p-6 sm:p-8 text-white shadow-lg space-y-4 border border-[#591d8f]/30">
           <div className="flex flex-wrap items-center gap-2">
