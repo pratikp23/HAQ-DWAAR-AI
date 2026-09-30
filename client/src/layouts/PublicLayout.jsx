@@ -2,6 +2,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import PublicNavbar from "../components/layout/PublicNavbar";
 import Footer from "../components/layout/Footer";
+import MobileBottomNav from "../components/layout/MobileBottomNav";
 import { LayoutContext } from "../context/LayoutContext";
 import { useLanguage } from "../context/LanguageContext";
 import LanguageSelector from "../components/common/LanguageSelector";
@@ -40,13 +41,16 @@ export default function PublicLayout({ children }) {
         {/* Public Navbar */}
         <PublicNavbar />
 
-        {/* Main Content */}
-        <main className="flex-1">
+        {/* Main Content (pb-28 on mobile to avoid MobileBottomNav overlap) */}
+        <main className="flex-1 pb-28 lg:pb-0">
           {children || <Outlet />}
         </main>
 
         {/* Public Footer */}
         <Footer forceRender={true} />
+
+        {/* Mobile Fixed Bottom Navigation Bar (lg:hidden) */}
+        <MobileBottomNav />
       </div>
     </LayoutContext.Provider>
   );

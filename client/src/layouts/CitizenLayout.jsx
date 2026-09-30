@@ -24,8 +24,8 @@ export default function CitizenLayout({ children }) {
         {/* Citizen Top Navbar */}
         <CitizenNavbar />
 
-        {/* Main Content Area */}
-        <main className="flex-1 pb-24 lg:pb-12">
+        {/* Main Content Area (pb-32 sm:pb-36 on mobile to prevent MobileBottomNav overlap) */}
+        <main className="flex-1 pb-32 sm:pb-36 lg:pb-12">
           {children || <Outlet />}
         </main>
 

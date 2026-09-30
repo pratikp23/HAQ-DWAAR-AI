@@ -270,7 +270,7 @@ export default function RecommendationCard({
       </div>
 
       {/* 6. Action Buttons */}
-      <div className="pt-3 border-t border-[#e9e1f5] flex items-center justify-between gap-2">
+      <div className="pt-3 border-t border-[#e9e1f5] flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
         <div className="flex items-center gap-2 flex-1 min-w-0">
           {schemeId && (
             <Link
