@@ -30,6 +30,7 @@ import {
   FileCode
 } from "lucide-react";
 import PersonalizedActionPlan from "../../components/dashboard/PersonalizedActionPlan";
+import ReportSchemeModal from "../../components/schemes/ReportSchemeModal";
 
 export default function SchemeDetails() {
   const { id } = useParams();
@@ -40,6 +41,7 @@ export default function SchemeDetails() {
   const [scheme, setScheme] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
 
   // Matching evaluation state (for authenticated users)
   const [evaluating, setEvaluating] = useState(false);
@@ -188,6 +190,14 @@ export default function SchemeDetails() {
           </Link>
 
           <div className="flex items-center space-x-2">
+            <button
+              type="button"
+              onClick={() => setReportModalOpen(true)}
+              className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition cursor-pointer"
+            >
+              <AlertTriangle className="w-3.5 h-3.5 mr-1 text-rose-600" />
+              <span>Report Scheme / Grievance</span>
+            </button>
             <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-black bg-emerald-50 text-emerald-800 border border-emerald-200">
               <ShieldCheck className="w-3.5 h-3.5 mr-1 text-emerald-600" />
               Verified Official Data
@@ -300,8 +310,8 @@ export default function SchemeDetails() {
                 </div>
               </div>
 
-              {scheme.officialApplicationUrl && (
-                <div className="pt-2 border-t border-[#e9e1f5]">
+              <div className="pt-2 border-t border-[#e9e1f5] space-y-2">
+                {scheme.officialApplicationUrl && (
                   <a
                     href={scheme.officialApplicationUrl}
                     target="_blank"
@@ -311,8 +321,16 @@ export default function SchemeDetails() {
                     <span>Visit Official Portal</span>
                     <ExternalLink className="w-3.5 h-3.5 ml-1.5 text-[#ea580c]" />
                   </a>
-                </div>
-              )}
+                )}
+                <button
+                  type="button"
+                  onClick={() => setReportModalOpen(true)}
+                  className="w-full text-center py-2 px-3 rounded-xl bg-rose-50/80 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs inline-flex items-center justify-center transition cursor-pointer"
+                >
+                  <AlertTriangle className="w-3.5 h-3.5 mr-1.5 text-rose-600" />
+                  <span>Report Inaccuracy or Fraud</span>
+                </button>
+              </div>
             </div>
 
           </div>
@@ -618,6 +636,13 @@ export default function SchemeDetails() {
             )}
           </div>
         </div>
+
+        {/* Citizen Fraud & Grievance Reporting Modal */}
+        <ReportSchemeModal
+          scheme={scheme}
+          isOpen={reportModalOpen}
+          onClose={() => setReportModalOpen(false)}
+        />
 
       </div>
     </div>

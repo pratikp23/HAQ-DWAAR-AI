@@ -345,6 +345,25 @@ export default function BrowseSchemes() {
                     <SchemeImageBanner scheme={scheme} heightClass="h-36 sm:h-40" />
                   </Link>
 
+                  {/* Gazette & Verification Badges */}
+                  <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                    {scheme.gazetteNumber ? (
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-purple-50 text-[#2b0f4c] border border-purple-200">
+                        📜 Gazette: {scheme.gazetteNumber}
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">
+                        ✓ Govt Verified
+                      </span>
+                    )}
+
+                    {scheme.isFlagged && (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200">
+                        ⚠️ Nodal Audit
+                      </span>
+                    )}
+                  </div>
+
                   {/* Scheme Name */}
                   <h2 className="text-base font-black text-[#0f172a] leading-snug line-clamp-2 group-hover:text-[#591d8f] transition-colors">
                     <Link to={`/schemes/${scheme._id}`}>

@@ -63,13 +63,14 @@ export default function LoginPage() {
     try {
       const authRes = await login(email.trim(), password);
       const userRole = authRes?.user?.role;
+      const isAdminTier = ["admin", "super_admin", "chief_officer", "category_admin"].includes(userRole);
 
-      if (userRole === "admin") {
+      if (isAdminTier) {
         const dest = from && from.startsWith("/admin") ? from : "/admin";
         navigate(dest, { replace: true });
       } else {
         if (selectedRoleTab === "admin") {
-          setInfoMessage("Signed in as Citizen! Redirecting to your Personalized Benefit Portal...");
+          setInfoMessage("Signed in as Citizen! Redirecting to Citizen Portal...");
         }
         const dest = from && !from.startsWith("/admin") ? from : "/dashboard";
         navigate(dest, { replace: true });
@@ -195,23 +196,59 @@ export default function LoginPage() {
               </button>
             </div>
 
-            {/* Admin Auto-Fill Demo Callout */}
+            {/* Multi-Tier Governance Credentials Helper */}
             {selectedRoleTab === "admin" && (
-              <div className="p-3 bg-purple-50 rounded-2xl border border-purple-200 text-xs text-[#2b0f4c] flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <KeyRound className="w-4 h-4 text-[#591d8f] shrink-0" />
-                  <span className="text-[11px] font-semibold">Demo credentials pre-loaded</span>
+              <div className="p-3 bg-purple-50/90 rounded-2xl border border-purple-200 text-xs space-y-2">
+                <div className="flex items-center justify-between font-bold text-[#2b0f4c] text-[11px]">
+                  <span className="flex items-center space-x-1.5">
+                    <KeyRound className="w-3.5 h-3.5 text-[#591d8f]" />
+                    <span>Select Administrative Tier to Test:</span>
+                  </span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail("admin@haqdwaar.gov.in");
-                    setPassword("Admin@123");
-                  }}
-                  className="text-[11px] font-bold text-[#ea580c] underline cursor-pointer"
-                >
-                  Refill
-                </button>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 text-[10px]">
+                  {/* 1. Chief Govt Officer */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmail("chief.officer@nic.in");
+                      setPassword("Officer@123");
+                    }}
+                    className="p-2 rounded-xl bg-white border border-purple-200 text-left hover:border-purple-500 hover:bg-purple-100/50 transition cursor-pointer"
+                  >
+                    <div className="font-black text-[#2b0f4c] truncate">Govt Chief Officer</div>
+                    <div className="text-slate-500 truncate">Vets & Approves Admins</div>
+                  </button>
+
+                  {/* 2. Department Admin */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmail("kisan.admin@gov.in");
+                      setPassword("Kisan@123");
+                    }}
+                    className="p-2 rounded-xl bg-white border border-purple-200 text-left hover:border-purple-500 hover:bg-purple-100/50 transition cursor-pointer"
+                  >
+                    <div className="font-black text-emerald-800 truncate">Dept Admin (KISAN)</div>
+                    <div className="text-slate-500 truncate">Manages Agri Schemes</div>
+                  </button>
+
+                  {/* 3. Super Admin */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmail("admin@haqdwaar.gov.in");
+                      setPassword("Admin@123");
+                    }}
+                    className="p-2 rounded-xl bg-white border border-purple-200 text-left hover:border-purple-500 hover:bg-purple-100/50 transition cursor-pointer"
+                  >
+                    <div className="font-black text-orange-800 truncate">Super Admin</div>
+                    <div className="text-slate-500 truncate">Platform Monitoring</div>
+                  </button>
+                </div>
+                <div className="p-2 bg-white/80 rounded-xl text-[10px] text-purple-900 border border-purple-100 flex items-center justify-between">
+                  <span>💡 <strong>Approved Officer?</strong> Enter your registered email (e.g. pratikpathak2308@gmail.com) and password below.</span>
+                </div>
               </div>
             )}
 

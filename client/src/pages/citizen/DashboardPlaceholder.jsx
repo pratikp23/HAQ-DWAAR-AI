@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useLanguage } from "../../context/LanguageContext";
@@ -10,22 +10,17 @@ import { getDocuments } from "../../services/documentApi";
 import { getApplications, createApplication } from "../../services/applicationApi";
 import { getCitizenNotifications, getUnreadCount } from "../../services/notificationApi";
 import { getDigiLockerStatus } from "../../services/digilockerApi";
-import { getSchemeReadiness } from "../../services/readinessApi";
 
-// Citizen Dashboard Components
+// Citizen Dashboard Components (Streamlined Workflow)
 import DashboardHero from "../../components/dashboard/DashboardHero";
-import BenefitReadinessCard from "../../components/dashboard/BenefitReadinessCard";
-import MittraAssistantCard from "../../components/dashboard/MittraAssistantCard";
-import QuickActionGrid from "../../components/dashboard/QuickActionGrid";
 import RecommendationSection from "../../components/dashboard/RecommendationSection";
-import LifeSituationSectors from "../../components/dashboard/LifeSituationSectors";
+import ApplicationTrackerCard from "../../components/dashboard/ApplicationTrackerCard";
+import MittraAssistantCard from "../../components/dashboard/MittraAssistantCard";
 import DocumentHealthCard from "../../components/dashboard/DocumentHealthCard";
 import NotificationPreview from "../../components/dashboard/NotificationPreview";
-import ApplicationTrackerCard from "../../components/dashboard/ApplicationTrackerCard";
-import BenefitJourney from "../../components/dashboard/BenefitJourney";
-import TrustInformationCard from "../../components/dashboard/TrustInformationCard";
 import DashboardSkeleton from "../../components/dashboard/DashboardSkeleton";
-import AiMitraVoiceModal from "../../components/dashboard/AiMitraVoiceModal";
+import CscCenterCard from "../../components/dashboard/CscCenterCard";
+import { useHaqAI } from "../../context/HaqAIContext";
 
 import { 
   CheckCircle2, 
@@ -35,20 +30,14 @@ import {
 } from "lucide-react";
 
 /**
- * HAQ DWAAR AI — Authenticated Citizen Experience Dashboard
+ * HAQ DWAAR AI — Citizen Experience Dashboard
  * 
- * Journey Flow:
- * CITIZEN
- * → BENEFIT PASSPORT
- * → LIFE SITUATION
- * → BENEFIT MATCHING
- * → WHY THIS MATCH?
- * → DOCUMENT HEALTH
- * → READINESS
- * → ACTION PLAN
- * → DEADLINE / NOTIFICATION
- * → OFFICIAL APPLICATION
- * → APPLICATION TRACKING
+ * Clean 4-Step Civic Workflow:
+ * 1. Benefit Passport Health & Entitlements Overview
+ * 2. Matched Schemes For You (Core Discovery with Match % and Readiness)
+ * 3. Application Tracker (Active applications & official portal links)
+ * 4. Document Vault & DigiLocker Sync + Scheme Deadlines
+ * + AI Mitra 24x7 Multilingual Voice Assistant
  */
 export default function DashboardPlaceholder() {
   const { user } = useAuth();
@@ -65,19 +54,13 @@ export default function DashboardPlaceholder() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isDigiLockerDemo, setIsDigiLockerDemo] = useState(true);
 
-  // Scheme Readiness State
-  const [targetSchemeReadiness, setTargetSchemeReadiness] = useState(null);
-  const [targetScheme, setTargetScheme] = useState(null);
-
   // Loading & Error States
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [actionSuccess, setActionSuccess] = useState("");
 
-  // Interactive Voice Modal States
-  const [voiceModalOpen, setVoiceModalOpen] = useState(false);
-  const [voiceInitialQuery, setVoiceInitialQuery] = useState("");
   const [audioPlaying, setAudioPlaying] = useState(false);
+  const { setIsOpen: setHaqAIOpen, sendMessage: sendHaqAIMessage } = useHaqAI();
 
   // Fetch all primary citizen data
   const fetchDashboardData = async () => {
@@ -110,9 +93,8 @@ export default function DashboardPlaceholder() {
       }
 
       // 2. Recommendations
-      let recs = [];
       if (matchRes.status === "fulfilled") {
-        recs = matchRes.value?.data?.data?.recommendations || [];
+        const recs = matchRes.value?.data?.data?.recommendations || [];
         setMatchedSchemes(recs);
       }
 
@@ -123,9 +105,8 @@ export default function DashboardPlaceholder() {
       }
 
       // 4. Applications Tracker
-      let apps = [];
       if (appsRes.status === "fulfilled") {
-        apps = appsRes.value?.data?.data?.applications || [];
+        const apps = appsRes.value?.data?.data?.applications || [];
         setTrackedApps(apps);
       }
 
@@ -143,24 +124,6 @@ export default function DashboardPlaceholder() {
       if (digiRes.status === "fulfilled") {
         const mode = digiRes.value?.data?.data?.mode || "demo";
         setIsDigiLockerDemo(mode === "demo");
-      }
-
-      // 8. Fetch scheme readiness for top recommendation or tracked application
-      const firstCandidate = apps[0]?.schemeId || recs[0];
-      if (firstCandidate) {
-        const cid = firstCandidate._id || firstCandidate.schemeId || firstCandidate.id;
-        if (cid) {
-          try {
-            const readinessRes = await getSchemeReadiness(cid);
-            if (readinessRes?.data?.data) {
-              setTargetSchemeReadiness(readinessRes.data.data.readiness);
-              setTargetScheme(readinessRes.data.data.scheme);
-            }
-          } catch (rErr) {
-            // Non-blocking readiness fetch
-            console.debug("Target scheme readiness non-critical error:", rErr);
-          }
-        }
       }
 
     } catch (err) {
@@ -191,10 +154,12 @@ export default function DashboardPlaceholder() {
     }
   };
 
-  // Open Voice Modal with initial query
+  // Open HAQ AI Assistant with initial query
   const handleOpenVoiceModal = (query = "") => {
-    setVoiceInitialQuery(query);
-    setVoiceModalOpen(true);
+    if (setHaqAIOpen) setHaqAIOpen(true);
+    if (query && sendHaqAIMessage) {
+      sendHaqAIMessage(query);
+    }
   };
 
   // Text-to-speech audio reader
@@ -234,10 +199,8 @@ export default function DashboardPlaceholder() {
     return ids;
   }, [trackedApps]);
 
-  const topSchemeId = targetScheme?._id || targetScheme?.id || matchedSchemes[0]?.schemeId || matchedSchemes[0]?._id || null;
-
   return (
-    <div className="w-full px-3 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6 sm:space-y-8">
+    <div className="w-full px-3 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6 sm:space-y-8 max-w-7xl mx-auto">
       
       {/* 1. Global Action Success Toast */}
       {actionSuccess && (
@@ -288,72 +251,54 @@ export default function DashboardPlaceholder() {
       ) : (
         <>
           {/* ======================================================== */}
-          {/* 1. PERSONALIZED GREETING / PROFILE STATUS               */}
+          {/* STEP 1: PERSONALIZED GREETING & BENEFIT PASSPORT STATUS   */}
           {/* ======================================================== */}
-          <DashboardHero
-            user={user}
-            profileData={profileData}
-            completeness={completeness}
-            onPlayAudio={handlePlayAudio}
-            audioPlaying={audioPlaying}
-          />
-
-          {/* ======================================================== */}
-          {/* 2. BENEFIT READINESS & MITTRA SIDE-BY-SIDE ON DESKTOP   */}
-          {/* ======================================================== */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
-            
-            {/* Benefit Readiness Card (5 cols on lg) */}
-            <div className="lg:col-span-5 flex flex-col">
-              <BenefitReadinessCard
-                readinessData={targetSchemeReadiness}
-                targetScheme={targetScheme || matchedSchemes[0]}
-                profileCompleteness={completeness}
-                vaultDocuments={vaultDocuments}
-                loading={loading}
-              />
-            </div>
-
-            {/* MITTRA / Life Situation Assistant Card (7 cols on lg) */}
-            <div className="lg:col-span-7 flex flex-col">
-              <MittraAssistantCard
-                onOpenVoiceModal={handleOpenVoiceModal}
-              />
-            </div>
-
+          <div id="step-passport" data-haq-target="dashboard-benefit-passport">
+            <DashboardHero
+              user={user}
+              profileData={profileData}
+              completeness={completeness}
+              onPlayAudio={handlePlayAudio}
+              audioPlaying={audioPlaying}
+            />
           </div>
 
           {/* ======================================================== */}
-          {/* 3. QUICK ACTIONS GRID (6 Core Civic Gateways)            */}
+          {/* STEP 2: TOP MATCHED SCHEMES ("Aapke Liye Chuni Gayi")    */}
           {/* ======================================================== */}
-          <QuickActionGrid
-            completeness={completeness}
-            unreadCount={unreadCount}
-            vaultDocCount={vaultDocuments.length}
-            trackedAppCount={trackedApps.length}
-            topSchemeId={topSchemeId}
-          />
+          <div id="step-schemes" data-haq-target="dashboard-recommendations">
+            <RecommendationSection
+              recommendations={matchedSchemes}
+              loading={loading}
+              onRetry={fetchDashboardData}
+              onTrackScheme={handleTrackScheme}
+              trackedSchemeIds={trackedSchemeIds}
+            />
+          </div>
 
           {/* ======================================================== */}
-          {/* 4. FOR YOU — VERIFIED OPPORTUNITIES                     */}
+          {/* STEP 3: APPLICATION TRACKER ("My Tracked Applications")  */}
           {/* ======================================================== */}
-          <RecommendationSection
-            recommendations={matchedSchemes}
-            loading={loading}
-            onRetry={fetchDashboardData}
-            onTrackScheme={handleTrackScheme}
-            trackedSchemeIds={trackedSchemeIds}
-          />
+          <div id="step-tracker" data-haq-target="dashboard-tracker">
+            <ApplicationTrackerCard
+              applications={trackedApps}
+              loading={loading}
+            />
+          </div>
 
           {/* ======================================================== */}
-          {/* 4.1. QUICK SECTORS — त्वरित श्रेणियां                    */}
+          {/* STEP 4: 24x7 AI MITTRA VOICE & BHASHINI ASSISTANT       */}
           {/* ======================================================== */}
-          <LifeSituationSectors />
+          <div id="step-mittra" data-haq-target="dashboard-mittra">
+            <MittraAssistantCard
+              onOpenVoiceModal={handleOpenVoiceModal}
+            />
+          </div>
 
           {/* ======================================================== */}
-          {/* 5. DOCUMENT HEALTH VAULT + NOTIFICATIONS PREVIEW        */}
+          {/* STEP 5: DOCUMENT HEALTH VAULT + DEADLINES & NOTIFICATIONS */}
           {/* ======================================================== */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+          <div id="step-vault" data-haq-target="dashboard-document-health" className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
             
             {/* Document Health Card (7 cols) */}
             <div className="lg:col-span-7 flex flex-col">
@@ -374,38 +319,18 @@ export default function DashboardPlaceholder() {
             </div>
 
           </div>
-
+          
           {/* ======================================================== */}
-          {/* 6. APPLICATION TRACKER ("My Applications")               */}
+          {/* STEP 6: NEARBY CSC & VLE ASSISTANCE (जन सेवा केंद्र)       */}
           {/* ======================================================== */}
-          <ApplicationTrackerCard
-            applications={trackedApps}
-            loading={loading}
-          />
-
-          {/* ======================================================== */}
-          {/* 7. BENEFIT JOURNEY VISUAL (Scheme se Application Tak)    */}
-          {/* ======================================================== */}
-          <BenefitJourney
-            completeness={completeness}
-            vaultDocCount={vaultDocuments.length}
-            trackedApps={trackedApps}
-          />
-
-          {/* ======================================================== */}
-          {/* 8. TRUST / CITIZEN INFORMATION PANEL                    */}
-          {/* ======================================================== */}
-          <TrustInformationCard />
+          <div id="step-csc">
+            <CscCenterCard 
+              user={user} 
+              profileData={profileData} 
+            />
+          </div>
         </>
       )}
-
-      {/* Interactive AI MITTRA Voice Modal */}
-      <AiMitraVoiceModal
-        isOpen={voiceModalOpen}
-        initialQuery={voiceInitialQuery}
-        onClose={() => setVoiceModalOpen(false)}
-        onPassportUpdated={fetchDashboardData}
-      />
 
     </div>
   );

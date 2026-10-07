@@ -34,3 +34,17 @@ export const logoutUser = async () => {
 export const testAdminRoute = async () => {
   return await api.get("/auth/admin-test");
 };
+
+/**
+ * Update user profile details and avatar
+ */
+export const updateUserProfile = async (profileData) => {
+  return await api.put("/auth/profile", profileData);
+};
+
+/**
+ * Change account password
+ */
+export const changePassword = async (passwordData) => {
+  return await api.put("/auth/change-password", passwordData);
+};

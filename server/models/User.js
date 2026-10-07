@@ -27,8 +27,47 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["citizen", "admin"],
+      enum: ["citizen", "category_admin", "super_admin", "chief_officer", "admin"],
       default: "citizen",
+    },
+    department: {
+      type: String,
+      enum: ["STUDENT", "KISAN", "BUSINESS", "EMPLOYMENT", "HEALTH", "GENERAL", "ALL", null],
+      default: null,
+    },
+    designation: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    govtIdNumber: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    officerStatus: {
+      type: String,
+      enum: ["NONE", "PENDING_VERIFICATION", "ACTIVE_VERIFIED", "SUSPENDED", "RETIRED"],
+      default: "NONE",
+    },
+    avatar: {
+      type: String,
+      default: null,
+    },
+    phone: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    officeLocation: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    verifiedByChief: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
     },
   },
   {
@@ -52,6 +91,13 @@ userSchema.methods.toSafeObject = function () {
     name: this.name,
     email: this.email,
     role: this.role,
+    department: this.department,
+    designation: this.designation,
+    govtIdNumber: this.govtIdNumber,
+    officerStatus: this.officerStatus,
+    avatar: this.avatar,
+    phone: this.phone,
+    officeLocation: this.officeLocation,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
   };

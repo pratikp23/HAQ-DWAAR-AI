@@ -133,6 +133,8 @@ export default function RecommendationSection({
             </button>
           ))}
           <Link
+            id="step-scheme-explore-btn"
+            data-haq-target="explore-schemes-btn"
             to="/dashboard/recommendations"
             className="inline-flex items-center gap-0.5 px-2.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-[#7c3aed] hover:text-[#591d8f] transition"
           >
@@ -155,7 +157,7 @@ export default function RecommendationSection({
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div data-haq-target="recommendations-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredList.map((scheme, idx) => {
             const sid = scheme.schemeId || scheme._id;
             return (
@@ -164,6 +166,7 @@ export default function RecommendationSection({
                 scheme={scheme}
                 onTrack={onTrackScheme}
                 isTracked={trackedSchemeIds.has(sid)}
+                isFirstCard={idx === 0}
               />
             );
           })}

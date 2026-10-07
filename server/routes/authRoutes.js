@@ -1,5 +1,5 @@
 import express from "express";
-import { register, login, getMe, logout } from "../controllers/authController.js";
+import { register, login, getMe, logout, updateUserProfile, changePassword } from "../controllers/authController.js";
 import { requireAuth } from "../middleware/authMiddleware.js";
 import { requireRole } from "../middleware/roleMiddleware.js";
 
@@ -12,6 +12,8 @@ router.post("/logout", logout);
 
 // Protected routes
 router.get("/me", requireAuth, getMe);
+router.put("/profile", requireAuth, updateUserProfile);
+router.put("/change-password", requireAuth, changePassword);
 
 // Admin-only test route (for testing 403 authorization without building full admin dashboard)
 router.get("/admin-test", requireAuth, requireRole("admin"), (req, res) => {

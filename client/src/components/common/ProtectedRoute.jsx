@@ -21,7 +21,16 @@ export const ProtectedRoute = ({ children, requiredRole }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (requiredRole && user.role !== requiredRole) {
+  const allowedAdminRoles = ["admin", "super_admin", "chief_officer", "category_admin"];
+  const hasRolePermission = requiredRole
+    ? Array.isArray(requiredRole)
+      ? requiredRole.includes(user.role)
+      : requiredRole === "admin"
+      ? allowedAdminRoles.includes(user.role)
+      : user.role === requiredRole
+    : true;
+
+  if (!hasRolePermission) {
     const handleSwitchToAdmin = async () => {
       await logout();
       navigate("/login", { state: { from: location } });

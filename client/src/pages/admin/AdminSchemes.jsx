@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 
 export default function AdminSchemes() {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const { inLayout } = useContext(LayoutContext) || {};
   const navigate = useNavigate();
 
@@ -33,25 +33,18 @@ export default function AdminSchemes() {
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate("/", { replace: true });
-    } catch (err) {
-      console.error("Logout failed:", err);
-    }
-  };
-
   // New Scheme Form Modal state
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     shortDescription: "",
-    category: "STUDENT",
+    category: (user?.department && user.department !== "ALL") ? user.department : "STUDENT",
     state: "All-India",
     benefitSummary: "",
     eligibilitySummary: "",
     officialSourceUrl: "",
+    officialApplicationUrl: "",
+    gazetteNumber: "",
     sourceName: "",
     sourceType: "CENTRAL_GOVERNMENT",
   });
@@ -118,11 +111,13 @@ export default function AdminSchemes() {
       setFormData({
         name: "",
         shortDescription: "",
-        category: "STUDENT",
+        category: (user?.department && user.department !== "ALL") ? user.department : "KISAN",
         state: "All-India",
         benefitSummary: "",
         eligibilitySummary: "",
         officialSourceUrl: "",
+        officialApplicationUrl: "",
+        gazetteNumber: "",
         sourceName: "",
         sourceType: "CENTRAL_GOVERNMENT",
       });
@@ -201,13 +196,31 @@ export default function AdminSchemes() {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 space-y-6">
         
         {/* Page Banner */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-2xl border border-[#e9e1f5] shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-3xl border border-[#e9e1f5] shadow-xs">
           <div>
-            <h1 className="text-2xl font-extrabold text-[#0f172a] tracking-tight">
-              Scheme Verification &amp; Catalog Control
+            <div className="flex items-center space-x-2 mb-1">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#2b0f4c] text-white">
+                {user?.role === "category_admin"
+                  ? `${user?.department} Jurisdiction`
+                  : user?.role === "chief_officer"
+                  ? "Chief Officer Audit"
+                  : "Super Admin"}
+              </span>
+              <span className="text-xs text-purple-700 font-bold">
+                {user?.role === "category_admin"
+                  ? `Officer: ${user?.name || "Nodal Officer"}`
+                  : "Statutory Scheme Registry"}
+              </span>
+            </div>
+            <h1 className="text-2xl font-black text-[#0f172a] tracking-tight">
+              {user?.role === "category_admin"
+                ? `${user?.department} Schemes & Gazette Registry`
+                : "Central Schemes & Gazette Compliance Directory"}
             </h1>
             <p className="text-xs sm:text-sm text-[#4b5563] mt-1">
-              Only verified records are accessible to citizens. DRAFT and ARCHIVED schemes are quarantined.
+              {user?.role === "category_admin"
+                ? `Authorized to add, edit, and verify welfare schemes with mandatory Gazette circular references for ${user?.department}.`
+                : "Cross-department schemes oversight, official circular verification, and citizen fraud grievance protection."}
             </p>
           </div>
 
@@ -231,7 +244,7 @@ export default function AdminSchemes() {
 
             <button
               onClick={() => setShowAddModal(true)}
-              className="inline-flex items-center px-3.5 py-2 rounded-xl text-xs font-bold bg-[#ea580c] hover:bg-[#c2410c] text-white shadow-xs transition-colors"
+              className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-black bg-gradient-to-r from-[#ea580c] to-[#f97316] hover:opacity-95 text-white shadow-xs transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4 mr-1" />
               Add Scheme
@@ -269,10 +282,10 @@ export default function AdminSchemes() {
               <table className="min-w-full divide-y divide-slate-200 text-xs text-left">
                 <thead className="bg-slate-50 text-slate-700 font-bold uppercase tracking-wider">
                   <tr>
-                    <th className="px-5 py-3.5">Scheme Name</th>
-                    <th className="px-4 py-3.5">Category</th>
-                    <th className="px-4 py-3.5">Authority</th>
-                    <th className="px-4 py-3.5">Status</th>
+                    <th className="px-5 py-3.5">Scheme & Description</th>
+                    <th className="px-4 py-3.5">Department</th>
+                    <th className="px-4 py-3.5">Gazette & Portal URL</th>
+                    <th className="px-4 py-3.5">Status & Integrity</th>
                     <th className="px-5 py-3.5 text-right">Actions</th>
                   </tr>
                 </thead>
@@ -284,15 +297,40 @@ export default function AdminSchemes() {
                         <div className="text-slate-500 text-[11px] line-clamp-1">{s.shortDescription}</div>
                       </td>
                       <td className="px-4 py-4">
-                        <span className="font-semibold text-slate-700">{s.category}</span>
+                        <span className="font-bold text-purple-900 bg-purple-50 px-2 py-0.5 rounded-md border border-purple-200">{s.category}</span>
+                        <div className="text-[10px] text-slate-500 mt-0.5 truncate max-w-[140px]">{s.sourceName}</div>
                       </td>
-                      <td className="px-4 py-4">
-                        <span className="text-slate-600 truncate max-w-[180px] block">{s.sourceName}</span>
+                      <td className="px-4 py-4 space-y-1">
+                        <div className="text-[11px] font-mono text-slate-800">
+                          {s.gazetteNumber ? (
+                            <span className="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200">
+                              📜 {s.gazetteNumber}
+                            </span>
+                          ) : (
+                            <span className="text-slate-400 italic">No Gazette Ref</span>
+                          )}
+                        </div>
+                        {s.officialApplicationUrl && (
+                          <a
+                            href={s.officialApplicationUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[11px] font-bold text-[#591d8f] hover:underline inline-flex items-center"
+                          >
+                            <span>Official Portal (.gov.in)</span>
+                            <ExternalLink className="w-3 h-3 ml-1" />
+                          </a>
+                        )}
                       </td>
-                      <td className="px-4 py-4">
+                      <td className="px-4 py-4 space-y-1">
                         <span className={`inline-block px-2 py-0.5 rounded-full font-bold text-[10px] border ${getStatusBadge(s.verificationStatus)}`}>
                           {s.verificationStatus}
                         </span>
+                        {s.isFlagged && (
+                          <div className="text-[10px] font-black text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">
+                            🚩 Flagged ({s.reportedFraudCount || 1} Reports)
+                          </div>
+                        )}
                       </td>
                       <td className="px-5 py-4 text-right space-x-2">
                         {s.verificationStatus !== "VERIFIED" && (
@@ -370,8 +408,9 @@ export default function AdminSchemes() {
                   <label className="block font-semibold text-slate-700 mb-1">Category *</label>
                   <select
                     value={formData.category}
+                    disabled={user?.role === "category_admin" && Boolean(user?.department && user?.department !== "ALL")}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg text-sm bg-white"
+                    className="w-full px-3 py-2 border rounded-lg text-sm bg-white disabled:bg-slate-100 disabled:text-slate-500 font-bold"
                   >
                     <option value="STUDENT">STUDENT</option>
                     <option value="KISAN">KISAN</option>
@@ -455,6 +494,29 @@ export default function AdminSchemes() {
                   placeholder="https://..."
                   className="w-full px-3 py-2 border rounded-lg text-sm"
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">Gazette Circular / Ref No.</label>
+                  <input
+                    type="text"
+                    value={formData.gazetteNumber}
+                    onChange={(e) => setFormData({ ...formData, gazetteNumber: e.target.value })}
+                    placeholder="e.g. Gazette Ref / S.O. 142(E)"
+                    className="w-full px-3 py-2 border rounded-lg text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">Official Portal (.gov.in)</label>
+                  <input
+                    type="url"
+                    value={formData.officialApplicationUrl}
+                    onChange={(e) => setFormData({ ...formData, officialApplicationUrl: e.target.value })}
+                    placeholder="https://pmkisan.gov.in"
+                    className="w-full px-3 py-2 border rounded-lg text-sm"
+                  />
+                </div>
               </div>
 
               <div className="flex justify-end space-x-3 pt-3 border-t">

@@ -13,6 +13,7 @@ import AdminLayout from "./layouts/AdminLayout";
 // Public Pages
 import HomePage from "./pages/HomePage";
 import BrowseSchemes from "./pages/public/BrowseSchemes";
+import OfficerApply from "./pages/public/OfficerApply";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import NotFoundPage from "./pages/public/NotFoundPage";
@@ -35,6 +36,9 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminSchemes from "./pages/admin/AdminSchemes";
 import AdminNotifications from "./pages/admin/AdminNotifications";
 import NotificationReview from "./pages/admin/NotificationReview";
+import AdminOfficers from "./pages/admin/AdminOfficers";
+import AdminGrievances from "./pages/admin/AdminGrievances";
+import AdminProfile from "./pages/admin/AdminProfile";
 
 function App() {
   return (
@@ -52,6 +56,7 @@ function App() {
                 <Route path="/schemes/:id" element={<SchemeDetails />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/officer/apply" element={<OfficerApply />} />
 
                 {/* Anchor Redirects for landing page sections */}
                 <Route path="/how-it-works" element={<Navigate to="/#how-it-works" replace />} />
@@ -99,8 +104,12 @@ function App() {
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/schemes" element={<AdminSchemes />} />
+                <Route path="/admin/officers" element={<AdminOfficers />} />
+                <Route path="/admin/grievances" element={<AdminGrievances />} />
                 <Route path="/admin/notifications" element={<AdminNotifications />} />
                 <Route path="/admin/notifications/:id" element={<NotificationReview />} />
+                <Route path="/admin/profile" element={<AdminProfile />} />
+                <Route path="/admin/settings" element={<AdminProfile />} />
               </Route>
             </Routes>
           </BrowserRouter>

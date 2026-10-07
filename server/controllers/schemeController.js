@@ -15,7 +15,10 @@ export const getSchemes = async (req, res, next) => {
     const conditions = [];
 
     // Role-based visibility enforcement (anonymous & citizens see strictly VERIFIED)
-    const isAdmin = req.user && req.user.role === "admin";
+    const isAdmin =
+      req.user &&
+      ["admin", "super_admin", "chief_officer", "category_admin"].includes(req.user.role);
+
     if (!isAdmin) {
       conditions.push({ verificationStatus: "VERIFIED" });
     } else if (status && status !== "ALL") {
@@ -25,7 +28,15 @@ export const getSchemes = async (req, res, next) => {
       conditions.push({ verificationStatus: { $ne: "ARCHIVED" } });
     }
 
-    if (category && category !== "ALL") {
+    // If category_admin has a specific assigned department, scope to it
+    if (
+      req.user &&
+      req.user.role === "category_admin" &&
+      req.user.department &&
+      req.user.department !== "ALL"
+    ) {
+      conditions.push({ category: req.user.department.toUpperCase() });
+    } else if (category && category !== "ALL") {
       conditions.push({ category: category.toUpperCase() });
     }
 
@@ -211,6 +222,9 @@ export const createScheme = async (req, res, next) => {
       sourceType,
       deadline,
       hasDeadline: Boolean(hasDeadline),
+      gazetteNumber: req.body.gazetteNumber ? req.body.gazetteNumber.trim() : "",
+      assignedOfficerId: req.user ? req.user._id : null,
+      createdOfficerId: req.user ? req.user._id : null,
       verificationStatus: "DRAFT", // Default to DRAFT until reviewed and verified
       tags: Array.isArray(tags) ? tags : [],
     });

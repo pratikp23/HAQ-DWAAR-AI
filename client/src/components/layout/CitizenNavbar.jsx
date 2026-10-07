@@ -21,6 +21,7 @@ import {
 import { useAuth } from "../../hooks/useAuth";
 import { useLanguage } from "../../context/LanguageContext";
 import { getUnreadCount } from "../../services/notificationApi";
+import { useHaqAI } from "../../context/HaqAIContext";
 import BrandLogo from "./BrandLogo";
 
 /**
@@ -36,6 +37,7 @@ import BrandLogo from "./BrandLogo";
 export default function CitizenNavbar() {
   const { user, logout } = useAuth();
   const { language, setLanguage, t, languages } = useLanguage();
+  const { toggleAssistant } = useHaqAI();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -191,6 +193,24 @@ export default function CitizenNavbar() {
           <div className="hidden lg:flex items-center justify-center gap-1 xl:gap-1.5 shrink min-w-0">
             {citizenNavLinks.map((item, idx) => {
               const IconComp = item.icon;
+              if (item.isVoice) {
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => toggleAssistant && toggleAssistant()}
+                    className={`h-9 px-2 xl:px-3 rounded-xl text-xs xl:text-[13px] transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer ${
+                      item.active
+                        ? "bg-purple-50 text-[#2b0f4c] font-bold border border-purple-200/80 shadow-2xs"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium"
+                    }`}
+                  >
+                    <IconComp className="w-3.5 h-3.5 shrink-0 text-[#ea580c] animate-pulse" />
+                    <span className="hidden xl:inline">{item.label}</span>
+                    <span className="inline xl:hidden">{item.shortLabel}</span>
+                  </button>
+                );
+              }
               return (
                 <Link
                   key={idx}
@@ -201,7 +221,7 @@ export default function CitizenNavbar() {
                       : "text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium"
                   }`}
                 >
-                  <IconComp className={`w-3.5 h-3.5 shrink-0 ${item.isVoice ? "text-[#ea580c]" : ""}`} />
+                  <IconComp className="w-3.5 h-3.5 shrink-0" />
                   <span className="hidden xl:inline">{item.label}</span>
                   <span className="inline xl:hidden">{item.shortLabel}</span>
                 </Link>
@@ -310,6 +330,18 @@ export default function CitizenNavbar() {
 
                   {/* Links Section */}
                   <div className="py-2 bg-white">
+                    {["admin", "super_admin", "chief_officer", "category_admin"].includes(user?.role) && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setProfileDropdownOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-xs sm:text-sm font-bold text-orange-700 bg-orange-50/80 hover:bg-orange-100 transition-colors group border-b border-orange-100"
+                        role="menuitem"
+                      >
+                        <ShieldCheck className="w-4 h-4 text-orange-600 group-hover:scale-105 transition-transform shrink-0" />
+                        <span>Admin / Officer Console</span>
+                      </Link>
+                    )}
+
                     <Link
                       to="/dashboard/benefit-passport"
                       onClick={() => setProfileDropdownOpen(false)}
@@ -404,6 +436,26 @@ export default function CitizenNavbar() {
             <div className="space-y-1">
               {citizenNavLinks.map((item, idx) => {
                 const IconComp = item.icon;
+                if (item.isVoice) {
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setMobileDrawerOpen(false);
+                        if (toggleAssistant) toggleAssistant();
+                      }}
+                      className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-colors cursor-pointer text-left ${
+                        item.active
+                          ? "bg-purple-50 text-[#2b0f4c] font-bold border border-purple-200"
+                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                      }`}
+                    >
+                      <IconComp className="w-4 h-4 text-[#ea580c] animate-pulse" />
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                }
                 return (
                   <Link
                     key={idx}
@@ -415,7 +467,7 @@ export default function CitizenNavbar() {
                         : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                     }`}
                   >
-                    <IconComp className={`w-4 h-4 ${item.isVoice ? "text-[#ea580c]" : ""}`} />
+                    <IconComp className="w-4 h-4 text-slate-600" />
                     <span>{item.label}</span>
                   </Link>
                 );

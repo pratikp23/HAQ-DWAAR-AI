@@ -195,6 +195,29 @@ const schemeSchema = new mongoose.Schema(
       ref: "User",
       default: null,
     },
+    gazetteNumber: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    reportedFraudCount: {
+      type: Number,
+      default: 0,
+    },
+    isFlagged: {
+      type: Boolean,
+      default: false,
+    },
+    assignedOfficerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    createdOfficerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
     tags: [{ type: String, trim: true }],
   },
   {

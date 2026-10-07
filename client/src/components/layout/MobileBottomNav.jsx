@@ -14,6 +14,7 @@ import {
   LogIn
 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
+import { useHaqAI } from "../../context/HaqAIContext";
 
 /**
  * HAQ DWAAR AI — Complete Mobile Bottom Navigation
@@ -41,6 +42,7 @@ import { useAuth } from "../../hooks/useAuth";
 export default function MobileBottomNav() {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
+  const { toggleAssistant } = useHaqAI();
 
   const citizenNavItems = [
     {
@@ -169,16 +171,30 @@ export default function MobileBottomNav() {
                 <div className="absolute inset-0 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-tr from-[#ea580c] to-[#f97316] opacity-35 blur-md animate-pulse pointer-events-none" />
 
                 {/* Raised Circular Orange Mic Button with Clean Centered Microphone */}
-                <Link
-                  to={item.to}
-                  className={`relative w-13 h-13 sm:w-15 sm:h-15 rounded-full flex items-center justify-center bg-gradient-to-tr from-[#ea580c] via-[#f97316] to-[#ea580c] text-white shadow-[0_6px_20px_0_rgba(234,88,12,0.45)] border-3 sm:border-4 border-white active:scale-95 transition-transform duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-300 cursor-pointer ${
-                    item.active ? "ring-4 ring-[#ea580c] ring-offset-2" : ""
-                  }`}
-                  aria-label="MITTRA Voice AI Assistant - Speak your need"
-                  title="Speak your situation in your local language to MITTRA Voice AI"
-                >
-                  <IconComp className="w-6 h-6 sm:w-7 sm:h-7 text-white drop-shadow-xs" />
-                </Link>
+                {isAuthenticated ? (
+                  <button
+                    type="button"
+                    onClick={() => toggleAssistant && toggleAssistant()}
+                    className={`relative w-13 h-13 sm:w-15 sm:h-15 rounded-full flex items-center justify-center bg-gradient-to-tr from-[#ea580c] via-[#f97316] to-[#ea580c] text-white shadow-[0_6px_20px_0_rgba(234,88,12,0.45)] border-3 sm:border-4 border-white active:scale-95 transition-transform duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-300 cursor-pointer ${
+                      item.active ? "ring-4 ring-[#ea580c] ring-offset-2" : ""
+                    }`}
+                    aria-label="MITTRA Voice AI Assistant - Speak your need"
+                    title="Speak your situation in your local language to MITTRA Voice AI"
+                  >
+                    <IconComp className="w-6 h-6 sm:w-7 sm:h-7 text-white drop-shadow-xs" />
+                  </button>
+                ) : (
+                  <Link
+                    to={item.to}
+                    className={`relative w-13 h-13 sm:w-15 sm:h-15 rounded-full flex items-center justify-center bg-gradient-to-tr from-[#ea580c] via-[#f97316] to-[#ea580c] text-white shadow-[0_6px_20px_0_rgba(234,88,12,0.45)] border-3 sm:border-4 border-white active:scale-95 transition-transform duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-300 cursor-pointer ${
+                      item.active ? "ring-4 ring-[#ea580c] ring-offset-2" : ""
+                    }`}
+                    aria-label="MITTRA Voice AI Assistant - Speak your need"
+                    title="Speak your situation in your local language to MITTRA Voice AI"
+                  >
+                    <IconComp className="w-6 h-6 sm:w-7 sm:h-7 text-white drop-shadow-xs" />
+                  </Link>
+                )}
 
                 {/* Clean Label below mic */}
                 <span className="text-[9px] sm:text-[10px] font-black text-[#ea580c] mt-0.5 tracking-tight drop-shadow-2xs">

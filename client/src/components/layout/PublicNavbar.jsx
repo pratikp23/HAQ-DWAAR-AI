@@ -195,6 +195,17 @@ export default function PublicNavbar() {
                 </div>
               )}
             </div>
+            {/* Officer Clearance Portal */}
+            <Link
+              to="/officer/apply"
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${
+                location.pathname === "/officer/apply"
+                  ? "bg-purple-50 text-[#2b0f4c] font-black"
+                  : "text-[#4b5563] hover:text-[#0f172a] hover:bg-[#fbf9fe]"
+              }`}
+            >
+              🏛️ Officer Portal
+            </Link>
           </div>
 
           {/* Desktop Right Controls (Sign In & Get Started) */}
@@ -203,9 +214,9 @@ export default function PublicNavbar() {
               <Button
                 variant="plum"
                 size="sm"
-                to={user?.role === "admin" ? "/admin" : "/dashboard"}
+                to={["admin", "super_admin", "chief_officer", "category_admin"].includes(user?.role) ? "/admin" : "/dashboard"}
               >
-                {user?.role === "admin" ? "Admin Console" : "My Dashboard"}
+                {["admin", "super_admin", "chief_officer", "category_admin"].includes(user?.role) ? "🏛️ Admin Console" : "My Dashboard"}
               </Button>
             ) : (
               <>
@@ -312,10 +323,10 @@ export default function PublicNavbar() {
                 <Button
                   variant="plum"
                   fullWidth
-                  to={user?.role === "admin" ? "/admin" : "/dashboard"}
+                  to={["admin", "super_admin", "chief_officer", "category_admin"].includes(user?.role) ? "/admin" : "/dashboard"}
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {user?.role === "admin" ? "Admin Console" : "My Dashboard"}
+                  {["admin", "super_admin", "chief_officer", "category_admin"].includes(user?.role) ? "🏛️ Admin Console" : "My Dashboard"}
                 </Button>
               ) : (
                 <>

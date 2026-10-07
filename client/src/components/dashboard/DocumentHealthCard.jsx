@@ -182,6 +182,7 @@ export default function DocumentHealthCard({
       {/* 5. Clear Full-Width CTA */}
       <div className="pt-2 border-t border-slate-100">
         <Link
+          id="step-vault-btn"
           to="/dashboard/documents"
           className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold bg-[#2b0f4c] hover:bg-[#1e0a3c] text-white shadow-xs transition-colors cursor-pointer"
         >

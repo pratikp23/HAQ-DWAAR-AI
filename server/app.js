@@ -19,6 +19,9 @@ import applicationTrackerRoutes from "./routes/applicationTrackerRoutes.js";
 import citizenNotificationRoutes from "./routes/citizenNotificationRoutes.js";
 import bhashiniRoutes from "./routes/bhashiniRoutes.js";
 import adminAnalyticsRoutes from "./routes/adminAnalyticsRoutes.js";
+import chiefOfficerRoutes from "./routes/chiefOfficerRoutes.js";
+import schemeReportRoutes from "./routes/schemeReportRoutes.js";
+import mittraRoutes from "./routes/mittraRoutes.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
 const app = express();
@@ -42,9 +45,9 @@ if (process.env.NODE_ENV !== "test") {
   app.use(morgan("dev"));
 }
 
-// Body parsing
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Body parsing (allow base64 image uploads up to 10MB)
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Base API Routes
 app.use("/api", healthRoutes);
@@ -62,6 +65,10 @@ app.use("/api/applications", applicationTrackerRoutes);
 app.use("/api/notifications", citizenNotificationRoutes);
 app.use("/api/bhashini", bhashiniRoutes);
 app.use("/api/admin/analytics", adminAnalyticsRoutes);
+app.use("/api/officer", chiefOfficerRoutes);
+app.use("/api/chief", chiefOfficerRoutes);
+app.use("/api/reports", schemeReportRoutes);
+app.use("/api/mittra", mittraRoutes);
 
 // Catch-all 404 handler
 app.use(notFoundHandler);

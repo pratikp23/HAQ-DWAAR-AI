@@ -334,6 +334,7 @@ export default function BenefitPassport() {
             <div className="shrink-0 flex items-center gap-3">
               <button
                 type="button"
+                data-haq-target="passport-save"
                 onClick={handleSubmit}
                 disabled={saving}
                 className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-[#ea580c] hover:bg-[#c2410c] shadow-md disabled:opacity-50 transition-all cursor-pointer"
@@ -374,7 +375,7 @@ export default function BenefitPassport() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Section 1: Personal Details */}
-          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+          <div data-haq-target="passport-personal" className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center space-x-2.5 pb-2 border-b border-slate-100">
               <User className="w-5 h-5 text-blue-700" />
               <h2 className="font-bold text-slate-900 text-base">Section 1 — Personal Information</h2>
@@ -387,6 +388,7 @@ export default function BenefitPassport() {
                   type="number"
                   min="0"
                   max="125"
+                  data-haq-field="age"
                   value={personal.age}
                   onChange={(e) => setPersonal({ ...personal, age: e.target.value })}
                   placeholder="e.g. 20"
@@ -397,6 +399,7 @@ export default function BenefitPassport() {
               <div>
                 <label className="block font-semibold text-slate-700 mb-1">Gender</label>
                 <select
+                  data-haq-field="gender"
                   value={personal.gender}
                   onChange={(e) => setPersonal({ ...personal, gender: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white"
@@ -411,6 +414,7 @@ export default function BenefitPassport() {
               <div>
                 <label className="block font-semibold text-slate-700 mb-1">Social Category</label>
                 <select
+                  data-haq-field="category"
                   value={personal.category}
                   onChange={(e) => setPersonal({ ...personal, category: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white"
@@ -426,6 +430,7 @@ export default function BenefitPassport() {
                 <label className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
+                    data-haq-field="differentlyAbled"
                     checked={personal.differentlyAbled}
                     onChange={(e) => setPersonal({ ...personal, differentlyAbled: e.target.checked })}
                     className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
@@ -437,7 +442,7 @@ export default function BenefitPassport() {
           </div>
 
           {/* Section 2: Location */}
-          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+          <div data-haq-target="passport-location" className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center space-x-2.5 pb-2 border-b border-slate-100">
               <MapPin className="w-5 h-5 text-indigo-700" />
               <h2 className="font-bold text-slate-900 text-base">Section 2 — Location Details</h2>
@@ -448,6 +453,7 @@ export default function BenefitPassport() {
                 <label className="block font-semibold text-slate-700 mb-1">State</label>
                 <input
                   type="text"
+                  data-haq-field="state"
                   value={location.state}
                   onChange={(e) => setLocation({ ...location, state: e.target.value })}
                   placeholder="e.g. Madhya Pradesh"
@@ -459,6 +465,7 @@ export default function BenefitPassport() {
                 <label className="block font-semibold text-slate-700 mb-1">District</label>
                 <input
                   type="text"
+                  data-haq-field="district"
                   value={location.district}
                   onChange={(e) => setLocation({ ...location, district: e.target.value })}
                   placeholder="e.g. Bhopal"
@@ -554,7 +561,7 @@ export default function BenefitPassport() {
           </div>
 
           {/* Section 4: Occupation & Income */}
-          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+          <div data-haq-target="passport-economic" className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center space-x-2.5 pb-2 border-b border-slate-100">
               <Briefcase className="w-5 h-5 text-amber-700" />
               <h2 className="font-bold text-slate-900 text-base">Section 4 — Occupation &amp; Income</h2>
@@ -564,6 +571,7 @@ export default function BenefitPassport() {
               <div>
                 <label className="block font-semibold text-slate-700 mb-1">Primary Occupation</label>
                 <select
+                  data-haq-field="occupation"
                   value={occupation.occupationType}
                   onChange={(e) => setOccupation({ ...occupation, occupationType: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 bg-white"
@@ -594,6 +602,7 @@ export default function BenefitPassport() {
                 <input
                   type="number"
                   min="0"
+                  data-haq-field="income"
                   value={occupation.annualIncome}
                   onChange={(e) => setOccupation({ ...occupation, annualIncome: e.target.value })}
                   placeholder="e.g. 150000"

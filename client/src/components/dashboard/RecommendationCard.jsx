@@ -87,6 +87,7 @@ export default function RecommendationCard({
   scheme,
   onTrack,
   isTracked = false,
+  isFirstCard = false,
 }) {
   const [imageError, setImageError] = useState(false);
 
@@ -274,6 +275,7 @@ export default function RecommendationCard({
         <div className="flex items-center gap-2 flex-1 min-w-0">
           {schemeId && (
             <Link
+              id={isFirstCard ? "step-scheme-apply-btn" : undefined}
               to={hasBlockers ? "/dashboard/documents" : `/dashboard/readiness/${schemeId}`}
               className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold text-center shadow-xs transition cursor-pointer truncate ${
                 hasBlockers

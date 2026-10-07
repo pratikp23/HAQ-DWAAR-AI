@@ -299,6 +299,7 @@ export default function Documents() {
             {/* Primary Action Buttons */}
             <div className="flex flex-wrap items-center gap-3 shrink-0">
               <button
+                data-haq-target="open-document-upload"
                 onClick={() => setShowUploadForm(!showUploadForm)}
                 className="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition-all"
               >
@@ -309,6 +310,7 @@ export default function Documents() {
               </button>
 
               <button
+                data-haq-target="open-digilocker-import"
                 onClick={handleOpenDigiLocker}
                 className="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-bold bg-[#ea580c] hover:bg-[#c2410c] text-white shadow-md transition-all"
               >
@@ -348,7 +350,7 @@ export default function Documents() {
 
       {/* Manual Upload Section (Collapsible) */}
       {showUploadForm && (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-4">
+        <div data-haq-target="document-upload-dropzone" className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-slate-100">
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
               <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -425,7 +427,7 @@ export default function Documents() {
       )}
 
       {/* Document Vault Gallery */}
-      <div className="space-y-4">
+      <div data-haq-target="document-vault-grid" className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-bold text-slate-900">Your Document Vault</h2>

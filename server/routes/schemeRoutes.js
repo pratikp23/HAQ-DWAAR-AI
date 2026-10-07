@@ -6,8 +6,9 @@ import {
   updateScheme,
   archiveScheme,
 } from "../controllers/schemeController.js";
+import { reportSchemeIssue } from "../controllers/schemeReportController.js";
 import { requireAuth, optionalAuth } from "../middleware/authMiddleware.js";
-import { requireRole } from "../middleware/roleMiddleware.js";
+import { requireRole, requireDepartmentScope } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
@@ -15,9 +16,30 @@ const router = express.Router();
 router.get("/", optionalAuth, getSchemes);
 router.get("/:id", optionalAuth, getSchemeById);
 
-// Admin role strictly required
-router.post("/", requireAuth, requireRole("admin"), createScheme);
-router.put("/:id", requireAuth, requireRole("admin"), updateScheme);
-router.delete("/:id", requireAuth, requireRole("admin"), archiveScheme);
+// Citizen grievance & fraud reporting for a scheme
+router.post("/:id/report", optionalAuth, reportSchemeIssue);
+
+// Admin scheme operations with scoped permissions
+router.post(
+  "/",
+  requireAuth,
+  requireRole("admin", "super_admin", "category_admin"),
+  requireDepartmentScope(),
+  createScheme
+);
+router.put(
+  "/:id",
+  requireAuth,
+  requireRole("admin", "super_admin", "category_admin"),
+  requireDepartmentScope(),
+  updateScheme
+);
+router.delete(
+  "/:id",
+  requireAuth,
+  requireRole("admin", "super_admin", "category_admin"),
+  requireDepartmentScope(),
+  archiveScheme
+);
 
 export default router;

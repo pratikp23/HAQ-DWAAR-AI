@@ -184,7 +184,7 @@ export default function Recommendations() {
 
         {/* Recommendations List */}
         {!loading && !error && filteredRecs.length > 0 && (
-          <div className="space-y-4">
+          <div data-haq-target="scheme-recommendation-list" className="space-y-4">
             {filteredRecs.map((rec) => {
               const isExpanded = expandedSchemeId === rec.schemeId;
               const isMatched = rec.classification === "MATCHED";
