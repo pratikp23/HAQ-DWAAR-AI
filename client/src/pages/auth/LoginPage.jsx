@@ -15,12 +15,81 @@ import {
   Check,
   Layers,
   ExternalLink,
-  Fingerprint
+  Fingerprint,
+  Building2,
+  BadgeCheck
 } from "lucide-react";
 import BrandLogo from "../../components/layout/BrandLogo";
 
+const DEPARTMENTS = [
+  {
+    id: "KISAN",
+    label: "🌾 Agriculture (KISAN)",
+    ministry: "Dept of Agriculture & Farmers Welfare",
+    officer: "Sunil Verma (Agriculture Nodal)",
+    email: "kisan.admin@gov.in",
+    pass: "Kisan@123",
+    color: "emerald"
+  },
+  {
+    id: "STUDENT",
+    label: "🎓 Education (STUDENT)",
+    ministry: "Ministry of Education",
+    officer: "Dr. Ananya Roy (Education Nodal)",
+    email: "student.admin@gov.in",
+    pass: "Student@123",
+    color: "blue"
+  },
+  {
+    id: "HEALTH",
+    label: "🏥 Health (HEALTH)",
+    ministry: "Ministry of Health & Family Welfare",
+    officer: "Dr. Vikram Joshi (Health Nodal)",
+    email: "health.admin@gov.in",
+    pass: "Health@123",
+    color: "rose"
+  },
+  {
+    id: "BUSINESS",
+    label: "💼 MSME (BUSINESS)",
+    ministry: "Ministry of MSME & Enterprise",
+    officer: "Rohan Singhal (MSME Nodal)",
+    email: "business.admin@gov.in",
+    pass: "Business@123",
+    color: "amber"
+  },
+  {
+    id: "EMPLOYMENT",
+    label: "👷 Labour (EMPLOYMENT)",
+    ministry: "Ministry of Labour & Employment",
+    officer: "Meenakshi Sundaram (Labour Nodal)",
+    email: "employment.admin@gov.in",
+    pass: "Labour@123",
+    color: "cyan"
+  },
+  {
+    id: "CHIEF",
+    label: "⚖️ Chief Govt Officer (IAS)",
+    ministry: "National Verification Authority",
+    officer: "Dr. Rajeshwar Sharma (IAS)",
+    email: "chief.officer@nic.in",
+    pass: "Officer@123",
+    color: "purple"
+  },
+  {
+    id: "SUPER",
+    label: "🛡️ Platform Super Admin",
+    ministry: "Platform Administration",
+    officer: "Platform Super Administrator",
+    email: "admin@haqdwaar.gov.in",
+    pass: "Admin@123",
+    color: "orange"
+  }
+];
+
 export default function LoginPage() {
   const [selectedRoleTab, setSelectedRoleTab] = useState("citizen"); // "citizen" | "admin"
+  const [selectedDepartment, setSelectedDepartment] = useState("KISAN");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState("");
@@ -38,13 +107,23 @@ export default function LoginPage() {
     setFormError("");
     setInfoMessage("");
     if (role === "admin") {
-      setEmail("admin@haqdwaar.gov.in");
-      setPassword("Admin@123");
+      const defaultDept = DEPARTMENTS[0];
+      setSelectedDepartment(defaultDept.id);
+      setEmail(defaultDept.email);
+      setPassword(defaultDept.pass);
     } else {
-      if (email === "admin@haqdwaar.gov.in") {
-        setEmail("");
-        setPassword("");
-      }
+      setEmail("");
+      setPassword("");
+    }
+  };
+
+  const handleSelectDepartment = (deptId) => {
+    setSelectedDepartment(deptId);
+    const found = DEPARTMENTS.find((d) => d.id === deptId);
+    if (found) {
+      setEmail(found.email);
+      setPassword(found.pass);
+      setFormError("");
     }
   };
 
@@ -198,56 +277,58 @@ export default function LoginPage() {
 
             {/* Multi-Tier Governance Credentials Helper */}
             {selectedRoleTab === "admin" && (
-              <div className="p-3 bg-purple-50/90 rounded-2xl border border-purple-200 text-xs space-y-2">
-                <div className="flex items-center justify-between font-bold text-[#2b0f4c] text-[11px]">
+              <div className="p-4 bg-purple-50/90 rounded-2xl border border-purple-200 text-xs space-y-3">
+                <div className="flex items-center justify-between font-bold text-[#2b0f4c] text-xs">
                   <span className="flex items-center space-x-1.5">
-                    <KeyRound className="w-3.5 h-3.5 text-[#591d8f]" />
-                    <span>Select Administrative Tier to Test:</span>
+                    <Building2 className="w-4 h-4 text-[#591d8f]" />
+                    <span>Choose Administrative Department / Ministry:</span>
+                  </span>
+                  <span className="text-[10px] bg-purple-200/80 text-purple-900 px-2 py-0.5 rounded-full font-bold">
+                    Official Nodal
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 text-[10px]">
-                  {/* 1. Chief Govt Officer */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEmail("chief.officer@nic.in");
-                      setPassword("Officer@123");
-                    }}
-                    className="p-2 rounded-xl bg-white border border-purple-200 text-left hover:border-purple-500 hover:bg-purple-100/50 transition cursor-pointer"
+                {/* Department Dropdown Selector */}
+                <div>
+                  <select
+                    value={selectedDepartment}
+                    onChange={(e) => handleSelectDepartment(e.target.value)}
+                    className="w-full py-2.5 px-3 rounded-xl border border-purple-300 bg-white text-slate-900 font-bold text-xs focus:ring-2 focus:ring-[#591d8f] focus:outline-none shadow-2xs cursor-pointer"
                   >
-                    <div className="font-black text-[#2b0f4c] truncate">Govt Chief Officer</div>
-                    <div className="text-slate-500 truncate">Vets & Approves Admins</div>
-                  </button>
-
-                  {/* 2. Department Admin */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEmail("kisan.admin@gov.in");
-                      setPassword("Kisan@123");
-                    }}
-                    className="p-2 rounded-xl bg-white border border-purple-200 text-left hover:border-purple-500 hover:bg-purple-100/50 transition cursor-pointer"
-                  >
-                    <div className="font-black text-emerald-800 truncate">Dept Admin (KISAN)</div>
-                    <div className="text-slate-500 truncate">Manages Agri Schemes</div>
-                  </button>
-
-                  {/* 3. Super Admin */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEmail("admin@haqdwaar.gov.in");
-                      setPassword("Admin@123");
-                    }}
-                    className="p-2 rounded-xl bg-white border border-purple-200 text-left hover:border-purple-500 hover:bg-purple-100/50 transition cursor-pointer"
-                  >
-                    <div className="font-black text-orange-800 truncate">Super Admin</div>
-                    <div className="text-slate-500 truncate">Platform Monitoring</div>
-                  </button>
+                    {DEPARTMENTS.map((dept) => (
+                      <option key={dept.id} value={dept.id}>
+                        {dept.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
+
+                {/* Selected Officer Card Banner */}
+                {(() => {
+                  const currentDept = DEPARTMENTS.find((d) => d.id === selectedDepartment);
+                  if (!currentDept) return null;
+                  return (
+                    <div className="p-2.5 bg-white rounded-xl border border-purple-200 flex items-center justify-between shadow-2xs">
+                      <div className="space-y-0.5">
+                        <div className="font-black text-[#2b0f4c] text-xs flex items-center gap-1.5">
+                          <BadgeCheck className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>{currentDept.officer}</span>
+                        </div>
+                        <div className="text-[10px] text-slate-500 font-medium">
+                          {currentDept.ministry}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-purple-100 text-[#591d8f]">
+                          Auto-Filled
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 <div className="p-2 bg-white/80 rounded-xl text-[10px] text-purple-900 border border-purple-100 flex items-center justify-between">
-                  <span>💡 <strong>Approved Officer?</strong> Enter your registered email (e.g. pratikpathak2308@gmail.com) and password below.</span>
+                  <span>💡 <strong>Custom Officer?</strong> You can also type your own registered .gov.in email & password below.</span>
                 </div>
               </div>
             )}

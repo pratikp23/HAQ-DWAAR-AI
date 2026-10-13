@@ -78,6 +78,94 @@ async function seedGovernanceUsers() {
     );
     console.log("✓ Category Admin (KISAN) created: kisan.admin@gov.in (Password: Kisan@123)");
 
+    // 4. Pre-Verified Department Admin (Education / STUDENT)
+    const studentEmail = "student.admin@gov.in";
+    const studentPasswordHash = await bcrypt.hash("Student@123", 10);
+    await User.findOneAndUpdate(
+      { email: studentEmail },
+      {
+        $set: {
+          name: "Dr. Ananya Roy (Education Nodal)",
+          email: studentEmail,
+          passwordHash: studentPasswordHash,
+          role: "category_admin",
+          department: "STUDENT",
+          designation: "Joint Director, Ministry of Education",
+          govtIdNumber: "EDU/DL/2024/9142",
+          officerStatus: "ACTIVE_VERIFIED",
+          verifiedByChief: chiefUser._id,
+        },
+      },
+      { upsert: true, new: true }
+    );
+    console.log("✓ Category Admin (STUDENT) created: student.admin@gov.in (Password: Student@123)");
+
+    // 5. Pre-Verified Department Admin (Health / HEALTH)
+    const healthEmail = "health.admin@gov.in";
+    const healthPasswordHash = await bcrypt.hash("Health@123", 10);
+    await User.findOneAndUpdate(
+      { email: healthEmail },
+      {
+        $set: {
+          name: "Dr. Vikram Joshi (Health Nodal)",
+          email: healthEmail,
+          passwordHash: healthPasswordHash,
+          role: "category_admin",
+          department: "HEALTH",
+          designation: "Director, Ministry of Health & Family Welfare",
+          govtIdNumber: "HLTH/GOI/2024/3301",
+          officerStatus: "ACTIVE_VERIFIED",
+          verifiedByChief: chiefUser._id,
+        },
+      },
+      { upsert: true, new: true }
+    );
+    console.log("✓ Category Admin (HEALTH) created: health.admin@gov.in (Password: Health@123)");
+
+    // 6. Pre-Verified Department Admin (MSME / BUSINESS)
+    const businessEmail = "business.admin@gov.in";
+    const businessPasswordHash = await bcrypt.hash("Business@123", 10);
+    await User.findOneAndUpdate(
+      { email: businessEmail },
+      {
+        $set: {
+          name: "Rohan Singhal (MSME Nodal)",
+          email: businessEmail,
+          passwordHash: businessPasswordHash,
+          role: "category_admin",
+          department: "BUSINESS",
+          designation: "Deputy Secretary, Ministry of MSME",
+          govtIdNumber: "MSME/ND/2024/8812",
+          officerStatus: "ACTIVE_VERIFIED",
+          verifiedByChief: chiefUser._id,
+        },
+      },
+      { upsert: true, new: true }
+    );
+    console.log("✓ Category Admin (BUSINESS) created: business.admin@gov.in (Password: Business@123)");
+
+    // 7. Pre-Verified Department Admin (Labour / EMPLOYMENT)
+    const labourEmail = "employment.admin@gov.in";
+    const labourPasswordHash = await bcrypt.hash("Labour@123", 10);
+    await User.findOneAndUpdate(
+      { email: labourEmail },
+      {
+        $set: {
+          name: "Meenakshi Sundaram (Labour Nodal)",
+          email: labourEmail,
+          passwordHash: labourPasswordHash,
+          role: "category_admin",
+          department: "EMPLOYMENT",
+          designation: "Regional Commissioner, Ministry of Labour",
+          govtIdNumber: "LAB/TN/2024/7740",
+          officerStatus: "ACTIVE_VERIFIED",
+          verifiedByChief: chiefUser._id,
+        },
+      },
+      { upsert: true, new: true }
+    );
+    console.log("✓ Category Admin (EMPLOYMENT) created: employment.admin@gov.in (Password: Labour@123)");
+
     console.log("========================================================");
     console.log("  All Governance Accounts Successfully Synced!");
     console.log("========================================================");
