@@ -277,33 +277,86 @@ export default function LoginPage() {
 
             {/* Multi-Tier Governance Credentials Helper */}
             {selectedRoleTab === "admin" && (
-              <div className="p-4 bg-purple-50/90 rounded-2xl border border-purple-200 text-xs space-y-3">
+              <div className="p-4 bg-purple-50/90 rounded-2xl border border-purple-200 text-xs space-y-3.5">
                 <div className="flex items-center justify-between font-bold text-[#2b0f4c] text-xs">
                   <span className="flex items-center space-x-1.5">
                     <Building2 className="w-4 h-4 text-[#591d8f]" />
-                    <span>Choose Administrative Department / Ministry:</span>
+                    <span>Select Administrative Role & Ministry:</span>
                   </span>
-                  <span className="text-[10px] bg-purple-200/80 text-purple-900 px-2 py-0.5 rounded-full font-bold">
-                    Official Nodal
+                  <span className="text-[10px] bg-purple-200 text-purple-900 px-2 py-0.5 rounded-full font-bold">
+                    Multi-Tier Governance
                   </span>
                 </div>
 
-                {/* Department Dropdown Selector */}
-                <div>
-                  <select
-                    value={selectedDepartment}
-                    onChange={(e) => handleSelectDepartment(e.target.value)}
-                    className="w-full py-2.5 px-3 rounded-xl border border-purple-300 bg-white text-slate-900 font-bold text-xs focus:ring-2 focus:ring-[#591d8f] focus:outline-none shadow-2xs cursor-pointer"
+                {/* Tier Selection Pills */}
+                <div className="grid grid-cols-2 gap-2 text-[11px] font-bold">
+                  <button
+                    type="button"
+                    onClick={() => handleSelectDepartment("CHIEF")}
+                    className={`p-2 rounded-xl border text-left transition flex items-center justify-between cursor-pointer ${
+                      selectedDepartment === "CHIEF"
+                        ? "bg-[#2b0f4c] text-white border-[#2b0f4c] shadow-xs"
+                        : "bg-white text-slate-700 border-purple-200 hover:border-purple-400"
+                    }`}
                   >
-                    {DEPARTMENTS.map((dept) => (
-                      <option key={dept.id} value={dept.id}>
-                        {dept.label}
-                      </option>
-                    ))}
-                  </select>
+                    <div>
+                      <div className="font-black">⚖️ Chief Govt Officer (IAS)</div>
+                      <div className={`text-[10px] ${selectedDepartment === "CHIEF" ? "text-purple-200" : "text-slate-500"}`}>
+                        Statutory Verification Authority
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSelectDepartment("SUPER")}
+                    className={`p-2 rounded-xl border text-left transition flex items-center justify-between cursor-pointer ${
+                      selectedDepartment === "SUPER"
+                        ? "bg-[#2b0f4c] text-white border-[#2b0f4c] shadow-xs"
+                        : "bg-white text-slate-700 border-purple-200 hover:border-purple-400"
+                    }`}
+                  >
+                    <div>
+                      <div className="font-black">🛡️ Platform Super Admin</div>
+                      <div className={`text-[10px] ${selectedDepartment === "SUPER" ? "text-purple-200" : "text-slate-500"}`}>
+                        Full System Architecture
+                      </div>
+                    </div>
+                  </button>
                 </div>
 
-                {/* Selected Officer Card Banner */}
+                {/* Ministry Department Nodal Admins Section */}
+                <div className="space-y-1.5 pt-1">
+                  <div className="text-[11px] font-black text-slate-700 uppercase tracking-wider flex items-center justify-between">
+                    <span>Department Ministries (Nodal Officers):</span>
+                    <span className="text-[10px] font-normal text-purple-700">Click to switch ministry</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-[10px]">
+                    {DEPARTMENTS.filter(d => !["CHIEF", "SUPER"].includes(d.id)).map((dept) => {
+                      const isSelected = selectedDepartment === dept.id;
+                      return (
+                        <button
+                          key={dept.id}
+                          type="button"
+                          onClick={() => handleSelectDepartment(dept.id)}
+                          className={`p-2 rounded-xl border text-left transition cursor-pointer flex flex-col justify-between ${
+                            isSelected
+                              ? "bg-purple-900 text-white border-purple-950 shadow-xs"
+                              : "bg-white text-slate-800 border-purple-200 hover:border-purple-400 hover:bg-purple-100/40"
+                          }`}
+                        >
+                          <div className="font-black truncate">{dept.label}</div>
+                          <div className={`text-[9px] truncate mt-0.5 ${isSelected ? "text-purple-200" : "text-slate-500"}`}>
+                            {dept.officer.split(" (")[0]}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Selected Officer Summary Card */}
                 {(() => {
                   const currentDept = DEPARTMENTS.find((d) => d.id === selectedDepartment);
                   if (!currentDept) return null;
@@ -311,16 +364,16 @@ export default function LoginPage() {
                     <div className="p-2.5 bg-white rounded-xl border border-purple-200 flex items-center justify-between shadow-2xs">
                       <div className="space-y-0.5">
                         <div className="font-black text-[#2b0f4c] text-xs flex items-center gap-1.5">
-                          <BadgeCheck className="w-3.5 h-3.5 text-emerald-600" />
+                          <BadgeCheck className="w-4 h-4 text-emerald-600 shrink-0" />
                           <span>{currentDept.officer}</span>
                         </div>
                         <div className="text-[10px] text-slate-500 font-medium">
-                          {currentDept.ministry}
+                          {currentDept.ministry} • <span className="font-mono text-purple-700">{currentDept.email}</span>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-purple-100 text-[#591d8f]">
-                          Auto-Filled
+                      <div className="text-right shrink-0 ml-2">
+                        <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                          Active Verified
                         </span>
                       </div>
                     </div>
@@ -328,7 +381,7 @@ export default function LoginPage() {
                 })()}
 
                 <div className="p-2 bg-white/80 rounded-xl text-[10px] text-purple-900 border border-purple-100 flex items-center justify-between">
-                  <span>💡 <strong>Custom Officer?</strong> You can also type your own registered .gov.in email & password below.</span>
+                  <span>💡 <strong>Custom Registered Officer?</strong> You can also type your registered email & password below.</span>
                 </div>
               </div>
             )}
