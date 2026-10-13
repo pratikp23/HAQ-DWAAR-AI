@@ -23,6 +23,15 @@ import {
 import { applyOfficerLicense } from "../../services/officerApi";
 import { SAMPLE_GOVT_DOCS } from "../../utils/govtDocumentSamples";
 
+const OFFICER_MINISTRIES = [
+  { id: "KISAN", label: "🌾 Agriculture (KISAN)", ministry: "Dept of Agriculture & Farmers Welfare", code: "KISAN", sampleDesignation: "Deputy Director (Agri Schemes)", sampleLoc: "Krishi Bhawan, New Delhi" },
+  { id: "STUDENT", label: "🎓 Education (STUDENT)", ministry: "Ministry of Education", code: "STUDENT", sampleDesignation: "Joint Director (Scholarships)", sampleLoc: "Shastri Bhawan, New Delhi" },
+  { id: "HEALTH", label: "🏥 Health (HEALTH)", ministry: "Ministry of Health & Family Welfare", code: "HEALTH", sampleDesignation: "Nodal Officer (PM-JAY)", sampleLoc: "Nirman Bhawan, New Delhi" },
+  { id: "BUSINESS", label: "💼 MSME (BUSINESS)", ministry: "Ministry of MSME & Commercial", code: "BUSINESS", sampleDesignation: "Assistant Director (Credit)", sampleLoc: "Udyog Bhawan, New Delhi" },
+  { id: "EMPLOYMENT", label: "👷 Labour (EMPLOYMENT)", ministry: "Ministry of Labour & Employment", code: "EMPLOYMENT", sampleDesignation: "Regional Welfare Commissioner", sampleLoc: "Shram Shakti Bhawan, New Delhi" },
+  { id: "GENERAL", label: "🏛️ Social Justice (GENERAL)", ministry: "Ministry of Social Justice", code: "GENERAL", sampleDesignation: "Nodal Welfare Officer", sampleLoc: "Antyodaya Bhawan, New Delhi" },
+];
+
 export default function RegisterPage() {
   const [activeTab, setActiveTab] = useState("citizen"); // "citizen" | "officer"
 
@@ -56,6 +65,26 @@ export default function RegisterPage() {
 
   const { register, clearError } = useAuth();
   const navigate = useNavigate();
+
+  const handleQuickFillOfficerDemo = (ministryId) => {
+    const selected = OFFICER_MINISTRIES.find((m) => m.id === ministryId) || OFFICER_MINISTRIES[0];
+    setOfficerData({
+      applicantName: "Dr. Sandeep Deshmukh",
+      email: `sandeep.deshmukh.${selected.code.toLowerCase()}@nic.in`,
+      phone: "9876543210",
+      department: selected.id,
+      designation: selected.sampleDesignation,
+      officeLocation: selected.sampleLoc,
+      govtIdType: "EMPLOYEE_ID",
+      govtIdNumber: `GOI/${selected.code}/2026/${Math.floor(1000 + Math.random() * 9000)}`,
+      justification: `Designated as Category Admin & Nodal Officer for scheme verification, citizen readiness audits, and grievance dispatch under ${selected.ministry}.`,
+      employeeIdCardUrl: SAMPLE_GOVT_DOCS.employeeIdCardUrl,
+      authorizationLetterUrl: SAMPLE_GOVT_DOCS.authorizationLetterUrl,
+      postingOrderUrl: SAMPLE_GOVT_DOCS.postingOrderUrl,
+      specimenSignatureUrl: SAMPLE_GOVT_DOCS.specimenSignatureUrl,
+    });
+    setOfficerError("");
+  };
 
   const handleCitizenSubmit = async (e) => {
     e.preventDefault();
@@ -450,7 +479,7 @@ export default function RegisterPage() {
                     </div>
                   </div>
                 ) : (
-                  <form className="space-y-3" onSubmit={handleOfficerSubmit}>
+                  <form className="space-y-4" onSubmit={handleOfficerSubmit}>
                     {officerError && (
                       <div className="p-3 bg-red-50 border border-red-200 rounded-2xl flex items-start space-x-2 text-red-800 text-xs">
                         <AlertCircle className="w-4 h-4 text-red-600 mt-0.5 shrink-0" />
@@ -458,8 +487,64 @@ export default function RegisterPage() {
                       </div>
                     )}
 
-                    <div className="p-3 bg-amber-50/80 border border-amber-200 rounded-2xl text-[11px] text-amber-900 leading-relaxed">
-                      <strong>⚠️ Statutory Requirement:</strong> Department Admin rights are issued solely after verification by the Higher-Level Govt Officer. Public registration as admin is prohibited.
+                    {/* Quick Demo Fill & Statutory Guidance Header */}
+                    <div className="p-3.5 bg-gradient-to-r from-purple-50 via-purple-100/50 to-amber-50 rounded-2xl border border-purple-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                      <div className="space-y-0.5">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-purple-900 flex items-center gap-1.5">
+                          <Building2 className="w-3.5 h-3.5 text-[#591d8f]" />
+                          <span>Official Ministry Department Nodal Portal</span>
+                        </span>
+                        <p className="text-[11px] text-slate-600">
+                          Select your ministry and submit official credentials for Chief Officer verification.
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleQuickFillOfficerDemo(officerData.department)}
+                        className="px-3 py-1.5 rounded-xl text-xs font-black bg-gradient-to-r from-[#591d8f] to-[#2b0f4c] text-white hover:opacity-95 transition shadow-xs flex items-center gap-1.5 self-start sm:self-auto cursor-pointer shrink-0"
+                        title="Auto-fill verified officer details for testing"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-[#fb923c]" />
+                        <span>⚡ 1-Click Demo Fill</span>
+                      </button>
+                    </div>
+
+                    {/* Department Ministry Interactive Grid Selector */}
+                    <div className="space-y-1.5">
+                      <label className="block text-[11px] font-black text-slate-700 uppercase tracking-wider">
+                        Choose Your Target Ministry / Department: *
+                      </label>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {OFFICER_MINISTRIES.map((m) => {
+                          const isSelected = officerData.department === m.id;
+                          return (
+                            <button
+                              key={m.id}
+                              type="button"
+                              onClick={() => {
+                                setOfficerData((prev) => ({
+                                  ...prev,
+                                  department: m.id,
+                                  designation: m.sampleDesignation,
+                                  officeLocation: m.sampleLoc,
+                                }));
+                              }}
+                              className={`p-2.5 rounded-xl border text-left transition cursor-pointer flex flex-col justify-between ${
+                                isSelected
+                                  ? "bg-[#2b0f4c] text-white border-[#2b0f4c] shadow-xs ring-2 ring-purple-400/40"
+                                  : "bg-white text-slate-800 border-purple-200 hover:border-purple-400 hover:bg-purple-50/50"
+                              }`}
+                            >
+                              <div className="font-black text-xs truncate">{m.label}</div>
+                              <div className={`text-[10px] mt-1 truncate ${isSelected ? "text-purple-200" : "text-slate-500"}`}>
+                                {m.sampleDesignation.split(" (")[0]}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -473,8 +558,8 @@ export default function RegisterPage() {
                           required
                           value={officerData.applicantName}
                           onChange={handleOfficerChange}
-                          placeholder="e.g. Ramesh Sharma"
-                          className="w-full py-2 px-3 border border-[#e9e1f5] rounded-xl text-xs bg-[#fbf9fe] focus:bg-white text-slate-900"
+                          placeholder="e.g. Dr. Sandeep Deshmukh"
+                          className="w-full py-2.5 px-3 border border-[#e9e1f5] rounded-xl text-xs bg-[#fbf9fe] focus:bg-white text-slate-900 font-medium"
                         />
                       </div>
 
@@ -489,30 +574,12 @@ export default function RegisterPage() {
                           value={officerData.email}
                           onChange={handleOfficerChange}
                           placeholder="officer@nic.in"
-                          className="w-full py-2 px-3 border border-[#e9e1f5] rounded-xl text-xs bg-[#fbf9fe] focus:bg-white text-slate-900"
+                          className="w-full py-2.5 px-3 border border-[#e9e1f5] rounded-xl text-xs bg-[#fbf9fe] focus:bg-white text-slate-900 font-medium"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                          Department Ministry *
-                        </label>
-                        <select
-                          name="department"
-                          value={officerData.department}
-                          onChange={handleOfficerChange}
-                          className="w-full py-2 px-3 border border-[#e9e1f5] rounded-xl text-xs bg-white text-slate-900 font-bold"
-                        >
-                          <option value="KISAN">🌾 Agriculture / KISAN</option>
-                          <option value="STUDENT">🎓 Education / STUDENT</option>
-                          <option value="HEALTH">🏥 Health / HEALTH</option>
-                          <option value="BUSINESS">💼 MSME / BUSINESS</option>
-                          <option value="EMPLOYMENT">👷 Labour / EMPLOYMENT</option>
-                          <option value="GENERAL">🏛️ General / GENERAL</option>
-                        </select>
-                      </div>
 
                       <div>
                         <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
