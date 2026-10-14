@@ -242,6 +242,45 @@ export default function Readiness() {
           )}
         </div>
 
+        {/* Ineligibility Warning Banner */}
+        {(matchingConditions?.classification === "NOT_MATCHED" || (matchingConditions?.failedConditions && matchingConditions.failedConditions.length > 0)) && (
+          <div className="p-4 sm:p-5 rounded-2xl bg-rose-50 border-2 border-rose-300 text-rose-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+            <div className="flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center shrink-0">
+                <XCircle className="w-6 h-6 text-white" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-black uppercase tracking-wider bg-rose-600 text-white px-2.5 py-0.5 rounded-full">
+                    NOT ELIGIBLE TO APPLY
+                  </span>
+                  <span className="text-xs font-bold text-rose-800">
+                    Statutory Rule Not Met
+                  </span>
+                </div>
+                <p className="text-xs text-rose-900 leading-relaxed font-medium">
+                  Your current Benefit Passport details do not satisfy the statutory criteria for this scheme:{" "}
+                  <strong>
+                    {matchingConditions.failedConditions && matchingConditions.failedConditions.length > 0
+                      ? (matchingConditions.failedConditions[0].explanation || matchingConditions.failedConditions[0])
+                      : "Demographic or category rules not met."}
+                  </strong>
+                </p>
+                <p className="text-[11px] text-rose-700">
+                  Even if your document health is ready, applications submitted without satisfying statutory eligibility criteria will be rejected by the Ministry Nodal Officer.
+                </p>
+              </div>
+            </div>
+
+            <Link
+              to="/dashboard/benefit-passport"
+              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-white text-rose-800 border border-rose-300 hover:bg-rose-100 transition whitespace-nowrap shrink-0 shadow-xs self-end sm:self-auto"
+            >
+              Update Benefit Passport →
+            </Link>
+          </div>
+        )}
+
         {/* ======================================================== */}
         {/* APPLICATION PREPARATION READINESS SCORE BANNER           */}
         {/* ======================================================== */}

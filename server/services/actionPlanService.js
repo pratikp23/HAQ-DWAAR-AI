@@ -132,12 +132,13 @@ export function generateActionPlan(readinessResult, scheme) {
   for (const r of ruleResults) {
     if (r.status === "FAIL") {
       const ruleLabel = r.label || r.rule?.label || "Requirement";
+      const isCasteRule = (r.fieldPath || "").toLowerCase().includes("category") || (r.fieldPath || "").toLowerCase().includes("caste") || ruleLabel.toLowerCase().includes("caste");
       actions.push({
         id: `act-prof-failed-${actionCounter++}`,
         priority: "HIGH",
         type: "PROFILE",
-        title: `Review ${ruleLabel}`,
-        description: `The current profile information does not match the scheme's configured criteria (${r.explanation || "criterion not met"}). Please review your profile information and the official scheme requirements before applying.`,
+        title: isCasteRule ? `Ineligible: Category Mismatch (${ruleLabel})` : `Ineligible: ${ruleLabel} Mismatch`,
+        description: `This scheme strictly requires: ${r.rule?.value ? String(r.rule.value).toUpperCase() : ruleLabel}, but your Benefit Passport indicates "${r.actualValue || 'Different category/value'}". You are not eligible to apply for this quota. (${r.explanation || "criteria not met"})`,
         status: "PENDING",
         relatedField: r.fieldPath || r.rule?.fieldPath || null,
         actionUrl: "/dashboard/benefit-passport",

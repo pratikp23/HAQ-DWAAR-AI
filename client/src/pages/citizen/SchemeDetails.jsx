@@ -4,6 +4,8 @@ import { getSchemeById } from "../../services/schemeApi";
 import { evaluateScheme } from "../../services/matchingApi";
 import { getSchemeDocumentChecklist } from "../../services/documentApi";
 import { getApplications, createApplication } from "../../services/applicationApi";
+import { getProfile } from "../../services/profileApi";
+import { getSchemeReadiness } from "../../services/readinessApi";
 import { useAuth } from "../../hooks/useAuth";
 import { useLanguage } from "../../context/LanguageContext";
 import {
@@ -56,6 +58,10 @@ export default function SchemeDetails() {
   const [trackingApp, setTrackingApp] = useState(null);
   const [trackingLoading, setTrackingLoading] = useState(false);
 
+  // Profile & Readiness state
+  const [profileData, setProfileData] = useState(null);
+  const [readinessData, setReadinessData] = useState(null);
+
   useEffect(() => {
     const fetchDetails = async () => {
       setLoading(true);
@@ -101,9 +107,35 @@ export default function SchemeDetails() {
       }
     };
 
+    const fetchProfileAndReadiness = async () => {
+      if (!isAuthenticated) return;
+      try {
+        const [profRes, readRes] = await Promise.allSettled([
+          getProfile(),
+          getSchemeReadiness(id),
+        ]);
+        if (profRes.status === "fulfilled") {
+          const p = profRes.value?.data?.profile || profRes.value?.profile || profRes.value?.data;
+          if (p) setProfileData(p);
+        }
+        if (readRes.status === "fulfilled") {
+          const r = readRes.value?.data || readRes.value;
+          if (r) {
+            setReadinessData(r);
+            if (r.readiness?.matchingConditions && !evaluation) {
+              setEvaluation(r.readiness.matchingConditions);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("Could not load profile or readiness:", err.message);
+      }
+    };
+
     fetchDetails();
     fetchChecklist();
     fetchTracking();
+    fetchProfileAndReadiness();
   }, [id, isAuthenticated]);
 
   const handleStartTracking = async () => {
@@ -598,6 +630,8 @@ export default function SchemeDetails() {
           <PersonalizedActionPlan
             scheme={scheme}
             user={user}
+            profileData={profileData}
+            readinessData={readinessData}
             evaluation={evaluation}
             onSaveApplication={handleStartTracking}
             isTracking={!!trackingApp}

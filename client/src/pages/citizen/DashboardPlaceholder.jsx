@@ -7,7 +7,7 @@ import { useLanguage } from "../../context/LanguageContext";
 import { getProfile } from "../../services/profileApi";
 import { getRecommendations } from "../../services/matchingApi";
 import { getDocuments } from "../../services/documentApi";
-import { getApplications, createApplication } from "../../services/applicationApi";
+import { getApplications, createApplication, quickApplyScheme } from "../../services/applicationApi";
 import { getCitizenNotifications, getUnreadCount } from "../../services/notificationApi";
 import { getDigiLockerStatus } from "../../services/digilockerApi";
 
@@ -156,6 +156,40 @@ export default function DashboardPlaceholder() {
     }
   };
 
+  // ⚡ 1-Click Quick Apply directly from citizen dashboard
+  const handleQuickApplyFromDashboard = async (scheme) => {
+    const sid = scheme.schemeId || scheme._id;
+    if (!sid) return;
+
+    try {
+      const res = await quickApplyScheme({
+        schemeId: sid,
+        evaluation: {
+          matchScore: scheme.matchScore || 95,
+          classification: scheme.classification || "MATCHED",
+          topReasons: scheme.topReasons || [],
+        },
+      });
+
+      const refNum = res?.data?.data?.referenceNumber || res?.data?.referenceNumber || "HAQ/2026/APPLIED";
+      setActionSuccess(`⚡ Direct Quick Apply submitted for "${scheme.name}"! Reference Number: ${refNum}. Transmitted to Department Nodal Queue.`);
+
+      // Refresh applications immediately so the card switches to "✓ Applied" and Application Tracker updates
+      const appsRes = await getApplications();
+      const updatedApps = appsRes?.data?.data?.applications || appsRes?.data?.applications || appsRes?.data || [];
+      if (Array.isArray(updatedApps)) {
+        setTrackedApps(updatedApps);
+      }
+
+      setTimeout(() => setActionSuccess(""), 7000);
+    } catch (err) {
+      console.error("Dashboard Quick Apply failed:", err);
+      const msg = err.response?.data?.message || err.message || "Failed to submit Quick Apply.";
+      setError(msg);
+      setTimeout(() => setError(""), 5000);
+    }
+  };
+
   // Open HAQ AI Assistant with initial query
   const handleOpenVoiceModal = (query = "") => {
     if (setHaqAIOpen) setHaqAIOpen(true);
@@ -197,6 +231,18 @@ export default function DashboardPlaceholder() {
     trackedApps.forEach((app) => {
       const sid = app.schemeId?._id || app.schemeId;
       if (sid) ids.add(sid.toString());
+    });
+    return ids;
+  }, [trackedApps]);
+
+  // Set of applied scheme IDs (status === 'APPLIED' or 'COMPLETED' or submissionType === 'QUICK_APPLY')
+  const appliedSchemeIds = useMemo(() => {
+    const ids = new Set();
+    trackedApps.forEach((app) => {
+      const sid = app.schemeId?._id || app.schemeId;
+      if (sid && (app.status === "APPLIED" || app.status === "COMPLETED" || app.submissionType === "QUICK_APPLY")) {
+        ids.add(sid.toString());
+      }
     });
     return ids;
   }, [trackedApps]);
@@ -274,7 +320,9 @@ export default function DashboardPlaceholder() {
               loading={loading}
               onRetry={fetchDashboardData}
               onTrackScheme={handleTrackScheme}
+              onQuickApply={handleQuickApplyFromDashboard}
               trackedSchemeIds={trackedSchemeIds}
+              appliedSchemeIds={appliedSchemeIds}
             />
           </div>
 

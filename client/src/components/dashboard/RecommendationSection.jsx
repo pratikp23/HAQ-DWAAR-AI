@@ -18,6 +18,8 @@ export default function RecommendationSection({
   onRetry,
   onTrackScheme,
   trackedSchemeIds = new Set(),
+  appliedSchemeIds = new Set(),
+  onQuickApply,
 }) {
   const [activeFilter, setActiveFilter] = useState("ALL");
 
@@ -166,6 +168,8 @@ export default function RecommendationSection({
                 scheme={scheme}
                 onTrack={onTrackScheme}
                 isTracked={trackedSchemeIds.has(sid)}
+                isApplied={appliedSchemeIds.has(sid)}
+                onQuickApply={onQuickApply}
                 isFirstCard={idx === 0}
               />
             );

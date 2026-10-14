@@ -86,7 +86,9 @@ const CATEGORY_IMAGE_MAP = {
 export default function RecommendationCard({
   scheme,
   onTrack,
+  onQuickApply,
   isTracked = false,
+  isApplied = false,
   isFirstCard = false,
 }) {
   const [imageError, setImageError] = useState(false);
@@ -273,21 +275,50 @@ export default function RecommendationCard({
       {/* 6. Action Buttons */}
       <div className="pt-3 border-t border-[#e9e1f5] flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          {schemeId && (
+          {isApplied ? (
             <Link
-              id={isFirstCard ? "step-scheme-apply-btn" : undefined}
-              to={hasBlockers ? "/dashboard/documents" : `/dashboard/readiness/${schemeId}`}
-              className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold text-center shadow-xs transition cursor-pointer truncate ${
-                hasBlockers
-                  ? "bg-[#ea580c] hover:bg-[#c2410c] text-white"
-                  : "bg-[#2b0f4c] hover:bg-[#1e0a3c] text-white"
-              }`}
+              to="/dashboard/applications"
+              className="flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-black bg-emerald-50 text-emerald-800 border border-emerald-300 text-center shadow-xs flex items-center justify-center gap-1.5"
             >
-              <span>{hasBlockers ? "Complete Documents" : "Check Readiness"}</span>
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              <span>✓ Applied (Nodal Queue)</span>
+            </Link>
+          ) : !hasBlockers && matchScore >= 80 && onQuickApply ? (
+            <button
+              type="button"
+              onClick={() => onQuickApply(scheme)}
+              className="flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-[#591d8f] via-[#7c3aed] to-[#ea580c] hover:opacity-95 text-white shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer truncate"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+              <span>⚡ 1-Click Quick Apply</span>
+            </button>
+          ) : (
+            schemeId && (
+              <Link
+                id={isFirstCard ? "step-scheme-apply-btn" : undefined}
+                to={hasBlockers ? "/dashboard/documents" : `/dashboard/readiness/${schemeId}`}
+                className={`flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold text-center shadow-xs transition cursor-pointer truncate ${
+                  hasBlockers
+                    ? "bg-[#ea580c] hover:bg-[#c2410c] text-white"
+                    : "bg-[#2b0f4c] hover:bg-[#1e0a3c] text-white"
+                }`}
+              >
+                <span>{hasBlockers ? "Complete Documents" : "Check Readiness"}</span>
+              </Link>
+            )
+          )}
+
+          {schemeId && !hasBlockers && matchScore >= 80 && !isApplied && (
+            <Link
+              to={`/dashboard/readiness/${schemeId}`}
+              className="py-2 px-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold shrink-0 transition"
+              title="View Preparation Plan"
+            >
+              <span>Plan</span>
             </Link>
           )}
 
-          {onTrack && !isTracked && (
+          {onTrack && !isTracked && !isApplied && (
             <button
               type="button"
               onClick={() => onTrack(schemeId, name)}
@@ -298,7 +329,7 @@ export default function RecommendationCard({
             </button>
           )}
 
-          {isTracked && (
+          {isTracked && !isApplied && (
             <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-1.5 rounded-xl border border-emerald-200 shrink-0">
               ✓ Tracking
             </span>

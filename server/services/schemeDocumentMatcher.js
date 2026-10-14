@@ -23,10 +23,34 @@ export function isTypeMatch(schemeType, userDocType) {
   if (normScheme === normUser) return true;
   if (normScheme.includes(normUser) || normUser.includes(normScheme)) return true;
 
+  // Category-specific caste / community certificate matching
+  const isSchemeCaste = normScheme.includes("caste") || normScheme.includes("community") || normScheme.includes("category");
+  const isUserCaste = normUser.includes("caste") || normUser.includes("community") || normUser.includes("category");
+
+  if (isSchemeCaste && isUserCaste) {
+    const isSchemeObc = normScheme.includes("obc") || normScheme.includes("backward");
+    const isSchemeSc = normScheme.includes("sc") || normScheme.includes("scheduled caste");
+    const isSchemeSt = normScheme.includes("st") || normScheme.includes("scheduled tribe");
+    const isSchemeEws = normScheme.includes("ews") || normScheme.includes("weaker");
+
+    const isUserObc = normUser.includes("obc") || normUser.includes("backward");
+    const isUserSc = normUser.includes("sc") || normUser.includes("scheduled caste");
+    const isUserSt = normUser.includes("st") || normUser.includes("scheduled tribe");
+    const isUserEws = normUser.includes("ews") || normUser.includes("weaker");
+
+    // Strictly enforce sub-category alignment if specified by scheme
+    if (isSchemeObc && !isUserObc && (isUserSc || isUserSt || isUserEws)) return false;
+    if (isSchemeSc && !isUserSc && (isUserObc || isUserSt || isUserEws)) return false;
+    if (isSchemeSt && !isUserSt && (isUserObc || isUserSc || isUserEws)) return false;
+    if (isSchemeEws && !isUserEws && (isUserObc || isUserSc || isUserSt)) return false;
+
+    return true;
+  }
+
   // Specific common mappings
   if (normScheme.includes("aadhaar") && normUser.includes("aadhaar")) return true;
   if (normScheme.includes("income") && normUser.includes("income")) return true;
-  if (normScheme.includes("caste") && normUser.includes("caste")) return true;
+  if (isSchemeCaste && isUserCaste) return true;
   if (normScheme.includes("domicile") && normUser.includes("domicile")) return true;
   if (normScheme.includes("marksheet") && normUser.includes("marksheet")) return true;
   if ((normScheme.includes("passbook") || normScheme.includes("bank")) && normUser.includes("bank passbook")) return true;

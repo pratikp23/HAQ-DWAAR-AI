@@ -16,30 +16,22 @@ import {
   Send,
   Building2,
   UserCheck,
-  ArrowRight
+  ArrowRight,
+  XCircle,
+  Lock,
+  AlertTriangle,
 } from "lucide-react";
 import { DigiLockerLogo } from "../common/GovLogos";
 import { quickApplyScheme } from "../../services/applicationApi";
 
 /**
  * HAQ DWAAR AI — Personalized Action Plan ("Scheme se Application Tak")
- * 
- * Pixel-perfect implementation of the user's reference mockup (media_1790770535200.png):
- * - Deep purple branded header with sparkle emblem
- * - Scheme metadata strip with Level/Category pill, Scheme Title, Benefit Callout, Match Score & Eligibility tier
- * - 4-stage interactive roadmap:
- *   1. Confirm Benefit Passport (COMPLETED, Green border & badge)
- *   2. Fetch Required Document / Blocker (IN_PROGRESS, Orange border & 1-Click DigiLocker Sync button)
- *   3. Review document health (PENDING, Gray/Purple badge)
- *   4. Apply on official portal (PENDING, Gray/Purple badge)
- * - Action footer:
- *   - "Save to My Applications" (with tracking status)
- *   - "Proceed to Official Government Portal ↗" (direct statutory gateway)
  */
 export default function PersonalizedActionPlan({
   scheme,
   user,
   profileData = null,
+  readinessData = null,
   evaluation = null,
   onSaveApplication,
   isTracking = false,
@@ -47,9 +39,50 @@ export default function PersonalizedActionPlan({
 }) {
   const navigate = useNavigate();
 
+  // Citizen state & demographic descriptor
+  const citizenState = profileData?.personal?.state || profileData?.location?.state || "Madhya Pradesh";
+  const citizenCategory = profileData?.personal?.category || profileData?.personal?.socialCategory || user?.socialCategory || "General";
+
+  // Check scheme category requirements from rules and requiredDocuments
+  const casteRule = scheme?.rules?.find(r => 
+    (r.fieldPath || "").toLowerCase().includes("category") || 
+    (r.fieldPath || "").toLowerCase().includes("caste") ||
+    (r.label || "").toLowerCase().includes("category") ||
+    (r.label || "").toLowerCase().includes("caste")
+  );
+
+  const casteDoc = scheme?.requiredDocuments?.find(d => 
+    (d.documentType || "").toLowerCase().includes("caste") || 
+    (d.documentType || "").toLowerCase().includes("community")
+  );
+
+  // Determine required category
+  let requiredCategory = null;
+  if (casteRule?.expectedValue || casteRule?.value) {
+    requiredCategory = String(casteRule.expectedValue || casteRule.value).toUpperCase();
+  } else if (casteDoc) {
+    if (/obc|backward/i.test(casteDoc.documentType)) requiredCategory = "OBC";
+    else if (/sc|scheduled caste/i.test(casteDoc.documentType)) requiredCategory = "SC";
+    else if (/st|scheduled tribe/i.test(casteDoc.documentType)) requiredCategory = "ST";
+    else if (/ews|weaker/i.test(casteDoc.documentType)) requiredCategory = "EWS";
+  }
+
+  // Category mismatch check
+  const isCategoryMismatch = requiredCategory && citizenCategory && 
+    citizenCategory.toUpperCase() !== requiredCategory && 
+    citizenCategory.toUpperCase() !== "ALL";
+
+  // Check rule results from evaluation or readinessData
+  const matchingConditions = readinessData?.readiness?.matchingConditions || evaluation;
+  const failedConditions = matchingConditions?.failedConditions || 
+    matchingConditions?.ruleResults?.filter(r => r.status === "FAIL") || [];
+  
+  const isCriteriaFailed = matchingConditions?.classification === "NOT_MATCHED" || failedConditions.length > 0;
+  const isTotallyIneligible = isCategoryMismatch || isCriteriaFailed;
+
   // Step 1: Benefit Passport state (Detects if evaluation has missing parameters)
-  const missingItems = evaluation?.explanation?.missingInformation || [];
-  const [passportConfirmed, setPassportConfirmed] = useState(missingItems.length === 0);
+  const missingItems = matchingConditions?.explanation?.missingInformation || matchingConditions?.missingInformation || [];
+  const [passportConfirmed, setPassportConfirmed] = useState(!isTotallyIneligible && missingItems.length === 0);
   const [resolvingPassport, setResolvingPassport] = useState(false);
 
   // Step 2: DigiLocker Document Blocker state
@@ -74,22 +107,19 @@ export default function PersonalizedActionPlan({
   const officialUrl = scheme?.officialApplicationUrl || "https://scholarships.gov.in";
   
   // Dynamic match percentage
-  const matchScore = evaluation?.matchScore || 94;
-  const matchTier = matchScore >= 85 ? "High Eligibility" : matchScore >= 60 ? "Moderate Match" : "Basic Match";
+  const matchScore = isTotallyIneligible ? 35 : (matchingConditions?.matchScore || 94);
+  const matchTier = isTotallyIneligible ? "Ineligible" : matchScore >= 85 ? "High Eligibility" : matchScore >= 60 ? "Moderate Match" : "Basic Match";
 
   // Identify specific document blocker
   const missingDocs = scheme?.requiredDocuments?.filter(d => d.mandatory) || [];
-  const primaryBlockerDoc = missingDocs.length > 0 ? missingDocs[0].documentType : "Income Certificate (आय प्रमाण पत्र)";
-
-  // Citizen state & demographic descriptor
-  const citizenState = profileData?.personal?.state || profileData?.location?.state || "Madhya Pradesh";
-  const citizenCategory = profileData?.personal?.category || "OBC";
+  const primaryBlockerDoc = casteDoc?.documentType || (missingDocs.length > 0 ? missingDocs[0].documentType : "Income Certificate (आय प्रमाण पत्र)");
 
   // Check if all 3 prerequisite stages are completed
-  const isPrerequisitesComplete = passportConfirmed && digiLockerSynced && healthAudited;
+  const isPrerequisitesComplete = !isTotallyIneligible && passportConfirmed && digiLockerSynced && healthAudited;
 
   // Handlers for Step Actions
   const handleResolvePassport = () => {
+    if (isTotallyIneligible) return;
     setResolvingPassport(true);
     setTimeout(() => {
       setResolvingPassport(false);
@@ -114,6 +144,7 @@ export default function PersonalizedActionPlan({
   };
 
   const handleFastTrackAll = () => {
+    if (isTotallyIneligible) return;
     setPassportConfirmed(true);
     setDigiLockerSynced(true);
     setHealthAudited(true);
@@ -211,8 +242,52 @@ export default function PersonalizedActionPlan({
       {/* ======================================================== */}
       <div className="p-5 sm:p-6 space-y-4 bg-slate-50/40">
         
+        {/* Statutory Ineligibility Advisory Banner */}
+        {isTotallyIneligible && (
+          <div className="p-4 sm:p-5 bg-rose-50 border-2 border-rose-300 rounded-2xl text-rose-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in fade-in">
+            <div className="flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                <XCircle className="w-6 h-6 text-white" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[11px] font-black uppercase tracking-wider bg-rose-600 text-white px-2.5 py-0.5 rounded-full">
+                    NOT ELIGIBLE TO APPLY
+                  </span>
+                  <span className="text-xs font-bold text-rose-800">
+                    {isCategoryMismatch ? `Statutory ${requiredCategory} Category Required` : "Scheme Eligibility Rules Not Met"}
+                  </span>
+                </div>
+                <p className="text-xs text-rose-900 leading-relaxed font-medium">
+                  {isCategoryMismatch ? (
+                    <>
+                      This scheme is legally reserved for <strong>{requiredCategory}</strong> category beneficiaries holding an authentic <strong>{casteDoc?.documentType || `${requiredCategory} Caste Certificate`}</strong>. Your Benefit Passport is registered under <strong>{citizenCategory}</strong>.
+                    </>
+                  ) : (
+                    <>
+                      Your Benefit Passport currently does not satisfy the criteria for this scheme: <strong>{failedConditions[0]?.explanation || "Mandatory eligibility criteria not met."}</strong>
+                    </>
+                  )}
+                </p>
+                <p className="text-[11px] text-rose-800">
+                  {isCategoryMismatch
+                    ? `You cannot submit an application under the ${requiredCategory} quota with a ${citizenCategory} profile or certificate.`
+                    : "Please review the official scheme rules or update your Benefit Passport details if your registered information is outdated."}
+                </p>
+              </div>
+            </div>
+
+            <Link
+              to="/dashboard/benefit-passport"
+              className="px-3.5 py-2 rounded-xl text-xs font-bold bg-white text-rose-800 border border-rose-300 hover:bg-rose-100 transition whitespace-nowrap shrink-0 shadow-xs self-end sm:self-auto"
+            >
+              Update Passport Category →
+            </Link>
+          </div>
+        )}
+
         {/* Fast-Track Helper Bar */}
-        {!isPrerequisitesComplete && (
+        {!isPrerequisitesComplete && !isTotallyIneligible && (
           <div className="p-3 bg-purple-50/70 rounded-xl border border-purple-100 flex items-center justify-between text-xs">
             <span className="text-slate-600 font-medium">
               💡 Complete each step below or fast-track all 3 prerequisites for testing:
@@ -230,25 +305,29 @@ export default function PersonalizedActionPlan({
         
         {/* STEP 1: Confirm Benefit Passport */}
         <div className={`p-4 sm:p-5 rounded-2xl bg-white transition-all ${
-          passportConfirmed
+          isCategoryMismatch
+            ? "border-2 border-rose-300 ring-2 ring-rose-100 shadow-sm"
+            : passportConfirmed
             ? "border border-emerald-300 shadow-2xs"
             : "border-2 border-amber-300 ring-2 ring-amber-100 shadow-sm"
         } flex flex-col justify-between gap-3.5`}>
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
             <div className="flex items-start gap-3.5">
               <div className={`w-9 h-9 rounded-full ${
-                passportConfirmed ? "bg-emerald-600" : "bg-amber-600"
+                isCategoryMismatch ? "bg-rose-600" : passportConfirmed ? "bg-emerald-600" : "bg-amber-600"
               } text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5 shadow-xs`}>
-                {passportConfirmed ? <Check className="w-5 h-5 stroke-[2.5]" /> : "1"}
+                {isCategoryMismatch ? <XCircle className="w-5 h-5 text-white" /> : passportConfirmed ? <Check className="w-5 h-5 stroke-[2.5]" /> : "1"}
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <h4 className="text-sm sm:text-base font-bold text-slate-900">
-                    {passportConfirmed ? "Benefit Passport Confirmed" : "Verify Benefit Passport Details"}
+                    {isCategoryMismatch ? `Category Mismatch: ${citizenCategory} vs ${requiredCategory}` : passportConfirmed ? "Benefit Passport Confirmed" : "Verify Benefit Passport Details"}
                   </h4>
                 </div>
                 <p className="text-xs text-slate-600 font-normal leading-relaxed">
-                  {passportConfirmed
+                  {isCategoryMismatch
+                    ? `Scheme mandates ${requiredCategory} category. Your profile is set to "${citizenCategory}". You are not eligible under this category.`
+                    : passportConfirmed
                     ? `Your verified ${citizenState} • ${citizenCategory} profile and income criteria match all published rules.`
                     : `Demographic criteria requires verification before statutory submission: ${missingItems.length > 0 ? missingItems.join(", ") : "Family income and category"}.`}
                 </p>
@@ -256,15 +335,27 @@ export default function PersonalizedActionPlan({
             </div>
 
             <span className={`self-start sm:self-auto px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${
-              passportConfirmed
+              isCategoryMismatch
+                ? "bg-rose-100 text-rose-800 border border-rose-300"
+                : passportConfirmed
                 ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
                 : "bg-amber-100 text-amber-900 border border-amber-200"
             }`}>
-              {passportConfirmed ? "COMPLETED" : "ACTION NEEDED"}
+              {isCategoryMismatch ? "INELIGIBLE" : passportConfirmed ? "COMPLETED" : "ACTION NEEDED"}
             </span>
           </div>
 
-          {!passportConfirmed && (
+          {isCategoryMismatch ? (
+            <div className="sm:pl-12 pt-1 flex flex-wrap gap-2">
+              <Link
+                to="/dashboard/benefit-passport"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-xs transition"
+              >
+                <span>Edit Category in Benefit Passport</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          ) : !passportConfirmed && (
             <div className="sm:pl-12 pt-1 flex flex-wrap gap-2">
               <button
                 type="button"
@@ -298,25 +389,29 @@ export default function PersonalizedActionPlan({
 
         {/* STEP 2: Fetch Blocker Document */}
         <div className={`p-4 sm:p-5 rounded-2xl bg-white transition-all ${
-          digiLockerSynced
+          isCategoryMismatch
+            ? "border-2 border-rose-300 ring-2 ring-rose-100 shadow-sm"
+            : digiLockerSynced
             ? "border border-emerald-300 shadow-2xs"
             : "border-2 border-orange-300 ring-2 ring-orange-100 shadow-sm"
         } flex flex-col justify-between gap-3.5`}>
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
             <div className="flex items-start gap-3.5">
               <div className={`w-9 h-9 rounded-full ${
-                digiLockerSynced ? "bg-emerald-600" : "bg-[#ea580c]"
+                isCategoryMismatch ? "bg-rose-600" : digiLockerSynced ? "bg-emerald-600" : "bg-[#ea580c]"
               } text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5 shadow-xs`}>
-                {digiLockerSynced ? <Check className="w-5 h-5 stroke-[2.5]" /> : "2"}
+                {isCategoryMismatch ? <XCircle className="w-5 h-5 text-white" /> : digiLockerSynced ? <Check className="w-5 h-5 stroke-[2.5]" /> : "2"}
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <h4 className="text-sm sm:text-base font-bold text-slate-900">
-                    {digiLockerSynced ? `Verified ${primaryBlockerDoc}` : `Fetch ${primaryBlockerDoc}`}
+                    {isCategoryMismatch ? `Requires ${casteDoc?.documentType || `${requiredCategory} Caste Certificate`}` : digiLockerSynced ? `Verified ${primaryBlockerDoc}` : `Fetch ${primaryBlockerDoc}`}
                   </h4>
                 </div>
                 <p className="text-xs text-slate-600 font-normal leading-relaxed">
-                  {digiLockerSynced
+                  {isCategoryMismatch
+                    ? `Scheme mandates a valid ${casteDoc?.documentType || `${requiredCategory} Caste Certificate`}. Uploading another caste certificate will be rejected by the Nodal Officer.`
+                    : digiLockerSynced
                     ? `Certificate fetched and cryptographically signed via DigiLocker direct API v3. Zero document blockers.`
                     : `${primaryBlockerDoc} is required by statutory department rules. Fetch directly to bypass manual attestation.`}
                 </p>
@@ -324,15 +419,17 @@ export default function PersonalizedActionPlan({
             </div>
 
             <span className={`self-start sm:self-auto px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${
-              digiLockerSynced
+              isCategoryMismatch
+                ? "bg-rose-100 text-rose-800 border border-rose-300"
+                : digiLockerSynced
                 ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
                 : "bg-amber-100 text-amber-900 border border-amber-200"
             }`}>
-              {digiLockerSynced ? "COMPLETED" : "BLOCKER"}
+              {isCategoryMismatch ? "MISMATCH" : digiLockerSynced ? "COMPLETED" : "ACTION NEEDED"}
             </span>
           </div>
 
-          {!digiLockerSynced && (
+          {!isCategoryMismatch && !digiLockerSynced && (
             <div className="sm:pl-12 pt-1 flex flex-wrap gap-2">
               <button
                 type="button"
@@ -426,27 +523,33 @@ export default function PersonalizedActionPlan({
 
         {/* STEP 4: Application Transmission Status */}
         <div className={`p-4 sm:p-5 rounded-2xl bg-white transition-all ${
-          isPrerequisitesComplete
+          isTotallyIneligible
+            ? "border-2 border-rose-300 bg-rose-50/20"
+            : isPrerequisitesComplete
             ? "border-2 border-emerald-400 ring-2 ring-emerald-100 bg-gradient-to-r from-emerald-50/40 via-white to-purple-50/40 shadow-sm"
             : "border border-slate-200/90 shadow-2xs"
         } flex flex-col justify-between gap-3.5`}>
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
             <div className="flex items-start gap-3.5">
               <div className={`w-9 h-9 rounded-full ${
-                isPrerequisitesComplete ? "bg-gradient-to-tr from-[#591d8f] to-[#ea580c] text-white" : "bg-slate-100 text-slate-500"
+                isTotallyIneligible ? "bg-rose-600 text-white" : isPrerequisitesComplete ? "bg-gradient-to-tr from-[#591d8f] to-[#ea580c] text-white" : "bg-slate-100 text-slate-500"
               } flex items-center justify-center font-bold text-sm shrink-0 mt-0.5 shadow-xs`}>
-                {isPrerequisitesComplete ? <Sparkles className="w-5 h-5 text-white" /> : "4"}
+                {isTotallyIneligible ? <Lock className="w-4 h-4 text-white" /> : isPrerequisitesComplete ? <Sparkles className="w-5 h-5 text-white" /> : "4"}
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <h4 className="text-sm sm:text-base font-bold text-slate-900">
-                    {isPrerequisitesComplete
+                    {isTotallyIneligible
+                      ? "Quick Apply Locked (Ineligible to Apply)"
+                      : isPrerequisitesComplete
                       ? "Application Dossier 100% Ready for Nodal Queue!"
                       : "Quick Apply Submission (Scheme se Application Tak)"}
                   </h4>
                 </div>
                 <p className="text-xs text-slate-600 font-normal leading-relaxed">
-                  {isPrerequisitesComplete
+                  {isTotallyIneligible
+                    ? `Quick Apply is disabled because your profile does not meet the mandatory criteria (${isCategoryMismatch ? `Requires ${requiredCategory} category and ${casteDoc?.documentType || `${requiredCategory} Caste Certificate`}` : "Criteria not met"}).`
+                    : isPrerequisitesComplete
                     ? `All statutory prerequisites satisfied. Click 'Quick Apply' below to transmit your verified packet directly to the Ministry of ${category} Nodal Desk.`
                     : "Complete Steps 1 to 3 above to verify your Benefit Passport, fetch missing certificates, and unlock 1-Click Quick Apply."}
                 </p>
@@ -454,16 +557,18 @@ export default function PersonalizedActionPlan({
             </div>
 
             <span className={`self-start sm:self-auto px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${
-              isPrerequisitesComplete
+              isTotallyIneligible
+                ? "bg-rose-100 text-rose-800 border border-rose-300"
+                : isPrerequisitesComplete
                 ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
                 : "bg-slate-100 text-slate-600 border border-slate-200"
             }`}>
-              {isPrerequisitesComplete ? "READY TO APPLY" : "LOCKED"}
+              {isTotallyIneligible ? "BLOCKED" : isPrerequisitesComplete ? "READY TO APPLY" : "LOCKED"}
             </span>
           </div>
 
           {/* Quick Apply CTA Inside Step 4 when ready */}
-          {isPrerequisitesComplete && !quickApplySuccess && (
+          {!isTotallyIneligible && isPrerequisitesComplete && !quickApplySuccess && (
             <div className="sm:pl-12 pt-1 flex flex-wrap gap-2">
               <button
                 type="button"
@@ -515,14 +620,29 @@ export default function PersonalizedActionPlan({
         {/* Right Buttons: 1-Click Quick Apply + External Portal */}
         <div className="w-full md:w-auto flex flex-col sm:flex-row items-center gap-2.5">
           {/* ⚡ 1-Click Quick Apply Button */}
-          <button
-            type="button"
-            onClick={() => setShowQuickApplyModal(true)}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-[#591d8f] via-[#7c3aed] to-[#ea580c] text-white shadow-md shadow-purple-950/20 hover:opacity-95 transition-all cursor-pointer"
-          >
-            <Sparkles className="w-4 h-4 text-amber-300" />
-            <span>⚡ Quick Apply to Nodal Queue</span>
-          </button>
+          {isTotallyIneligible ? (
+            <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+              <span className="px-3.5 py-2.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1.5 w-full sm:w-auto justify-center">
+                <Lock className="w-4 h-4 text-rose-600" />
+                <span>Ineligible ({isCategoryMismatch ? `${requiredCategory} Required` : "Criteria Not Met"})</span>
+              </span>
+              <Link
+                to="/dashboard/recommendations"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition text-center shadow-xs"
+              >
+                View Eligible Schemes →
+              </Link>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setShowQuickApplyModal(true)}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-[#591d8f] via-[#7c3aed] to-[#ea580c] text-white shadow-md shadow-purple-950/20 hover:opacity-95 transition-all cursor-pointer"
+            >
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <span>⚡ Quick Apply to Nodal Queue</span>
+            </button>
+          )}
 
           {/* Official Portal Link */}
           {officialUrl && (
