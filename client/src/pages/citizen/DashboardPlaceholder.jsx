@@ -87,42 +87,44 @@ export default function DashboardPlaceholder() {
       ]);
 
       // 1. Profile Data
-      if (profileRes.status === "fulfilled" && profileRes.value?.data) {
-        setProfileData(profileRes.value.data.profile || null);
-        setCompleteness(profileRes.value.data.profileCompleteness || 0);
+      if (profileRes.status === "fulfilled" && profileRes.value) {
+        const pData = profileRes.value.data || profileRes.value;
+        setProfileData(pData.profile || null);
+        setCompleteness(pData.profileCompleteness || 0);
       }
 
       // 2. Recommendations
       if (matchRes.status === "fulfilled") {
-        const recs = matchRes.value?.data?.data?.recommendations || [];
-        setMatchedSchemes(recs);
+        const recs = matchRes.value?.data?.recommendations || matchRes.value?.recommendations || matchRes.value?.data?.data?.recommendations || [];
+        setMatchedSchemes(Array.isArray(recs) ? recs : []);
       }
 
       // 3. Document Vault
       if (docRes.status === "fulfilled") {
-        const docs = docRes.value?.data?.documents || docRes.value?.data?.data?.documents || [];
-        setVaultDocuments(docs);
+        const docs = docRes.value?.data?.documents || docRes.value?.documents || docRes.value?.data || [];
+        setVaultDocuments(Array.isArray(docs) ? docs : []);
       }
 
       // 4. Applications Tracker
       if (appsRes.status === "fulfilled") {
-        const apps = appsRes.value?.data?.data?.applications || [];
-        setTrackedApps(apps);
+        const apps = appsRes.value?.data?.applications || appsRes.value?.applications || appsRes.value?.data || [];
+        setTrackedApps(Array.isArray(apps) ? apps : []);
       }
 
       // 5. Notifications
       if (notifRes.status === "fulfilled") {
-        setNotifications(notifRes.value?.data?.data?.notifications || []);
+        const notifs = notifRes.value?.data?.notifications || notifRes.value?.notifications || notifRes.value?.data || [];
+        setNotifications(Array.isArray(notifs) ? notifs : []);
       }
 
       // 6. Unread Count
       if (unreadRes.status === "fulfilled") {
-        setUnreadCount(unreadRes.value?.data?.data?.unreadCount || 0);
+        setUnreadCount(unreadRes.value?.data?.unreadCount ?? unreadRes.value?.unreadCount ?? 0);
       }
 
       // 7. DigiLocker Status
       if (digiRes.status === "fulfilled") {
-        const mode = digiRes.value?.data?.data?.mode || "demo";
+        const mode = digiRes.value?.data?.mode || digiRes.value?.mode || "demo";
         setIsDigiLockerDemo(mode === "demo");
       }
 

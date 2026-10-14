@@ -40,3 +40,29 @@ export const updateApplication = async (id, payload) => {
 export const deleteApplication = async (id) => {
   return await api.delete(`/applications/${id}`);
 };
+
+/**
+ * ⚡ 1-Click Quick Apply to Department Nodal Queue
+ * Packages Benefit Passport, eligibility snapshot, and documents
+ * @param {Object} payload - { schemeId, notes, evaluation }
+ */
+export const quickApplyScheme = async (payload) => {
+  return await api.post("/applications/quick-apply", payload);
+};
+
+/**
+ * Fetch Department Nodal Application Queue
+ * @param {Object} params - { department, status }
+ */
+export const getDepartmentQueue = async (params = {}) => {
+  return await api.get("/applications/department/queue", { params });
+};
+
+/**
+ * Review & take action on a Department Application
+ * @param {string} id - Application Tracker ID
+ * @param {Object} payload - { actionTaken: "APPROVED" | "REJECTED" | "NEEDS_DOCUMENTS", remarks }
+ */
+export const reviewDepartmentApplication = async (id, payload) => {
+  return await api.put(`/applications/${id}/review`, payload);
+};

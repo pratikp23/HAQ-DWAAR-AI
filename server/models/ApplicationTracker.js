@@ -55,6 +55,69 @@ const applicationTrackerSchema = new mongoose.Schema(
       default: "",
       trim: true,
     },
+    // Snapshot of citizen's Benefit Passport at time of submission
+    applicantDetails: {
+      fullName: { type: String, default: "" },
+      email: { type: String, default: "" },
+      phone: { type: String, default: "" },
+      age: { type: Number, default: null },
+      gender: { type: String, default: "" },
+      category: { type: String, default: "" },
+      state: { type: String, default: "" },
+      district: { type: String, default: "" },
+      annualIncome: { type: Number, default: null },
+      occupation: { type: String, default: "" },
+      landHolding: { type: Number, default: null },
+      qualification: { type: String, default: "" },
+    },
+    // Eligibility criteria & match score evaluated at time of application
+    eligibilitySnapshot: {
+      matchScore: { type: Number, default: 100 },
+      classification: { type: String, default: "MATCHED" },
+      summary: { type: String, default: "" },
+      matchedReasons: { type: [String], default: [] },
+      missingInformation: { type: [String], default: [] },
+      failedConditions: { type: [String], default: [] },
+    },
+    // Ministry / Department assigned for statutory review
+    department: {
+      type: String,
+      enum: ["KISAN", "STUDENT", "HEALTH", "BUSINESS", "EMPLOYMENT", "GENERAL", "OTHER"],
+      default: "GENERAL",
+      index: true,
+    },
+    // Verified statutory documents attached from citizen vault / DigiLocker
+    documentsAttached: [
+      {
+        documentType: { type: String, required: true },
+        documentName: { type: String, default: "" },
+        status: { type: String, default: "VERIFIED" },
+        verifiedVia: { type: String, default: "DigiLocker" },
+        fileUrl: { type: String, default: "" },
+      },
+    ],
+    submissionType: {
+      type: String,
+      enum: ["QUICK_APPLY", "SELF_APPLIED", "MANUAL_TRACK"],
+      default: "QUICK_APPLY",
+      index: true,
+    },
+    // Official Department Nodal Officer Audit Trail
+    nodalReview: {
+      reviewedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null,
+      },
+      officerName: { type: String, default: null },
+      actionTaken: {
+        type: String,
+        enum: ["PENDING", "APPROVED", "REJECTED", "NEEDS_DOCUMENTS"],
+        default: "PENDING",
+      },
+      reviewedAt: { type: Date, default: null },
+      remarks: { type: String, default: "" },
+    },
   },
   {
     timestamps: true,

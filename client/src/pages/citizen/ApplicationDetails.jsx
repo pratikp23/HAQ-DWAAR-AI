@@ -20,6 +20,10 @@ import {
   Calendar,
   ShieldCheck,
   ChevronLeft,
+  Sparkles,
+  Building2,
+  Copy,
+  Check,
 } from "lucide-react";
 
 const STAGES = [
@@ -46,6 +50,7 @@ export default function ApplicationDetails() {
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [copiedRef, setCopiedRef] = useState(false);
 
   useEffect(() => {
     fetchDetail();
@@ -56,7 +61,7 @@ export default function ApplicationDetails() {
       setLoading(true);
       setError(null);
       const res = await getApplicationById(id);
-      const app = res.data?.data?.application;
+      const app = res?.data?.application || res?.application || res?.data;
       setApplication(app);
       if (app) {
         setCurrentStatus(app.status || "INTERESTED");
@@ -69,6 +74,12 @@ export default function ApplicationDetails() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCopyRef = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopiedRef(true);
+    setTimeout(() => setCopiedRef(false), 2000);
   };
 
   const handleUpdate = async (newStatus = currentStatus) => {
@@ -84,9 +95,11 @@ export default function ApplicationDetails() {
       };
 
       const res = await updateApplication(id, payload);
-      const updated = res.data?.data?.application;
-      setApplication(updated);
-      setCurrentStatus(updated.status);
+      const updated = res?.data?.application || res?.application || res?.data;
+      if (updated) {
+        setApplication(updated);
+        if (updated.status) setCurrentStatus(updated.status);
+      }
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err) {
@@ -293,6 +306,142 @@ export default function ApplicationDetails() {
             )}
           </div>
         </div>
+
+        {/* Ministry Nodal Officer Direct Queue & Dossier Section */}
+        {application.submissionType === "QUICK_APPLY" && (
+          <div className="mt-6 bg-white rounded-2xl border-2 border-purple-200 p-6 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-purple-100">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-9 h-9 rounded-xl bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
+                  <Sparkles className="w-5 h-5 text-purple-700" />
+                </div>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider bg-purple-600 text-white px-2 py-0.5 rounded-full">
+                      1-Click Quick Apply Dossier
+                    </span>
+                    <span className="text-xs text-slate-500 font-medium">
+                      Department: <strong>{application.department || scheme?.category || "Gov Desk"}</strong>
+                    </span>
+                  </div>
+                  <h3 className="text-sm sm:text-base font-extrabold text-slate-900 mt-0.5">
+                    Ministry Nodal Officer Review &amp; DBT Verification
+                  </h3>
+                </div>
+              </div>
+
+              {/* Reference Code with Copy button */}
+              {application.referenceNumber && (
+                <div className="flex items-center space-x-2 bg-purple-50 px-3 py-1.5 rounded-xl border border-purple-200 self-start sm:self-auto">
+                  <span className="text-xs font-mono font-black text-purple-900">{application.referenceNumber}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyRef(application.referenceNumber)}
+                    className="p-1 text-purple-700 hover:text-purple-900 rounded hover:bg-purple-100 transition cursor-pointer"
+                    title="Copy Reference Number"
+                  >
+                    {copiedRef ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Nodal Officer Review Status Card */}
+            {application.nodalReview?.actionTaken === "APPROVED" && (
+              <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-950 space-y-1">
+                <div className="flex items-center space-x-2 font-bold text-sm text-emerald-900">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                  <span>Direct Benefit Transfer (DBT) Sanctioned &amp; Approved!</span>
+                </div>
+                <p className="text-xs text-emerald-800">
+                  Reviewed by Nodal Officer <strong>{application.nodalReview.officerName || "Ministry Nodal Officer"}</strong> on{" "}
+                  {new Date(application.nodalReview.reviewedAt).toLocaleDateString("en-IN")}.
+                </p>
+                {application.nodalReview.remarks && (
+                  <p className="text-xs font-medium bg-white/70 p-2.5 rounded-lg border border-emerald-200 mt-2">
+                    <strong>Official Remarks:</strong> {application.nodalReview.remarks}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {(application.nodalReview?.actionTaken === "DOCS_REQUESTED" || application.nodalReview?.actionTaken === "NEEDS_DOCUMENTS") && (
+              <div className="p-4 rounded-xl bg-amber-50 border border-amber-300 text-amber-950 space-y-1">
+                <div className="flex items-center space-x-2 font-bold text-sm text-amber-900">
+                  <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
+                  <span>Additional Documents Requested by Department</span>
+                </div>
+                <p className="text-xs text-amber-800">
+                  Reviewed by Nodal Officer <strong>{application.nodalReview.officerName || "Ministry Nodal Desk"}</strong> on{" "}
+                  {new Date(application.nodalReview.reviewedAt).toLocaleDateString("en-IN")}.
+                </p>
+                {application.nodalReview.remarks && (
+                  <p className="text-xs font-medium bg-white/70 p-2.5 rounded-lg border border-amber-200 mt-2">
+                    <strong>Nodal Officer Note:</strong> {application.nodalReview.remarks}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {application.nodalReview?.actionTaken === "REJECTED" && (
+              <div className="p-4 rounded-xl bg-rose-50 border border-rose-300 text-rose-950 space-y-1">
+                <div className="flex items-center space-x-2 font-bold text-sm text-rose-900">
+                  <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+                  <span>Application Not Approved by Department</span>
+                </div>
+                <p className="text-xs text-rose-800">
+                  Reviewed by Nodal Officer <strong>{application.nodalReview.officerName || "Ministry Nodal Desk"}</strong> on{" "}
+                  {new Date(application.nodalReview.reviewedAt).toLocaleDateString("en-IN")}.
+                </p>
+                {application.nodalReview.remarks && (
+                  <p className="text-xs font-medium bg-white/70 p-2.5 rounded-lg border border-rose-200 mt-2">
+                    <strong>Reason:</strong> {application.nodalReview.remarks}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {!application.nodalReview?.actionTaken && (
+              <div className="p-4 rounded-xl bg-indigo-50/70 border border-indigo-200 text-indigo-950 flex items-start space-x-3">
+                <Building2 className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
+                <div className="text-xs space-y-1">
+                  <p className="font-bold text-indigo-900">In Ministry Review Queue</p>
+                  <p className="text-indigo-800 leading-relaxed">
+                    Your complete Benefit Passport and DigiLocker verified proofs have been securely bundled and placed into the verified queue for the <strong>{application.department || "Category"} Nodal Officer</strong>. You will be notified immediately upon nodal action.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Attached Proofs & Snapshot Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                <span className="font-bold text-slate-700 block mb-1">Attached DigiLocker Documents</span>
+                {application.documentsAttached && application.documentsAttached.length > 0 ? (
+                  <div className="space-y-1">
+                    {application.documentsAttached.map((doc, i) => (
+                      <div key={i} className="flex items-center justify-between text-slate-600 text-[11px]">
+                        <span>• {doc.documentType}</span>
+                        <span className="text-emerald-700 font-bold">Verified ({doc.source})</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-slate-500 text-[11px]">DigiLocker KYC Proofs Linked</span>
+                )}
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                <span className="font-bold text-slate-700 block mb-1">Eligibility Snapshot at Submission</span>
+                <div className="text-slate-600 text-[11px] space-y-0.5">
+                  <p>Match Score: <strong className="text-purple-700">{application.eligibilitySnapshot?.matchScore || 100}%</strong></p>
+                  {application.applicantDetails?.state && <p>State: <strong>{application.applicantDetails.state}</strong></p>}
+                  {application.applicantDetails?.socialCategory && <p>Category: <strong>{application.applicantDetails.socialCategory}</strong></p>}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Official Application Portal Gateway */}
         <div className="mt-6 bg-gradient-to-r from-blue-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-6 shadow-xs space-y-3">

@@ -62,8 +62,9 @@ export default function Readiness() {
   const fetchTracking = async () => {
     try {
       const res = await getApplications();
-      if (res?.data) {
-        const found = res.data.find(
+      const list = res?.data?.applications || res?.applications || (Array.isArray(res?.data) ? res.data : []);
+      if (Array.isArray(list)) {
+        const found = list.find(
           (a) => (a.schemeId?._id || a.schemeId) === schemeId
         );
         if (found) setTrackingApp(found);
@@ -84,12 +85,19 @@ export default function Readiness() {
     setTrackingLoading(true);
     try {
       const res = await createApplication({ schemeId });
-      if (res?.data) {
-        setTrackingApp(res.data);
-        navigate(`/dashboard/applications/${res.data._id}`);
+      const createdApp = res?.data?.application || res?.application || res?.data;
+      if (createdApp?._id) {
+        setTrackingApp(createdApp);
+        navigate(`/dashboard/applications/${createdApp._id}`);
       }
     } catch (err) {
       console.error("Failed to start tracking application:", err);
+      const existingId =
+        err.response?.data?.data?.application?._id ||
+        err.response?.data?.data?._id;
+      if (existingId) {
+        navigate(`/dashboard/applications/${existingId}`);
+      }
     } finally {
       setTrackingLoading(false);
     }

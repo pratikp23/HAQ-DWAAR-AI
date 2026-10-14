@@ -6,12 +6,19 @@ import {
   getApplicationById,
   updateApplication,
   deleteApplication,
+  quickApplyScheme,
+  getDepartmentQueue,
+  reviewDepartmentApplication,
 } from "../controllers/applicationTrackerController.js";
 
 const router = express.Router();
 
-// All tracker routes require authentication and enforce citizen ownership
+// All tracker routes require authentication
 router.use(requireAuth);
+
+router.post("/quick-apply", quickApplyScheme);
+router.get("/department/queue", getDepartmentQueue);
+router.put("/:id/review", reviewDepartmentApplication);
 
 router.post("/", createApplication);
 router.get("/", getApplications);

@@ -89,8 +89,9 @@ export default function SchemeDetails() {
       if (!isAuthenticated) return;
       try {
         const res = await getApplications();
-        if (res?.data) {
-          const found = res.data.find(
+        const list = res?.data?.applications || res?.applications || res?.data || [];
+        if (Array.isArray(list)) {
+          const found = list.find(
             (a) => (a.schemeId?._id || a.schemeId) === id
           );
           if (found) setTrackingApp(found);
@@ -113,12 +114,18 @@ export default function SchemeDetails() {
     setTrackingLoading(true);
     try {
       const res = await createApplication({ schemeId: id });
-      if (res?.data) {
-        setTrackingApp(res.data);
-        navigate(`/dashboard/applications/${res.data._id}`);
+      const newApp = res?.data?.application || res?.application || res?.data;
+      if (newApp) {
+        setTrackingApp(newApp);
+        navigate(`/dashboard/applications/${newApp._id || newApp.id}`);
       }
     } catch (err) {
       console.error("Failed to start tracking application:", err);
+      const existing = err.data?.data?.application || err.data?.application;
+      if (existing?._id) {
+        setTrackingApp(existing);
+        navigate(`/dashboard/applications/${existing._id}`);
+      }
     } finally {
       setTrackingLoading(false);
     }
