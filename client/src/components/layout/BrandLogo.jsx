@@ -44,7 +44,7 @@ export default function BrandLogo({
     >
       {/* PhonePe-Style Biometric / Civic Icon Badge */}
       <div
-        className={`${iconSizes[size] || iconSizes.md} bg-gradient-to-br from-[#5f259f] via-[#4a1d82] to-[#240b49] text-white flex items-center justify-center font-black shadow-md shadow-purple-950/25 ring-1.5 ring-purple-300/30 group-hover:scale-105 group-hover:shadow-purple-700/30 transition-all shrink-0 relative overflow-hidden`}
+        className={`${iconSizes[size] || iconSizes.md} bg-gradient-to-br from-[#1b3524] via-[#234731] to-[#112318] text-white flex items-center justify-center font-black shadow-md shadow-emerald-950/25 ring-1.5 ring-emerald-400/30 group-hover:scale-105 group-hover:shadow-emerald-700/30 transition-all shrink-0 relative overflow-hidden`}
       >
         {/* Subtle radial sheen */}
         <div className="absolute inset-0 bg-radial from-white/20 via-transparent to-black/25 pointer-events-none" />
@@ -71,7 +71,7 @@ export default function BrandLogo({
         {showSubtitle && (
           <span
             className={`text-[11px] font-semibold tracking-tight -mt-0.5 transition-colors ${
-              subtitleColor || "text-[#4b5563] group-hover:text-[#5f259f]"
+              subtitleColor || "text-[#4b5563] group-hover:text-[#234731]"
             }`}
           >
             {t("brandSubtitle", "Citizen Gateway")}

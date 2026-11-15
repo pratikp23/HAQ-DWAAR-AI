@@ -1,35 +1,31 @@
 import React, { useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { 
-  ShieldCheck, 
-  Lock, 
-  AlertCircle, 
   ExternalLink, 
   ArrowUp, 
-  Fingerprint, 
-  Sparkles, 
-  CheckCircle2, 
-  Globe2, 
-  PhoneCall, 
-  FileCheck2, 
-  HelpCircle,
-  Tractor,
-  GraduationCap,
-  Briefcase,
-  Building,
-  Home,
-  Shield
+  ShieldCheck, 
+  AlertCircle,
+  PhoneCall
 } from "lucide-react";
 import { LayoutContext } from "../../context/LayoutContext";
-import BrandLogo from "./BrandLogo";
+import { useAuth } from "../../hooks/useAuth";
 
 /**
- * HAQ DWAAR AI — Modern Civic Information Portal Footer
- * Featuring PhonePe-style Biometric & Identity Trust, 13 Regional Languages,
- * and Official Direct Gateways.
+ * LOK SAMARTH — ReactBits Pro Footer-1 (@reactbits-pro/footer-1) in Light Sage Green
+ * Reference: https://pro.reactbits.dev/docs/blocks/footer/footer-1?variantSort=latest
+ * 
+ * Features:
+ * 1. Palette: Light Sage Green (#eef5f0 / #e3ede6 / #d5e5d9) with rich forest green (#112318) typography.
+ * 2. Top Dual-Column Grid:
+ *    - Left: Circular emblem badge, bold brand title, slogan headline, and heritage footnote.
+ *    - Right: Bordered 3-column table grid with clean thin dividers and hover states.
+ * 3. Statutory Civic Transparency Notice: Official non-agency gazette disclosure.
+ * 4. Signature Giant Watermark Typography: "LOK SAMARTH" fully visible, non-clipped responsive watermark.
+ * 5. Bottom Utility Bar: Copyright, essential navigation, and Back to Top action.
  */
 export default function Footer({ forceRender = false }) {
   const { inLayout } = useContext(LayoutContext) || {};
+  const { isAuthenticated } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -42,13 +38,8 @@ export default function Footer({ forceRender = false }) {
 
   const handleAnchorClick = (e, targetHash) => {
     if (targetHash === "top") {
-      if (isHomePage) {
-        e.preventDefault();
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        window.history.pushState(null, "", "/");
-      } else {
-        navigate("/");
-      }
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
@@ -65,394 +56,306 @@ export default function Footer({ forceRender = false }) {
   };
 
   return (
-    <footer className="bg-gradient-to-b from-[#112318] via-[#0d1a12] to-[#08120c] text-[#ebf3ed] border-t border-[#234731]/80 text-xs selection:bg-[#ea580c] selection:text-white">
-      
-      {/* 1. TOP CIVIC TRUST HEADER STRIP */}
-      <div className="border-b border-[#234731]/60 py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+    <footer className="bg-[#eef5f0] text-[#24422e] border-t border-[#c6decb] relative overflow-hidden font-sans selection:bg-[#ea580c] selection:text-white">
+      {/* Background Subtle Sage Ambient Gradients */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#cbe3d2]/40 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-10 w-96 h-96 bg-[#ea580c]/5 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10 relative z-10 space-y-12">
+        
+        {/* ======================================================== */}
+        {/* 1. TOP MAIN ROW (Left: Brand & Slogan | Right: Bordered Grid) */}
+        {/* ======================================================== */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-start">
           
-          {/* Left: Lok Samarth Logo & Tagline */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <BrandLogo
-              to="/"
-              size="md"
-              showSubtitle={true}
-              iconType="fingerprint"
-              className="text-white [&_span]:text-white"
-              subtitleColor="text-[#c8ded0]"
-            />
-            <div className="hidden sm:block h-8 w-[1px] bg-emerald-800/60" />
-            <div className="text-[12px] text-[#c8ded0] leading-tight">
-              <span className="font-extrabold text-white">Digital Public Infrastructure</span>
-              <div className="text-[11px] text-[#c8ded0] flex items-center gap-1.5 mt-0.5">
-                <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>100% Gazette-Verified Citizen Welfare Gateway</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Trust Badges */}
-          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[#ebf3ed] text-[11px] font-semibold">
-              <Globe2 className="w-3.5 h-3.5 text-emerald-400" />
-              <span>13 Indian Languages</span>
-            </div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[#ebf3ed] text-[11px] font-semibold">
-              <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-              <span>Deterministic Matching</span>
-            </div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[#ebf3ed] text-[11px] font-semibold">
-              <Lock className="w-3.5 h-3.5 text-amber-400" />
-              <span>Zero Data Selling</span>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      {/* 2. MAIN 5-COLUMN DIRECTORY */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-12">
-          
-          {/* Column 1: Citizen Sectors */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
-              <span>Welfare Sectors</span>
-            </h4>
-            <ul className="space-y-2 text-[#c8ded0] text-[11px]">
-              <li>
-                <Link to="/browse-schemes?category=KISAN" className="hover:text-white transition flex items-center gap-1.5">
-                  <Tractor className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Kisan &amp; Agriculture</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/browse-schemes?category=STUDENT" className="hover:text-white transition flex items-center gap-1.5">
-                  <GraduationCap className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>Students &amp; Scholarships</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/browse-schemes?category=EMPLOYMENT" className="hover:text-white transition flex items-center gap-1.5">
-                  <Briefcase className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Employment &amp; Skill</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/browse-schemes?category=BUSINESS" className="hover:text-white transition flex items-center gap-1.5">
-                  <Building className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>MSME &amp; Enterprises</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/browse-schemes?category=HOUSING" className="hover:text-white transition flex items-center gap-1.5">
-                  <Home className="w-3.5 h-3.5 text-orange-400 shrink-0" />
-                  <span>Housing &amp; Urban</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/browse-schemes?category=GENERAL" className="hover:text-white transition flex items-center gap-1.5">
-                  <Shield className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Social Security &amp; Pension</span>
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 2: Citizen Tools */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <span>Citizen Tools</span>
-            </h4>
-            <ul className="space-y-2 text-[#c8ded0] text-[11px]">
-              <li>
-                <Link to="/dashboard/benefit-passport" className="hover:text-white transition">
-                  Benefit Passport
-                </Link>
-              </li>
-              <li>
-                <Link to="/dashboard/documents" className="hover:text-white transition">
-                  Document Health Vault
-                </Link>
-              </li>
-              <li>
-                <Link to="/dashboard/readiness" className="hover:text-white transition">
-                  Pre-Application Readiness
-                </Link>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={(e) => handleAnchorClick(e, "features")}
-                  className="hover:text-white transition text-left cursor-pointer"
-                >
-                  Bhashini AI Voice Mitra
-                </button>
-              </li>
-              <li>
-                <Link to="/dashboard/applications" className="hover:text-white transition">
-                  Application Milestone Tracker
-                </Link>
-              </li>
-              <li>
-                <Link to="/browse-schemes" className="hover:text-white transition">
-                  Official Scheme Catalog
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 3: How It Works & Trust */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-              <span>Trust &amp; Process</span>
-            </h4>
-            <ul className="space-y-2 text-[#c8ded0] text-[11px]">
-              <li>
-                <button
-                  type="button"
-                  onClick={(e) => handleAnchorClick(e, "how-it-works")}
-                  className="hover:text-white transition text-left cursor-pointer"
-                >
-                  6-Step Citizen Journey
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={(e) => handleAnchorClick(e, "features")}
-                  className="hover:text-white transition text-left cursor-pointer"
-                >
-                  Deterministic Rule Engine
-                </button>
-              </li>
-              <li>
-                <span className="hover:text-white transition cursor-default">
-                  Gazette Verification Protocol
-                </span>
-              </li>
-              <li>
-                <span className="hover:text-white transition cursor-default">
-                  Zero Commercial Middlemen
-                </span>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={(e) => handleAnchorClick(e, "about")}
-                  className="hover:text-white transition text-left cursor-pointer"
-                >
-                  About the Initiative
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={(e) => handleAnchorClick(e, "faq")}
-                  className="hover:text-white transition text-left cursor-pointer"
-                >
-                  Frequently Asked Questions
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 4: Official Direct Gateways */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <span>Official Gateways</span>
-            </h4>
-            <ul className="space-y-2 text-[#c8ded0] text-[11px]">
-              <li>
-                <a
-                  href="https://scholarships.gov.in"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white transition inline-flex items-center gap-1 group"
-                >
-                  <span>National Scholarship (NSP)</span>
-                  <ExternalLink className="w-3 h-3 text-emerald-400 group-hover:text-white" />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://pmkisan.gov.in"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white transition inline-flex items-center gap-1 group"
-                >
-                  <span>PM-Kisan Samman Nidhi</span>
-                  <ExternalLink className="w-3 h-3 text-emerald-400 group-hover:text-white" />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://www.digilocker.gov.in"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white transition inline-flex items-center gap-1 group"
-                >
-                  <span>DigiLocker India</span>
-                  <ExternalLink className="w-3 h-3 text-emerald-400 group-hover:text-white" />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://www.mygov.in"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white transition inline-flex items-center gap-1 group"
-                >
-                  <span>MyGov Citizen Portal</span>
-                  <ExternalLink className="w-3 h-3 text-emerald-400 group-hover:text-white" />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://web.umang.gov.in"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white transition inline-flex items-center gap-1 group"
-                >
-                  <span>UMANG App Services</span>
-                  <ExternalLink className="w-3 h-3 text-emerald-400 group-hover:text-white" />
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://dbtbharat.gov.in"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white transition inline-flex items-center gap-1 group"
-                >
-                  <span>DBT Bharat Gateway</span>
-                  <ExternalLink className="w-3 h-3 text-emerald-400 group-hover:text-white" />
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 5: National Helplines & Grievance */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-              <span>National Helplines</span>
-            </h4>
-            <div className="space-y-2 text-[#c8ded0] text-[11px]">
-              <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
-                <div className="text-[10px] text-amber-300 font-bold uppercase tracking-wider">Citizen Consumer Helpline</div>
-                <div className="text-white font-extrabold text-sm flex items-center gap-1 mt-0.5">
-                  <PhoneCall className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>1915</span>
+          {/* LEFT COLUMN: Brand identity & punchline */}
+          <div className="lg:col-span-5 flex flex-col justify-between h-full space-y-8">
+            <div className="space-y-6">
+              {/* Brand Logo & Name */}
+              <Link to="/" className="inline-flex items-center gap-3.5 group">
+                <div className="w-11 h-11 rounded-full bg-[#112318] text-white flex items-center justify-center font-black text-base shadow-sm group-hover:scale-105 transition-transform">
+                  LS
                 </div>
-              </div>
-              <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
-                <div className="text-[10px] text-amber-300 font-bold uppercase tracking-wider">Kisan Call Centre</div>
-                <div className="text-white font-extrabold text-xs flex items-center gap-1 mt-0.5">
-                  <PhoneCall className="w-3.5 h-3.5 text-amber-400" />
-                  <span>1800-180-1551</span>
-                </div>
-              </div>
-              <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
-                <div className="text-[10px] text-amber-300 font-bold uppercase tracking-wider">CPGRAMS Grievance</div>
-                <a
-                  href="https://pgportal.gov.in"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-emerald-300 hover:text-white font-bold text-xs inline-flex items-center gap-1 mt-0.5"
-                >
-                  <span>pgportal.gov.in</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        {/* 3. LOK SAMARTH SECURITY & BIOMETRIC TRUST CARD */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#112318] via-[#1a3826] to-[#234731] p-6 sm:p-8 border border-[#234731]/80 shadow-xl mb-10">
-          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            
-            <div className="flex items-start gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#ea580c] to-[#f97316] flex items-center justify-center text-white shadow-lg shrink-0">
-                <Fingerprint className="w-7 h-7 text-white" strokeWidth={2.4} />
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-base sm:text-lg font-black text-white tracking-tight">
-                    Citizen Security &amp; Identity Privacy First
-                  </h3>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    Encrypted Vault
+                <div className="flex flex-col">
+                  <span className="text-xl font-black tracking-wider text-[#112318] uppercase leading-none">
+                    LOK SAMARTH
+                  </span>
+                  <span className="text-[10px] font-bold text-[#235836] uppercase tracking-widest mt-1">
+                    लोक समर्थ • हक से हकदार
                   </span>
                 </div>
-                <p className="text-xs text-[#c8ded0] max-w-2xl leading-relaxed">
-                  Lok Samarth utilizes a zero-commercial-sale architecture. Your personal profile, benefit matches, and uploaded certificates are strictly used to compute eligibility and readiness before you visit authorized government portals.
-                </p>
+              </Link>
+
+              {/* Bold Headline Tagline */}
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#112318] tracking-tight leading-snug max-w-md">
+                Your Right, Your Benefit, Your Empowerment.
+              </h2>
+              
+              <p className="text-xs sm:text-sm text-[#385a42] font-medium leading-relaxed max-w-sm">
+                India's sovereign civic welfare gateway. Instant scheme discovery, statutory document health audits, and zero-leakage direct benefits.
+              </p>
+            </div>
+
+            {/* Heritage & Standard Footnote */}
+            <div className="pt-4 border-t border-[#c6decb] space-y-1.5">
+              <p className="text-xs text-[#44684e] font-semibold">
+                Sovereign Digital Public Infrastructure since 2026
+              </p>
+              <div className="flex items-center gap-2 text-[11px] text-[#1e6137] font-bold">
+                <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-[#1e6137]" />
+                <span>Zero Intermediary • Encrypted Storage</span>
               </div>
             </div>
-
-            <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
-              <Link
-                to="/register"
-                className="w-full sm:w-auto text-center px-5 py-2.5 rounded-xl bg-[#ea580c] hover:bg-[#c2410c] text-white font-extrabold text-xs shadow-md active:scale-95 transition-all cursor-pointer"
-              >
-                Create Benefit Passport
-              </Link>
-            </div>
-
           </div>
+
+          {/* RIGHT COLUMN: Bordered Box Grid (ReactBits Pro footer-1 signature) */}
+          <div className="lg:col-span-7">
+            <div className="rounded-2xl border border-[#bed8c5] bg-white/70 backdrop-blur-sm shadow-sm overflow-hidden grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-[#c6decb]">
+              
+              {/* Column 1: Welfare Schemes (Programs) */}
+              <div className="p-6 sm:p-7 space-y-4">
+                <h3 className="text-xs font-black uppercase tracking-wider text-[#112318]">
+                  Welfare Schemes
+                </h3>
+                <ul className="space-y-3 text-xs font-medium">
+                  <li>
+                    <Link 
+                      to="/browse-schemes?category=KISAN" 
+                      className="text-[#2b4c34] hover:text-[#0b1a10] hover:translate-x-0.5 transition flex items-center justify-between group"
+                    >
+                      <span>Kisan &amp; Agriculture</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link 
+                      to="/browse-schemes?category=STUDENT" 
+                      className="text-[#2b4c34] hover:text-[#0b1a10] hover:translate-x-0.5 transition flex items-center justify-between group"
+                    >
+                      <span>Students &amp; Higher Ed</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link 
+                      to="/browse-schemes?category=HEALTH" 
+                      className="text-[#2b4c34] hover:text-[#0b1a10] hover:translate-x-0.5 transition flex items-center justify-between group"
+                    >
+                      <span>Healthcare &amp; Swasthya</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link 
+                      to="/browse-schemes?category=HOUSING" 
+                      className="text-[#2b4c34] hover:text-[#0b1a10] hover:translate-x-0.5 transition flex items-center justify-between group"
+                    >
+                      <span>Affordable Housing</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link 
+                      to="/browse-schemes?category=BUSINESS" 
+                      className="text-[#2b4c34] hover:text-[#0b1a10] hover:translate-x-0.5 transition flex items-center justify-between group"
+                    >
+                      <span>MSME &amp; Enterprises</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link 
+                      to="/browse-schemes?category=GENERAL" 
+                      className="text-[#2b4c34] hover:text-[#0b1a10] hover:translate-x-0.5 transition flex items-center justify-between group"
+                    >
+                      <span>Social Security</span>
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Column 2: Citizen Services (Resources) */}
+              <div className="p-6 sm:p-7 space-y-4">
+                <h3 className="text-xs font-black uppercase tracking-wider text-[#112318]">
+                  Citizen Services
+                </h3>
+                <ul className="space-y-3 text-xs font-medium">
+                  <li>
+                    <Link 
+                      to="/dashboard/benefit-passport" 
+                      className="text-[#2b4c34] hover:text-[#0b1a10] hover:translate-x-0.5 transition flex items-center justify-between group"
+                    >
+                      <span>Benefit Passport</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link 
+                      to="/dashboard/documents" 
+                      className="text-[#2b4c34] hover:text-[#0b1a10] hover:translate-x-0.5 transition flex items-center justify-between group"
+                    >
+                      <span>Document Vault</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link 
+                      to="/dashboard/applications" 
+                      className="text-[#2b4c34] hover:text-[#0b1a10] hover:translate-x-0.5 transition flex items-center justify-between group"
+                    >
+                      <span>Live Scheme Radar</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link 
+                      to="/dashboard/life-situation" 
+                      className="text-[#2b4c34] hover:text-[#0b1a10] hover:translate-x-0.5 transition flex items-center justify-between group"
+                    >
+                      <span>AI Voice Mitra</span>
+                      <ExternalLink className="w-3 h-3 text-[#ea580c] opacity-80 group-hover:opacity-100" />
+                    </Link>
+                  </li>
+                  <li>
+                    <Link 
+                      to="/dashboard/profile" 
+                      className="text-[#2b4c34] hover:text-[#0b1a10] hover:translate-x-0.5 transition flex items-center justify-between group"
+                    >
+                      <span>District Merit Standing</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link 
+                      to="/how-it-works" 
+                      className="text-[#2b4c34] hover:text-[#0b1a10] hover:translate-x-0.5 transition flex items-center justify-between group"
+                    >
+                      <span>How Platform Works</span>
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Column 3: Official Gateways & Support (Support) */}
+              <div className="p-6 sm:p-7 space-y-4">
+                <h3 className="text-xs font-black uppercase tracking-wider text-[#112318]">
+                  Official Gateways
+                </h3>
+                <ul className="space-y-3 text-xs font-medium">
+                  <li>
+                    <a 
+                      href="https://scholarships.gov.in" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-[#2b4c34] hover:text-[#0b1a10] hover:translate-x-0.5 transition flex items-center justify-between group"
+                    >
+                      <span>NSP Scholarships</span>
+                      <ExternalLink className="w-3 h-3 text-[#1e6137] opacity-80 group-hover:opacity-100" />
+                    </a>
+                  </li>
+                  <li>
+                    <a 
+                      href="https://pmkisan.gov.in" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-[#2b4c34] hover:text-[#0b1a10] hover:translate-x-0.5 transition flex items-center justify-between group"
+                    >
+                      <span>PM-KISAN Samman</span>
+                      <ExternalLink className="w-3 h-3 text-[#1e6137] opacity-80 group-hover:opacity-100" />
+                    </a>
+                  </li>
+                  <li>
+                    <a 
+                      href="https://beneficiary.nha.gov.in" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-[#2b4c34] hover:text-[#0b1a10] hover:translate-x-0.5 transition flex items-center justify-between group"
+                    >
+                      <span>Ayushman Bharat</span>
+                      <ExternalLink className="w-3 h-3 text-[#1e6137] opacity-80 group-hover:opacity-100" />
+                    </a>
+                  </li>
+                  <li>
+                    <a 
+                      href="https://www.digilocker.gov.in" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-[#2b4c34] hover:text-[#0b1a10] hover:translate-x-0.5 transition flex items-center justify-between group"
+                    >
+                      <span>DigiLocker Portal</span>
+                      <ExternalLink className="w-3 h-3 text-[#1e6137] opacity-80 group-hover:opacity-100" />
+                    </a>
+                  </li>
+                  <li>
+                    <Link 
+                      to="/faq" 
+                      className="text-[#2b4c34] hover:text-[#0b1a10] hover:translate-x-0.5 transition flex items-center justify-between group"
+                    >
+                      <span>Frequently Asked (FAQ)</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <a 
+                      href="tel:1915" 
+                      className="text-[#c2410c] hover:text-[#9a3412] transition flex items-center justify-between font-bold group"
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <PhoneCall className="w-3 h-3" />
+                        <span>Helpline: 1915</span>
+                      </span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+
         </div>
 
-        {/* 4. CIVIC TRUST & LEGAL NON-AGENCY NOTICE */}
-        <div className="p-4 sm:p-5 bg-black/30 rounded-2xl border border-white/10 text-[11px] text-[#c8ded0] space-y-2 leading-relaxed">
-          <div className="flex items-center space-x-2 text-amber-400 font-bold">
-            <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" />
-            <span className="uppercase tracking-wider text-[10px]">Civic Platform Notice &amp; Disclaimer</span>
+        {/* ======================================================== */}
+        {/* 2. STATUTORY CIVIC DISCLOSURE NOTICE                     */}
+        {/* ======================================================== */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-white/60 border border-[#c2daca] text-[11px] text-[#2f5139] space-y-1.5 leading-relaxed shadow-sm">
+          <div className="flex items-center gap-2 text-[#b45309] font-bold">
+            <AlertCircle className="w-4 h-4 shrink-0 text-[#b45309]" />
+            <span className="uppercase tracking-wider text-[10px]">Statutory Civic Transparency &amp; Non-Agency Notice</span>
           </div>
           <p>
-            <strong>Lok Samarth is an independent civic assistance platform and is NOT an official government agency or public authority.</strong> All applications, verification of claims, and final benefit disbursements are conducted strictly through authorized government ministries and official portals (such as NSP, PM-Kisan, and State Portals). Scheme summaries and eligibility criteria are curated from published gazettes and official circulars for informational guidance only.
+            Lok Samarth (लोक समर्थ) is an independent civic assistance platform and is not an official government agency. Benefit approvals, physical inspections, and Direct Benefit Transfer (DBT) funds are disbursed strictly by the competent central and state ministries via sovereign portals. Scheme guidelines are synchronized from gazette circulars for citizen empowerment.
           </p>
         </div>
 
-        {/* 5. BOTTOM BAR WITH BACK-TO-TOP & COPYRIGHT */}
-        <div className="mt-10 pt-6 border-t border-[#234731]/60 flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#c8ded0] gap-4">
-          <div className="flex items-center space-x-2">
+        {/* ======================================================== */}
+        {/* 3. SIGNATURE REACTBITS PRO GIANT WATERMARK TYPOGRAPHY    */}
+        {/* ======================================================== */}
+        <div className="pt-10 pb-6 w-full select-none pointer-events-none text-center overflow-hidden flex items-center justify-center">
+          <span 
+            className="font-black uppercase tracking-tight text-[#163520]/10 leading-none whitespace-nowrap block"
+            style={{ fontSize: "clamp(2.75rem, 9.8vw, 10.5rem)" }}
+          >
+            LOK SAMARTH
+          </span>
+        </div>
+
+        {/* ======================================================== */}
+        {/* 4. BOTTOM BAR: COPYRIGHT & NAVIGATION                    */}
+        {/* ======================================================== */}
+        <div className="pt-6 border-t border-[#c6decb] flex flex-col sm:flex-row items-center justify-between text-xs text-[#385a42] gap-4">
+          <div className="flex items-center gap-2 font-medium">
             <span>© 2026</span>
-            <span className="font-extrabold text-white">LOK SAMARTH</span>
-            <span>• Your Right • Your Benefit • Your Empowerment</span>
+            <span className="font-extrabold text-[#112318]">LOK SAMARTH</span>
+            <span>• Sovereign Citizen Entitlement Portal</span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4 text-xs font-semibold">
-            <button
-              type="button"
-              onClick={(e) => handleAnchorClick(e, "about")}
-              className="hover:text-white transition cursor-pointer"
-            >
-              About
-            </button>
-            <button
-              type="button"
-              onClick={(e) => handleAnchorClick(e, "faq")}
-              className="hover:text-white transition cursor-pointer"
-            >
+          <div className="flex flex-wrap items-center gap-5 font-semibold">
+            <Link to="/how-it-works" className="text-[#2b4c34] hover:text-[#0b1a10] transition">
+              How It Works
+            </Link>
+            <Link to="/faq" className="text-[#2b4c34] hover:text-[#0b1a10] transition">
               FAQ
-            </button>
-            <Link to="/browse-schemes" className="hover:text-white transition">
+            </Link>
+            <Link to="/browse-schemes" className="text-[#2b4c34] hover:text-[#0b1a10] transition">
               Browse Schemes
             </Link>
             <button
               type="button"
               onClick={(e) => handleAnchorClick(e, "top")}
-              className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[#ebf3ed] hover:text-white transition cursor-pointer border border-white/10 active:scale-95"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white/90 hover:bg-white text-[#112318] transition cursor-pointer border border-[#bed8c5] shadow-xs active:scale-95 font-bold"
               aria-label="Scroll back to top"
             >
-              <ArrowUp className="w-3.5 h-3.5 text-amber-400" />
+              <ArrowUp className="w-3.5 h-3.5 text-[#1e6137]" />
               <span>Back to Top</span>
             </button>
           </div>
