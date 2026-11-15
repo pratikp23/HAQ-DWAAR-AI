@@ -5,6 +5,7 @@ import { LanguageProvider } from "./context/LanguageContext";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import { ToastContainer } from "./components/common/Toast";
+import ScrollToTop from "./components/common/ScrollToTop";
 
 // Layout Shells
 import PublicLayout from "./layouts/PublicLayout";
@@ -51,6 +52,7 @@ function App() {
       <AuthProvider>
         <LanguageProvider>
           <BrowserRouter>
+            <ScrollToTop />
             <Routes>
               {/* ======================================================== */}
               {/* 1. PUBLIC SHELL (Unauthenticated & Information Discovery) */}
