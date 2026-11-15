@@ -187,7 +187,7 @@ export default function CitizenNavbar() {
           {/* Left: Brand + Citizen Pill */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <BrandLogo to="/dashboard" size="sm" />
-            <span className="hidden 2xl:inline-flex items-center px-2.5 py-0.5 rounded-full bg-purple-50 text-[11px] font-semibold text-[#2b0f4c] border border-purple-200 shadow-2xs whitespace-nowrap">
+            <span className="hidden 2xl:inline-flex items-center px-2.5 py-0.5 rounded-full bg-[#eef5f0] text-[11px] font-bold text-[#112318] border border-[#c6decb] shadow-2xs whitespace-nowrap">
               Citizen Portal
             </span>
           </div>
@@ -196,6 +196,8 @@ export default function CitizenNavbar() {
           <div className="hidden lg:flex items-center justify-center gap-1 xl:gap-1.5 shrink min-w-0">
             {citizenNavLinks.map((item, idx) => {
               const IconComp = item.icon;
+              const isVault = item.to === "/dashboard/documents";
+
               if (item.isVoice) {
                 return (
                   <button
@@ -204,7 +206,7 @@ export default function CitizenNavbar() {
                     onClick={() => toggleAssistant && toggleAssistant()}
                     className={`h-9 px-2 xl:px-3 rounded-xl text-xs xl:text-[13px] transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer ${
                       item.active
-                        ? "bg-purple-50 text-[#2b0f4c] font-bold border border-purple-200/80 shadow-2xs"
+                        ? "bg-[#eef5f0] text-[#112318] font-bold border border-[#c6decb] shadow-2xs"
                         : "text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium"
                     }`}
                   >
@@ -220,13 +222,18 @@ export default function CitizenNavbar() {
                   to={item.to}
                   className={`h-9 px-2 xl:px-3 rounded-xl text-xs xl:text-[13px] transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                     item.active
-                      ? "bg-purple-50 text-[#2b0f4c] font-bold border border-purple-200/80 shadow-2xs"
+                      ? "bg-[#eef5f0] text-[#112318] font-bold border border-[#c6decb] shadow-2xs"
+                      : isVault
+                      ? "bg-emerald-50 text-emerald-800 font-bold border border-emerald-200/80 shadow-2xs hover:bg-emerald-100"
                       : "text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium"
                   }`}
                 >
-                  <IconComp className="w-3.5 h-3.5 shrink-0" />
+                  <IconComp className={`w-3.5 h-3.5 shrink-0 ${isVault ? "text-emerald-700" : ""}`} />
                   <span className="hidden xl:inline">{item.label}</span>
                   <span className="inline xl:hidden">{item.shortLabel}</span>
+                  {isVault && !item.active && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse ml-0.5" />
+                  )}
                 </Link>
               );
             })}

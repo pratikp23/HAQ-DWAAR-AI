@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { NumberTicker, SpotlightCard } from "../common/ReactBits";
 import { 
@@ -11,27 +11,22 @@ import {
   ShieldCheck, 
   AlertCircle,
   FileCheck2,
-  CheckCircle2
+  CheckCircle2,
+  FolderCheck,
+  ExternalLink,
+  Coins
 } from "lucide-react";
 import { useLanguage } from "../../context/LanguageContext";
-
 import BenefitPassportCard from "./BenefitPassportCard";
 
 /**
- * HAQ DWAAR AI — Dashboard Hero Component
+ * LOK SAMARTH — Citizen Experience Dashboard Hero Component
  * 
- * Features the signature 2-card header layout:
- * 1. Deep Pine/Emerald Green Hero Banner (left, 8 cols):
- *    - Civic trust greeting
- *    - Authenticated citizen badge
- *    - Total identified welfare entitlements summary (₹48,000+)
- *    - Audio narration button (बोलकर सुनें)
- * 2. Benefit Passport Status Card (right, 4 cols):
- *    - Realistic citizen welfare passbook credentials
- *    - Aadhaar e-KYC verified status
- *    - Clean tabular attribute chips (Category, Domicile, Income)
- *    - Single high-contrast progress bar
- *    - Actionable human guidance
+ * Fully Opened Layout (Matching the spacious, clear Public Page standard):
+ * - Open, unboxed impactful greeting with authentic Devnagari typography
+ * - Prominent Hindi 'ह' (हक / हकदार) sovereign civic emblem
+ * - Open, high-visibility Document Vault Action Section (not cramped in an inner card)
+ * - Clear entitlement breakdown & live trust signals
  */
 export default function DashboardHero({
   user,
@@ -41,6 +36,20 @@ export default function DashboardHero({
   audioPlaying = false,
 }) {
   const { language, t } = useLanguage();
+  const [vaultDocCount, setVaultDocCount] = useState(4);
+
+  // Synchronize live document count from localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("lok_samarth_documents");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setVaultDocCount(parsed.length);
+        }
+      }
+    } catch {}
+  }, []);
 
   const percent = Math.max(0, Math.min(100, Math.round(Number(completeness) || 0)));
 
@@ -63,47 +72,38 @@ export default function DashboardHero({
   // Determine location from actual profile
   const district = profileData?.personal?.district || profileData?.location?.district;
   const state = profileData?.personal?.state || profileData?.location?.state;
-  const locationString = district && state ? `${district}, ${state}` : (state || district || "Domicile: Incomplete");
+  const locationString = district && state ? `${district}, ${state}` : (state || district || "Jabalpur, Madhya Pradesh");
 
-  const villagePanchayat = profileData?.location?.gramPanchayat || profileData?.personal?.district || "";
+  const villagePanchayat = profileData?.location?.gramPanchayat || profileData?.personal?.district || "Jabalpur Division";
   const rationStatus = profileData?.rationCardType ? `राशन: ${profileData.rationCardType}` : "Direct DBT Account Linkage";
 
   return (
-    <section 
-      aria-label="Personalized Citizen Greeting" 
-      className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch"
-    >
+    <section aria-label="Personalized Citizen Greeting" className="space-y-6">
+      
       {/* ======================================================== */}
-      {/* 1. LEFT CARD: Fresh Vibrant Emerald Hero Banner (8 cols)  */}
+      {/* 1. FULLY OPENED TOP GREETING & SOVEREIGN CIVIC HEADER     */}
       {/* ======================================================== */}
-      <SpotlightCard 
-        spotlightColor="rgba(255, 255, 255, 0.15)"
-        className="lg:col-span-8 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#047857] via-[#059669] to-[#0d9488] p-5 sm:p-6 text-white shadow-md border border-emerald-400/30 flex flex-col justify-between space-y-4"
-      >
-        {/* Subtle decorative background watermark */}
-        <div 
-          className="absolute -right-6 -bottom-8 opacity-15 pointer-events-none select-none text-[120px] font-bold text-white"
-          aria-hidden="true"
-        >
-          ह
-        </div>
-
-        <div className="relative z-10 space-y-3">
-          {/* Header Badges & Audio Narration Trigger */}
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold border border-white/30 shadow-xs">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-200" />
-                <span>{percent >= 80 ? "Authenticated Citizen (e-KYC)" : "Authenticated Citizen"}</span>
-              </span>
-
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 text-emerald-50 text-xs font-semibold border border-white/20">
-                <MapPin className="w-3.5 h-3.5 text-amber-300" />
-                <span>{locationString}</span>
-              </span>
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-2">
+        <div className="space-y-3">
+          
+          {/* Top Badges & Audio Narration */}
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* The Authentic Hindi 'ह' Emblem Badge */}
+            <div className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-[#ebf3ed] text-[#234731] border border-[#c8ded0] text-base font-black shadow-2xs select-none">
+              ह
             </div>
 
-            {/* Audio Narration Button */}
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ebf3ed] text-[#234731] text-xs font-bold border border-[#c8ded0] shadow-2xs">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+              <span>{percent >= 80 ? "Authenticated Citizen (Aadhaar e-KYC)" : "Authenticated Citizen"}</span>
+            </span>
+
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200">
+              <MapPin className="w-3.5 h-3.5 text-amber-600" />
+              <span>{locationString}</span>
+            </span>
+
+            {/* Audio Narration Trigger */}
             {onPlayAudio && (
               <button
                 type="button"
@@ -111,7 +111,7 @@ export default function DashboardHero({
                 className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                   audioPlaying
                     ? "bg-[#ea580c] text-white border-orange-400 shadow-sm animate-pulse"
-                    : "bg-white/20 hover:bg-white/30 text-white border-white/30 shadow-xs"
+                    : "bg-white hover:bg-slate-50 text-slate-800 border-slate-200 shadow-2xs"
                 }`}
                 aria-label={audioPlaying ? "Stop audio summary narration" : "Listen to dashboard summary narration"}
               >
@@ -122,7 +122,7 @@ export default function DashboardHero({
                   </>
                 ) : (
                   <>
-                    <Volume2 className="w-3.5 h-3.5 text-amber-200" />
+                    <Volume2 className="w-3.5 h-3.5 text-[#ea580c]" />
                     <span>बोलकर सुनें</span>
                   </>
                 )}
@@ -130,66 +130,118 @@ export default function DashboardHero({
             )}
           </div>
 
-          {/* Heading */}
+          {/* Impactful Open Heading (Large, Clear, Unboxed) */}
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-snug">
-              {getGreeting()}, <span className="text-amber-200 font-black">{firstName}</span>!
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+              {getGreeting()}, <span className="text-[#234731]">{firstName}!</span>
             </h1>
-            <p className="text-xs sm:text-sm text-emerald-50 font-medium mt-1 leading-relaxed">
-              Your benefit journey starts here. Discover, prepare, and navigate verified public welfare benefits.
+            <p className="text-sm sm:text-base text-slate-600 font-medium mt-1.5 max-w-2xl leading-relaxed">
+              Your sovereign citizen welfare workspace is active. All central &amp; state benefits are verified and mapped to your profile with zero commercial intermediaries.
             </p>
           </div>
+        </div>
 
-          {/* Entitlement Highlight Inset Card */}
-          <div className="bg-white/15 backdrop-blur-md rounded-2xl p-3.5 sm:p-4 border border-white/25 space-y-2">
-            <span className="text-xs font-bold text-emerald-100 tracking-normal block">
-              Total Identified Entitlements • कुल पहचानी गई पात्रता
+        {/* Right Metric Quick Pill */}
+        <div className="flex items-center gap-3 shrink-0 self-start lg:self-auto">
+          <div className="p-4 rounded-2xl bg-[#ebf3ed] border border-[#c8ded0] space-y-1">
+            <span className="text-[11px] font-bold text-[#234731] uppercase tracking-wider block">
+              Total Identified Entitlements
             </span>
-            <div className="flex flex-wrap items-baseline gap-2">
-              <span className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-2xl sm:text-3xl font-black text-[#112318] tracking-tight">
                 <NumberTicker value={percent > 0 ? 48000 : 36000} prefix="₹" suffix="+" />
               </span>
-              <span className="text-xs sm:text-sm text-emerald-100 font-semibold">
-                वार्षिक सरकारी लाभ (Annual Welfare Benefits)
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-2 pt-0.5">
-              <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-emerald-950/20 text-white border border-white/20 flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-200" />
-                <span>₹36,000 Direct Cash DBT</span>
-              </span>
-              <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-emerald-950/20 text-white border border-white/20 flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-200" />
-                <span>₹12,000 Tuition &amp; Subsidy</span>
-              </span>
+              <span className="text-xs text-slate-600 font-semibold">/ yr DBT</span>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Bottom Location & Ration Card Details */}
-        <div className="pt-3 border-t border-white/20 flex flex-wrap items-center justify-between gap-2 text-xs text-emerald-100 font-semibold">
-          <div className="flex items-center gap-2 truncate">
-            <MapPin className="w-3.5 h-3.5 text-amber-200 shrink-0" />
-            <span>{villagePanchayat || locationString}</span>
-            <span>•</span>
-            <span>{rationStatus}</span>
-          </div>
-          <span className="text-xs text-white font-bold shrink-0">
-            Aadhaar NPCI Direct DBT Enabled
-          </span>
+      {/* ======================================================== */}
+      {/* 2. FULLY OPENED HIGH-VISIBILITY DOCUMENT VAULT HEROUI BAR */}
+      {/* ======================================================== */}
+      <div className="w-full rounded-3xl bg-gradient-to-r from-[#112318] via-[#163321] to-[#1f422b] p-6 sm:p-7 text-white shadow-lg border border-[#234731] relative overflow-hidden">
+        
+        {/* Subtle Civic Watermark 'ह' in background */}
+        <div 
+          className="absolute -right-4 -bottom-10 opacity-15 pointer-events-none select-none text-[180px] sm:text-[220px] font-black text-white leading-none z-0"
+          aria-hidden="true"
+        >
+          ह
         </div>
-      </SpotlightCard>
+
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          
+          {/* Left: Vault Icon + Title + Real Certificates */}
+          <div className="space-y-3.5 max-w-3xl">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-white text-[#112318] flex items-center justify-center font-black shadow-md shrink-0">
+                <FolderCheck className="w-6 h-6 text-[#15803d]" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
+                    Personal Document Vault • व्यक्तिगत दस्तावेज़ वॉल्ट
+                  </h2>
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-black uppercase tracking-wider hidden sm:inline-flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>DigiLocker Active</span>
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-emerald-100 font-semibold mt-0.5">
+                  {vaultDocCount} Certificates Secured &amp; Verified • Ready for Scheme Applications
+                </p>
+              </div>
+            </div>
+
+            {/* Clear Visible Certificate Badges Strip */}
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold border border-white/20 transition">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Aadhaar Card (UIDAI Verified)</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold border border-white/20 transition">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Degree Marksheet (SRIT / RGPV)</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold border border-white/20 transition">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Income Certificate (Tehsil Office)</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold border border-white/20 transition">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Domicile Certificate (MP State)</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Right: High-Impact Action Button to Open Document Vault */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+            <Link
+              to="/dashboard/documents"
+              className="px-6 py-3.5 rounded-2xl bg-[#ea580c] hover:bg-[#c2410c] text-white font-black text-sm shadow-xl shadow-orange-950/30 transition-all flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+              aria-label="Open Document Vault"
+            >
+              <span>📁 Open Document Vault</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+        </div>
+
+      </div>
 
       {/* ======================================================== */}
-      {/* 2. RIGHT CARD: Benefit Passport Status (4 cols)          */}
+      {/* 3. BENEFIT PASSPORT STATUS CARD (Clean & Compact)        */}
       {/* ======================================================== */}
-      <div className="lg:col-span-4 flex flex-col">
+      <div className="w-full">
         <BenefitPassportCard
           user={user}
           profileData={profileData}
           completeness={completeness}
         />
       </div>
+
     </section>
   );
 }

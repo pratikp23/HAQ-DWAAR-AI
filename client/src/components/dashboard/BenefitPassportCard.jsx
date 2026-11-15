@@ -60,7 +60,7 @@ export default function BenefitPassportCard({
           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs sm:text-[13px] font-semibold border shrink-0 shadow-2xs ${
             isComplete
               ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-              : "bg-purple-50 text-purple-800 border-purple-200"
+              : "bg-[#ebf3ed] text-[#234731] border-[#c8ded0]"
           }`}>
             <AadhaarLogo className="w-4 h-4 shrink-0" />
             <span>{isComplete ? "Aadhaar e-KYC" : "e-KYC Ready"}</span>
@@ -110,7 +110,7 @@ export default function BenefitPassportCard({
         <div className="space-y-1.5 pt-0.5">
           <div className="flex items-center justify-between text-xs sm:text-sm">
             <span className="font-medium text-slate-700">Profile Completeness</span>
-            <span className="font-semibold text-purple-900 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200 text-xs sm:text-sm flex items-center gap-1">
+            <span className="font-bold text-[#112318] bg-[#ebf3ed] px-2.5 py-0.5 rounded-full border border-[#c8ded0] text-xs sm:text-sm flex items-center gap-1">
               <NumberTicker value={percent} suffix="%" /> 
               <span>• {percent >= 80 ? "Verified" : percent > 0 ? "In Progress" : "Pending"}</span>
             </span>
@@ -125,7 +125,7 @@ export default function BenefitPassportCard({
           >
             <div 
               className={`h-full rounded-full transition-all duration-700 ease-out ${
-                isComplete ? "bg-emerald-600" : percent > 30 ? "bg-[#2b0f4c]" : "bg-orange-500"
+                isComplete ? "bg-emerald-600" : percent > 30 ? "bg-[#112318]" : "bg-orange-500"
               }`}
               style={{ width: `${percent}%` }}
             />
