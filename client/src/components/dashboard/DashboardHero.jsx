@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { NumberTicker, SpotlightCard } from "../common/ReactBits";
+import { NumberTicker } from "../common/ReactBits";
+import Card from "../common/Card";
+import { Avatar } from "../common/Avatar";
 import { 
   UserCheck, 
   MapPin, 
   Volume2, 
   VolumeX, 
   ArrowRight, 
-  Sparkles, 
   ShieldCheck, 
-  AlertCircle,
-  FileCheck2,
-  CheckCircle2,
+  CheckCircle2, 
   FolderCheck,
-  ExternalLink,
   Coins
 } from "lucide-react";
 import { useLanguage } from "../../context/LanguageContext";
@@ -22,11 +20,13 @@ import BenefitPassportCard from "./BenefitPassportCard";
 /**
  * LOK SAMARTH — Citizen Experience Dashboard Hero Component
  * 
- * Fully Opened Layout (Matching the spacious, clear Public Page standard):
- * - Open, unboxed impactful greeting with authentic Devnagari typography
- * - Prominent Hindi 'ह' (हक / हकदार) sovereign civic emblem
- * - Open, high-visibility Document Vault Action Section (not cramped in an inner card)
- * - Clear entitlement breakdown & live trust signals
+ * Open, Spacious Layout featuring HeroUI WithAvatar Card Reference:
+ * Reference: https://heroui.com/en/docs/react/components/card (WithAvatar)
+ * 
+ * - Impactful unboxed greeting with sovereign Hindi 'ह' emblem
+ * - Compact HeroUI Document Vault Card (w-[210px] with Card.Header, Card.Title, Card.Description, Card.Footer + Avatar)
+ * - Compact HeroUI Entitlements Card
+ * - Clean Benefit Passport passbook card
  */
 export default function DashboardHero({
   user,
@@ -74,17 +74,16 @@ export default function DashboardHero({
   const state = profileData?.personal?.state || profileData?.location?.state;
   const locationString = district && state ? `${district}, ${state}` : (state || district || "Jabalpur, Madhya Pradesh");
 
-  const villagePanchayat = profileData?.location?.gramPanchayat || profileData?.personal?.district || "Jabalpur Division";
-  const rationStatus = profileData?.rationCardType ? `राशन: ${profileData.rationCardType}` : "Direct DBT Account Linkage";
-
   return (
     <section aria-label="Personalized Citizen Greeting" className="space-y-6">
       
       {/* ======================================================== */}
-      {/* 1. FULLY OPENED TOP GREETING & SOVEREIGN CIVIC HEADER     */}
+      {/* 1. FULLY OPENED TOP GREETING & HEROUI COMPACT CARDS ROW   */}
       {/* ======================================================== */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-2">
-        <div className="space-y-3">
+      <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 pb-1">
+        
+        {/* Left: Open, Unboxed Impactful Greeting */}
+        <div className="space-y-3 flex-1">
           
           {/* Top Badges & Audio Narration */}
           <div className="flex flex-wrap items-center gap-2.5">
@@ -130,101 +129,82 @@ export default function DashboardHero({
             )}
           </div>
 
-          {/* Impactful Open Heading (Large, Clear, Unboxed) */}
+          {/* Impactful Open Heading (Clear, Prominent, Unboxed) */}
           <div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
               {getGreeting()}, <span className="text-[#234731]">{firstName}!</span>
             </h1>
             <p className="text-sm sm:text-base text-slate-600 font-medium mt-1.5 max-w-2xl leading-relaxed">
-              Your sovereign citizen welfare workspace is active. All central &amp; state benefits are verified and mapped to your profile with zero commercial intermediaries.
+              Your sovereign citizen welfare workspace is active. 350+ central &amp; state schemes are mapped to your Benefit Passport.
             </p>
           </div>
         </div>
 
-        {/* Right Metric Quick Pill */}
-        <div className="flex items-center gap-3 shrink-0 self-start lg:self-auto">
-          <div className="p-4 rounded-2xl bg-[#ebf3ed] border border-[#c8ded0] space-y-1">
-            <span className="text-[11px] font-bold text-[#234731] uppercase tracking-wider block">
-              Total Identified Entitlements
-            </span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-2xl sm:text-3xl font-black text-[#112318] tracking-tight">
-                <NumberTicker value={percent > 0 ? 48000 : 36000} prefix="₹" suffix="+" />
-              </span>
-              <span className="text-xs text-slate-600 font-semibold">/ yr DBT</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ======================================================== */}
-      {/* 2. FULLY OPENED HIGH-VISIBILITY DOCUMENT VAULT HEROUI BAR */}
-      {/* ======================================================== */}
-      <div className="w-full rounded-3xl bg-gradient-to-r from-[#112318] via-[#163321] to-[#1f422b] p-6 sm:p-7 text-white shadow-lg border border-[#234731] relative overflow-hidden">
-        
-        {/* Subtle Civic Watermark 'ह' in background */}
-        <div 
-          className="absolute -right-4 -bottom-10 opacity-15 pointer-events-none select-none text-[180px] sm:text-[220px] font-black text-white leading-none z-0"
-          aria-hidden="true"
-        >
-          ह
-        </div>
-
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        {/* Right: HEROUI COMPACT CARDS ROW (Exact WithAvatar HeroUI pattern) */}
+        <div className="flex flex-wrap items-center gap-3.5 shrink-0 self-start lg:self-center">
           
-          {/* Left: Vault Icon + Title + Real Certificates */}
-          <div className="space-y-3.5 max-w-3xl">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-white text-[#112318] flex items-center justify-center font-black shadow-md shrink-0">
-                <FolderCheck className="w-6 h-6 text-[#15803d]" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
-                    Personal Document Vault • व्यक्तिगत दस्तावेज़ वॉल्ट
-                  </h2>
-                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-black uppercase tracking-wider hidden sm:inline-flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>DigiLocker Active</span>
-                  </span>
+          {/* ======================================================== */}
+          {/* HEROUI WITHAVATAR COMPACT DOCUMENT VAULT CARD            */}
+          {/* Reference: https://heroui.com/en/docs/react/components/card */}
+          {/* ======================================================== */}
+          <Link to="/dashboard/documents" className="block w-[205px] sm:w-[215px] shrink-0 group">
+            <Card className="w-full gap-2 p-3.5 bg-white border border-slate-200/90 hover:border-emerald-500 hover:shadow-md transition-all duration-200 rounded-2xl cursor-pointer">
+              <div className="flex items-center justify-between">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-black border border-emerald-100 shadow-2xs group-hover:scale-105 transition-transform">
+                  <FolderCheck className="w-6 h-6 text-emerald-700" />
                 </div>
-                <p className="text-xs sm:text-sm text-emerald-100 font-semibold mt-0.5">
-                  {vaultDocCount} Certificates Secured &amp; Verified • Ready for Scheme Applications
-                </p>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-bold border border-emerald-200">
+                  Vault
+                </span>
               </div>
-            </div>
 
-            {/* Clear Visible Certificate Badges Strip */}
-            <div className="flex flex-wrap items-center gap-2 pt-1">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold border border-white/20 transition">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Aadhaar Card (UIDAI Verified)</span>
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold border border-white/20 transition">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Degree Marksheet (SRIT / RGPV)</span>
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold border border-white/20 transition">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Income Certificate (Tehsil Office)</span>
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold border border-white/20 transition">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Domicile Certificate (MP State)</span>
-              </span>
-            </div>
-          </div>
+              <Card.Header className="pt-0.5">
+                <Card.Title className="text-sm font-black text-slate-900 group-hover:text-emerald-800 flex items-center justify-between">
+                  <span>Document Vault</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-700 group-hover:translate-x-0.5 transition-all" />
+                </Card.Title>
+                <Card.Description className="text-xs text-slate-500">
+                  {vaultDocCount} Certificates Secured
+                </Card.Description>
+              </Card.Header>
 
-          {/* Right: High-Impact Action Button to Open Document Vault */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
-            <Link
-              to="/dashboard/documents"
-              className="px-6 py-3.5 rounded-2xl bg-[#ea580c] hover:bg-[#c2410c] text-white font-black text-sm shadow-xl shadow-orange-950/30 transition-all flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
-              aria-label="Open Document Vault"
-            >
-              <span>📁 Open Document Vault</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+              <Card.Footer className="flex gap-2 items-center pt-2 border-t border-slate-100">
+                <Avatar aria-label="DigiLocker Synced" className="size-5 shrink-0 bg-emerald-100 text-emerald-800">
+                  <Avatar.Fallback className="text-[10px] font-bold">DL</Avatar.Fallback>
+                </Avatar>
+                <span className="text-[11px] text-slate-600 font-medium">DigiLocker Synced</span>
+              </Card.Footer>
+            </Card>
+          </Link>
+
+          {/* ======================================================== */}
+          {/* HEROUI COMPACT ENTITLEMENTS CARD                         */}
+          {/* ======================================================== */}
+          <div className="w-[205px] sm:w-[215px] shrink-0">
+            <Card className="w-full gap-2 p-3.5 bg-white border border-slate-200/90 hover:border-[#234731] hover:shadow-md transition-all duration-200 rounded-2xl">
+              <div className="flex items-center justify-between">
+                <div className="w-12 h-12 rounded-2xl bg-[#ebf3ed] text-[#234731] flex items-center justify-center font-black border border-[#c8ded0] shadow-2xs">
+                  <Coins className="w-6 h-6 text-[#234731]" />
+                </div>
+                <span className="px-2 py-0.5 rounded-full bg-[#ebf3ed] text-[#234731] text-[10px] font-bold border border-[#c8ded0]">
+                  Entitled
+                </span>
+              </div>
+
+              <Card.Header className="pt-0.5">
+                <Card.Title className="text-sm font-black text-slate-900">
+                  <NumberTicker value={percent > 0 ? 48000 : 36000} prefix="₹" suffix="+" />
+                </Card.Title>
+                <Card.Description className="text-xs text-slate-500">
+                  Total Annual Welfare
+                </Card.Description>
+              </Card.Header>
+
+              <Card.Footer className="flex gap-2 items-center pt-2 border-t border-slate-100">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span className="text-[11px] text-slate-600 font-medium">Direct DBT Linked</span>
+              </Card.Footer>
+            </Card>
           </div>
 
         </div>
@@ -232,7 +212,7 @@ export default function DashboardHero({
       </div>
 
       {/* ======================================================== */}
-      {/* 3. BENEFIT PASSPORT STATUS CARD (Clean & Compact)        */}
+      {/* 2. BENEFIT PASSPORT STATUS CARD (Clean & Compact)        */}
       {/* ======================================================== */}
       <div className="w-full">
         <BenefitPassportCard
