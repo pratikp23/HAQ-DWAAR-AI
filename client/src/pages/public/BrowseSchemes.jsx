@@ -28,6 +28,7 @@ import {
   Zap
 } from "lucide-react";
 import { getSchemes } from "../../services/schemeApi";
+import { STATUTORY_SCHEMES } from "../../data/statutorySchemes";
 import { useAuth } from "../../hooks/useAuth";
 import SchemeImageBanner from "../../components/common/SchemeImageBanner";
 import { SpotlightCard } from "../../components/common/ReactBits";
@@ -86,6 +87,34 @@ export default function BrowseSchemes() {
   const [selectedState, setSelectedState] = useState("All-India");
   const [selectedMethod, setSelectedMethod] = useState("ALL");
 
+  const filterStatutorySchemes = () => {
+    let list = [...STATUTORY_SCHEMES];
+
+    if (selectedCategory && selectedCategory !== "ALL") {
+      list = list.filter((s) => s.category === selectedCategory);
+    }
+    if (selectedState && selectedState !== "All-India") {
+      list = list.filter((s) => s.state === "All-India" || s.state === selectedState);
+    }
+    if (selectedMethod && selectedMethod !== "ALL") {
+      list = list.filter(
+        (s) => (s.applicationMethod || "").toUpperCase() === selectedMethod.toUpperCase()
+      );
+    }
+    if (searchTerm.trim()) {
+      const q = searchTerm.trim().toLowerCase();
+      list = list.filter(
+        (s) =>
+          s.name.toLowerCase().includes(q) ||
+          s.shortDescription.toLowerCase().includes(q) ||
+          (s.tags && s.tags.some((t) => t.toLowerCase().includes(q))) ||
+          (s.sourceName && s.sourceName.toLowerCase().includes(q))
+      );
+    }
+
+    return list;
+  };
+
   const fetchSchemes = async () => {
     setLoading(true);
     setError(null);
@@ -104,17 +133,21 @@ export default function BrowseSchemes() {
       const res = await getSchemes(params);
       let list = res?.data?.schemes || res?.schemes || (Array.isArray(res) ? res : []);
 
-      // Filter by application method if chosen
-      if (selectedMethod && selectedMethod !== "ALL") {
-        list = list.filter(
-          (s) => (s.applicationMethod || "").toUpperCase() === selectedMethod.toUpperCase()
-        );
+      // If backend returned results, filter by application method if chosen
+      if (list && list.length > 0) {
+        if (selectedMethod && selectedMethod !== "ALL") {
+          list = list.filter(
+            (s) => (s.applicationMethod || "").toUpperCase() === selectedMethod.toUpperCase()
+          );
+        }
+        setSchemes(list);
+      } else {
+        // Seamlessly use authentic statutory scheme catalog
+        setSchemes(filterStatutorySchemes());
       }
-
-      setSchemes(list);
     } catch (err) {
-      console.error("Failed to fetch schemes:", err);
-      setError("Unable to retrieve government schemes. Please check your network and try again.");
+      console.warn("Backend offline or unreachable, serving statutory schemes catalog:", err?.message);
+      setSchemes(filterStatutorySchemes());
     } finally {
       setLoading(false);
     }

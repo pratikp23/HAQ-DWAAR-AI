@@ -163,63 +163,67 @@ export default function HomePage() {
     setOpenFaqIdx(openFaqIdx === idx ? null : idx);
   };
 
-  // 1. Featured National Schemes (Unstop Vertical Poster Cards)
+  // 1. Featured National Flagship Schemes (Real Authentic Schemes with HeroUI Cards)
   const featuredPosters = [
+    {
+      id: "nsp-csss-scholarship",
+      name: "NSP Central Sector Scheme of Scholarship (CSSS)",
+      category: "Higher Education & Technical",
+      department: "Ministry of Education (DoHE)",
+      benefit: "₹20,000 / Year DBT",
+      benefitSubtitle: "Direct Bank Transfer for College & Technical Students",
+      eligibility: "Class 12th >80th Percentile • Family Income < ₹4.5 Lakh",
+      tags: ["Central Sector", "Aadhaar DBT", "College / Degree"],
+      image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&auto=format&fit=crop&q=80",
+      deadline: "Open for AY 2025-26",
+      route: "/browse-schemes?category=STUDENT&search=Scholarship",
+      badgeText: "Direct DBT Disbursed",
+      badgeColor: "bg-emerald-600",
+    },
+    {
+      id: "ayushman-bharat",
+      name: "Ayushman Bharat Pradhan Mantri Jan Arogya (PM-JAY)",
+      category: "Health & Medical Care",
+      department: "National Health Authority (NHA)",
+      benefit: "₹5,00,000 / Family / Year",
+      benefitSubtitle: "100% Cashless Secondary & Tertiary Hospital Care",
+      eligibility: "SECC Vulnerable Families • Golden Card Holder",
+      tags: ["Cashless", "28,000+ Hospitals", "Zero Middlemen"],
+      image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop&q=80",
+      deadline: "Active Across India",
+      route: "/browse-schemes?category=HEALTH&search=Ayushman",
+      badgeText: "Golden Card Active",
+      badgeColor: "bg-rose-600",
+    },
+    {
+      id: "pm-surya-ghar",
+      name: "PM Surya Ghar: Muft Bijli Yojana",
+      category: "Clean Energy & Solar",
+      department: "Ministry of New & Renewable Energy",
+      benefit: "Up to ₹78,000 Direct Subsidy",
+      benefitSubtitle: "Rooftop Solar Subsidy + 300 Units Free Power/Mo",
+      eligibility: "Residential Households with Grid Rooftop",
+      tags: ["Solar Rooftop", "Direct DBT", "Zero Electric Bill"],
+      image: "https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800&auto=format&fit=crop&q=80",
+      deadline: "Live Portal Intake",
+      route: "/browse-schemes?category=GENERAL&search=Surya",
+      badgeText: "Instant Subsidy",
+      badgeColor: "bg-amber-600",
+    },
     {
       id: "pm-kisan",
       name: "PM-KISAN Samman Nidhi",
       category: "Agriculture & Farmers",
       department: "Ministry of Agriculture & Farmers Welfare",
-      benefit: "₹6,000 / Year",
-      benefitSubtitle: "Direct DBT in 3 installments",
-      eligibility: "Landholding Farmer Families",
-      tags: ["Direct Cash", "Central Sector", "All-India"],
-      image: "https://images.unsplash.com/photo-1592982537447-7440770cbfc9?w=600&auto=format&fit=crop&q=80",
+      benefit: "₹6,000 / Year DBT",
+      benefitSubtitle: "Direct Income Support in 3 Equal 4-Monthly Tranches",
+      eligibility: "Landholding Farmer Families with Aadhaar Bank Linkage",
+      tags: ["Direct Cash", "Central Sector", "NPCI Active"],
+      image: "https://images.unsplash.com/photo-1592982537447-7440770cbfc9?w=800&auto=format&fit=crop&q=80",
       deadline: "Continuous (Round Year)",
-      route: "/browse-schemes?category=KISAN",
-      badgeColor: "bg-emerald-500",
-    },
-    {
-      id: "ayushman-bharat",
-      name: "Ayushman Bharat PM-JAY",
-      category: "Healthcare",
-      department: "National Health Authority (NHA)",
-      benefit: "₹5,00,000 / Family / Year",
-      benefitSubtitle: "100% Cashless secondary & tertiary care",
-      eligibility: "SECC Listed Vulnerable Families",
-      tags: ["Hospitalization", "Free Card", "Cashless"],
-      image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&auto=format&fit=crop&q=80",
-      deadline: "Active in 28,000+ Hospitals",
-      route: "/browse-schemes?category=HEALTH",
-      badgeColor: "bg-rose-500",
-    },
-    {
-      id: "pmay-urban-rural",
-      name: "Pradhan Mantri Awas Yojana (PMAY)",
-      category: "Affordable Housing",
-      department: "Ministry of Housing & Urban Affairs",
-      benefit: "₹1,20,000 - ₹2,50,000",
-      benefitSubtitle: "Direct construction grant / interest subsidy",
-      eligibility: "Kutcha house dwellers, EWS / LIG",
-      tags: ["Pucca House", "Direct Grant", "PMAY-G / U"],
-      image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=600&auto=format&fit=crop&q=80",
-      deadline: "State Allocation Cycles",
-      route: "/browse-schemes?category=HOUSING",
-      badgeColor: "bg-amber-500",
-    },
-    {
-      id: "nsp-scholarship",
-      name: "National Means-cum-Merit Scholarship",
-      category: "Student Welfare",
-      department: "Ministry of Education (DoSEL)",
-      benefit: "₹12,000 / Year",
-      benefitSubtitle: "Annual merit stipend for Class 9-12",
-      eligibility: "Govt school students with < ₹3.5L family income",
-      tags: ["Merit Scholarship", "NSP Portal", "Class 9-12"],
-      image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&auto=format&fit=crop&q=80",
-      deadline: "31st October Annually",
-      route: "/browse-schemes?category=STUDENT",
-      badgeColor: "bg-blue-500",
+      route: "/browse-schemes?category=KISAN&search=Kisan",
+      badgeText: "100% Central Funded",
+      badgeColor: "bg-emerald-600",
     },
   ];
 
@@ -509,94 +513,121 @@ export default function HomePage() {
       </section>
 
       {/* ======================================================== */}
-      {/* 2. FEATURED SCHEMES POSTER CAROUSEL (Unstop "Featured")   */}
+      {/* 2. FEATURED SCHEMES POSTER CAROUSEL (HeroUI Reference)    */}
       {/* ======================================================== */}
       <section className="space-y-4">
-        <div className="flex items-center justify-between pb-1">
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-6 bg-[#234731] rounded-full" />
-            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              Featured Flagship Schemes
-            </h2>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1">
+          <div className="flex items-center gap-2.5">
+            <div className="w-2 h-7 bg-[#234731] rounded-full" />
+            <div>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                <span>Featured Flagship Schemes</span>
+                <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#ebf3ed] text-[#234731] border border-[#c8ded0]">
+                  Official Gazette Verified
+                </span>
+              </h2>
+              <p className="text-xs text-slate-500 font-medium">
+                Real central and state statutory welfare schemes pre-integrated with Aadhaar DBT and DigiLocker.
+              </p>
+            </div>
           </div>
           <Link
             to="/browse-schemes"
-            className="text-xs sm:text-sm font-bold text-[#234731] hover:text-[#152b1e] flex items-center gap-1"
+            className="text-xs sm:text-sm font-extrabold text-[#234731] hover:text-[#152b1e] inline-flex items-center gap-1 self-start sm:self-auto bg-[#ebf3ed] hover:bg-[#dfece2] px-3.5 py-1.5 rounded-full border border-[#c8ded0] transition"
           >
-            <span>View All</span>
+            <span>Explore 350+ Schemes</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        {/* Horizontal Poster Cards Grid / Carousel */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* HeroUI 4-Column Poster Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {featuredPosters.map((poster) => (
-            <div
+            <Card
               key={poster.id}
-              className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-lg hover:border-[#70987a] transition-all duration-300 flex flex-col justify-between overflow-hidden group"
+              radius="2xl"
+              padding="none"
+              isHoverable
+              className="group border border-slate-200/90 hover:border-[#234731] shadow-2xs hover:shadow-xl hover:shadow-emerald-950/10 transition-all duration-300 bg-white"
             >
-              {/* Poster Image */}
-              <div className="relative aspect-16/10 w-full overflow-hidden bg-slate-100">
-                <img
-                  src={poster.image}
-                  alt={poster.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  loading="lazy"
-                />
-                <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-white/95 text-slate-900 shadow-xs backdrop-blur-xs">
+              {/* HeroUI Card Top Image Banner */}
+              <Card.Image
+                src={poster.image}
+                alt={poster.name}
+                aspectRatio="aspect-16/10"
+              >
+                {/* Floating Category Pill */}
+                <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-white/95 text-slate-900 shadow-sm backdrop-blur-md border border-white/40">
                   {poster.category}
                 </span>
-              </div>
 
-              {/* Poster Content */}
-              <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
-                <div className="space-y-1.5">
-                  <div className="text-[11px] font-bold text-slate-500 truncate">
-                    {poster.department}
+                {/* Floating Official Status Pill */}
+                <span className={`absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${poster.badgeColor} text-white shadow-sm flex items-center gap-1.5`}>
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                  <span>{poster.badgeText}</span>
+                </span>
+              </Card.Image>
+
+              {/* HeroUI Card Body */}
+              <Card.Body className="p-4 sm:p-5 flex flex-col justify-between space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 truncate">
+                    <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                    <span className="truncate">{poster.department}</span>
                   </div>
-                  <h3 className="font-extrabold text-sm sm:text-base text-slate-900 group-hover:text-[#152b1e] transition-colors line-clamp-2 leading-snug">
+
+                  <h3 className="font-black text-base text-slate-900 group-hover:text-[#1b3524] transition-colors line-clamp-2 leading-snug">
                     {poster.name}
                   </h3>
-                  
-                  {/* Benefit Callout */}
-                  <div className="p-2.5 rounded-xl bg-[#ebf3ed]/70 border border-[#c8ded0] space-y-0.5">
-                    <div className="text-xs font-black text-[#152b1e]">
+
+                  {/* High-Visibility Benefit Box */}
+                  <div className="p-3 rounded-2xl bg-[#ebf3ed] border border-[#c8ded0] space-y-1">
+                    <div className="text-[10px] font-extrabold uppercase tracking-wider text-[#234731]">
+                      Statutory Entitlement Value
+                    </div>
+                    <div className="text-base sm:text-lg font-black text-[#112318] tracking-tight">
                       {poster.benefit}
                     </div>
-                    <div className="text-[10px] font-medium text-slate-600 line-clamp-1">
+                    <div className="text-[11px] font-semibold text-slate-600 line-clamp-1">
                       {poster.benefitSubtitle}
                     </div>
                   </div>
+
+                  {/* Eligibility Snapshot */}
+                  <div className="text-[11px] font-medium text-slate-600 bg-slate-50 p-2 rounded-xl border border-slate-100 flex items-start gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                    <span className="line-clamp-2">{poster.eligibility}</span>
+                  </div>
                 </div>
 
-                {/* Tags & Action */}
-                <div className="space-y-3 pt-1 border-t border-slate-100">
-                  <div className="flex flex-wrap gap-1">
-                    {poster.tags.map((tag, tIdx) => (
-                      <span
-                        key={tIdx}
-                        className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-slate-100 text-slate-700"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="flex items-center justify-between pt-1 text-[11px]">
-                    <span className="text-slate-500 font-medium truncate flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-slate-400" />
-                      {poster.deadline}
-                    </span>
-                    <Link
-                      to={poster.route}
-                      className="px-3 py-1.5 rounded-xl bg-[#234731] hover:bg-[#193524] text-white font-bold text-xs shadow-2xs transition shrink-0"
+                {/* Tags */}
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {poster.tags.map((tag, tIdx) => (
+                    <span
+                      key={tIdx}
+                      className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-700"
                     >
-                      Check Eligibility
-                    </Link>
-                  </div>
+                      {tag}
+                    </span>
+                  ))}
                 </div>
-              </div>
-            </div>
+              </Card.Body>
+
+              {/* HeroUI Card Footer */}
+              <Card.Footer className="px-4 sm:px-5 py-3.5 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between gap-2">
+                <span className="text-[11px] text-slate-500 font-semibold truncate flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5 text-slate-400" />
+                  <span>{poster.deadline}</span>
+                </span>
+                <Link
+                  to={poster.route}
+                  className="px-3.5 py-2 rounded-xl bg-[#234731] hover:bg-[#152b1e] text-white font-extrabold text-xs shadow-xs hover:shadow-md transition flex items-center gap-1.5 shrink-0"
+                >
+                  <span>Check &amp; Apply</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </Card.Footer>
+            </Card>
           ))}
         </div>
       </section>

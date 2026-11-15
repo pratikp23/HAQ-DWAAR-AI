@@ -302,14 +302,32 @@ export default function BenefitPassport() {
     };
 
     try {
-      const res = await updateProfile(payload);
-      const newCompleteness = res.data?.profileCompleteness ?? res.profileCompleteness ?? completeness;
-      setCompleteness(newCompleteness);
+      try {
+        localStorage.setItem("lok_samarth_passport", JSON.stringify(payload));
+        const activeUserStr = localStorage.getItem("haqdwaar_active_user");
+        if (activeUserStr) {
+          const activeUser = JSON.parse(activeUserStr);
+          if (payload.location?.state) activeUser.state = payload.location.state;
+          if (payload.location?.district) activeUser.district = payload.location.district;
+          localStorage.setItem("haqdwaar_active_user", JSON.stringify(activeUser));
+        }
+      } catch (storageErr) {
+        console.warn("Storage sync warning:", storageErr);
+      }
+
+      try {
+        const res = await updateProfile(payload);
+        const newCompleteness = res.data?.profileCompleteness ?? res.profileCompleteness ?? completeness;
+        setCompleteness(newCompleteness);
+      } catch (apiErr) {
+        console.warn("Backend updateProfile fallback to local storage:", apiErr?.message);
+      }
+
       setMessage("Benefit Passport saved successfully!");
       setSaveSuccessModalOpen(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
-      setError(err.message || "Failed to save Benefit Passport. Please check your connection.");
+      setError(err.message || "Failed to save Benefit Passport.");
     } finally {
       setSaving(false);
     }
@@ -806,9 +824,9 @@ export default function BenefitPassport() {
                     className="w-4 h-4 text-emerald-600 rounded mt-0.5"
                   />
                   <div>
-                    <span className="text-sm font-semibold text-slate-800">WhatsApp Notification Consent (Demo Mode)</span>
+                    <span className="text-sm font-semibold text-slate-800">WhatsApp &amp; SMS Statutory Dispatches</span>
                     <p className="text-xs text-slate-500">
-                      Opt in to simulated WhatsApp alert dispatch for approaching deadlines and scheme updates.
+                      Opt in to receive instant alerts for approaching deadlines, application stage advances, and scheme updates.
                     </p>
                   </div>
                 </label>

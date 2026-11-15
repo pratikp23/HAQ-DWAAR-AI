@@ -59,13 +59,31 @@ export default function ApplicationDetails() {
     try {
       setLoading(true);
       setError(null);
-      const res = await getApplicationById(id);
-      const app = res?.data?.application || res?.application || res?.data;
-      setApplication(app);
+      let app = null;
+      try {
+        const res = await getApplicationById(id);
+        app = res?.data?.application || res?.application || res?.data;
+      } catch (apiErr) {
+        console.warn("Backend getApplicationById offline, reading from local tracker:", apiErr?.message);
+      }
+
+      if (!app) {
+        try {
+          const raw = localStorage.getItem("lok_samarth_applications");
+          if (raw) {
+            const list = JSON.parse(raw);
+            app = list.find((a) => a._id === id || a.id === id);
+          }
+        } catch {}
+      }
+
       if (app) {
+        setApplication(app);
         setCurrentStatus(app.status || "INTERESTED");
         setNotes(app.notes || "");
         setReferenceNumber(app.referenceNumber || "");
+      } else {
+        setError("Application record not found in tracker.");
       }
     } catch (err) {
       console.error("Failed to load application details:", err);
@@ -93,12 +111,31 @@ export default function ApplicationDetails() {
         confirmJump: true,
       };
 
-      const res = await updateApplication(id, payload);
-      const updated = res?.data?.application || res?.application || res?.data;
-      if (updated) {
-        setApplication(updated);
-        if (updated.status) setCurrentStatus(updated.status);
+      try {
+        const res = await updateApplication(id, payload);
+        const updated = res?.data?.application || res?.application || res?.data;
+        if (updated) {
+          setApplication(updated);
+          if (updated.status) setCurrentStatus(updated.status);
+        }
+      } catch (apiErr) {
+        console.warn("Backend updateApplication fallback to local storage:", apiErr?.message);
       }
+
+      // Sync local storage
+      try {
+        const raw = localStorage.getItem("lok_samarth_applications");
+        if (raw) {
+          const list = JSON.parse(raw);
+          const updatedList = list.map((a) =>
+            a._id === id || a.id === id ? { ...a, status: newStatus, notes, referenceNumber } : a
+          );
+          localStorage.setItem("lok_samarth_applications", JSON.stringify(updatedList));
+          setApplication((prev) => ({ ...prev, status: newStatus, notes, referenceNumber }));
+          setCurrentStatus(newStatus);
+        }
+      } catch {}
+
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err) {

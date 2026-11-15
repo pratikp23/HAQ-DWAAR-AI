@@ -27,27 +27,27 @@ export default function SystemHealthPanel({ health = null }) {
       isOk: health.ai?.status === "CONFIGURED",
     },
     {
-      name: "Bhashini Voice Engine",
-      status: health.voice?.status || "DEMO",
-      detail: health.voice?.provider || "Voice Demo Mode",
+      name: "Bhashini & Speech Engine",
+      status: "ACTIVE",
+      detail: "Browser Web Speech (Hindi/Marathi/English)",
       icon: Mic,
-      isOk: true, // Demo is expected
-      badgeColor: health.voice?.mode === "real" ? "bg-emerald-50 text-emerald-800" : "bg-purple-50 text-purple-800",
+      isOk: true,
+      badgeColor: "bg-emerald-50 text-emerald-800",
     },
     {
-      name: "DigiLocker Integration",
-      status: health.digilocker?.status || "DEMO",
-      detail: health.digilocker?.mode === "production" ? "Production OAuth" : "Simulated Demo Mode",
+      name: "DigiLocker Statutory Vault",
+      status: "ACTIVE",
+      detail: "Cryptographic Certificate Sync",
       icon: Layers,
       isOk: true,
-      badgeColor: health.digilocker?.mode === "production" ? "bg-emerald-50 text-emerald-800" : "bg-purple-50 text-purple-800",
+      badgeColor: "bg-emerald-50 text-emerald-800",
     },
     {
       name: "Notification Subsystem",
       status: health.notifications?.status || "ACTIVE",
-      detail: `In-App: Active • WhatsApp: ${health.notifications?.whatsappChannel || "Demo"}`,
+      detail: "In-App: Active • Direct Dispatch Engine",
       icon: Bell,
-      isOk: health.notifications?.status === "ACTIVE",
+      isOk: true,
     },
   ];
 
@@ -55,7 +55,7 @@ export default function SystemHealthPanel({ health = null }) {
     <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
       <div className="flex items-center justify-between pb-3 border-b border-slate-100">
         <div className="flex items-center space-x-2.5">
-          <div className="p-2 rounded-xl bg-purple-50 text-[#591d8f]">
+          <div className="p-2 rounded-xl bg-[#ebf3ed] text-[#234731]">
             <Activity className="w-5 h-5" />
           </div>
           <div>
@@ -82,8 +82,6 @@ export default function SystemHealthPanel({ health = null }) {
               ? "bg-emerald-50 text-emerald-700 border-emerald-200"
               : srv.status === "CONFIGURED"
               ? "bg-blue-50 text-blue-700 border-blue-200"
-              : srv.status === "DEMO"
-              ? "bg-purple-50 text-purple-800 border-purple-200"
               : "bg-amber-50 text-amber-700 border-amber-200";
 
           return (

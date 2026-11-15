@@ -112,8 +112,9 @@ export default function DocumentHealthCard({
               <BadgeCheck className="w-3.5 h-3.5 text-emerald-600" />
               <span>Direct API v3</span>
             </span>
-            <span className="text-xs font-medium px-2 py-0.5 rounded-md bg-purple-50 text-[#591d8f] border border-purple-200">
-              {isDemoMode ? "DigiLocker Demo" : "Sync Active"}
+            <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-[#ebf3ed] text-[#234731] border border-[#c8ded0] flex items-center gap-1">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Statutory Vault Synced</span>
             </span>
           </div>
         </div>

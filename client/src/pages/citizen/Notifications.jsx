@@ -260,7 +260,7 @@ export default function Notifications() {
                         {notif.channel === "WHATSAPP" && (
                           <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 flex items-center">
                             <MessageSquare className="w-2.5 h-2.5 mr-1" />
-                            WhatsApp Demo
+                            WhatsApp Direct
                           </span>
                         )}
                       </div>

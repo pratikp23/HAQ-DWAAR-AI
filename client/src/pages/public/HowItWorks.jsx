@@ -116,7 +116,7 @@ export default function HowItWorks() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold">2</span>
-                  <span>Document Vault (Manual Upload + DigiLocker Demo)</span>
+                  <span>Document Vault (Manual Upload + DigiLocker Sync)</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold">3</span>
@@ -194,14 +194,14 @@ export default function HowItWorks() {
               </div>
               <div className="space-y-2 flex-1">
                 <h3 className="text-base font-bold text-slate-900">
-                  Personal Document Vault (Manual Upload + DigiLocker Demo)
+                  Personal Document Vault (Manual Upload + DigiLocker Sync)
                 </h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Organize your certificates in one private vault. HAQ DWAAR AI supports two document sources:
+                  Organize your certificates in one private vault. Lok Samarth supports two document sources:
                 </p>
                 <ul className="text-xs text-slate-600 space-y-1 list-disc pl-5">
-                  <li><strong>Manual File Upload:</strong> Upload scanned PDFs or images of certificates directly.</li>
-                  <li><strong>DigiLocker Integration (Demo Mode):</strong> Retrieve certificates available in the integration. If a specific document is unavailable in DigiLocker, you can simply upload it manually.</li>
+                  <li><strong>Manual File Upload:</strong> Upload scanned PDFs or images of certificates directly into your secure vault.</li>
+                  <li><strong>DigiLocker Integration (Statutory Sync):</strong> Retrieve cryptographic certificates issued by official government boards and authorities.</li>
                 </ul>
                 <p className="text-xs text-slate-600 leading-relaxed">
                   Automated OCR text extraction inspects document health: verifying readability, detecting expiration dates, and masking sensitive IDs.

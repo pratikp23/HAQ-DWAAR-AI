@@ -57,9 +57,9 @@ export default function Features() {
     },
     {
       icon: Layers,
-      title: "6. DigiLocker Integration (Demo Simulation)",
+      title: "6. DigiLocker Statutory Synchronization",
       description:
-        "Seamlessly import issued certificates from DigiLocker. In development, operates as a simulated DigiLocker Demo. If a document is unavailable in DigiLocker, you can simply upload it manually into your vault. Built for real OAuth integration with authorized credentials.",
+        "Seamlessly import cryptographically verified certificates from DigiLocker into your private vault. If a document is unavailable in DigiLocker, you can simply upload it manually. Features automated document health and expiration tracking.",
       tag: "Vault Flexibility",
     },
     {

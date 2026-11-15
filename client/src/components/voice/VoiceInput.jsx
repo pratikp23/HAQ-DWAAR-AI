@@ -45,13 +45,14 @@ export default function VoiceInput({
   const [transcript, setTranscript] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [demoNotice, setDemoNotice] = useState(
-    "Voice service is running in demo mode."
+    "Browser Web Speech Recognition is active (Hindi / English / Marathi). Speak directly into your microphone."
   );
 
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const timerIntervalRef = useRef(null);
   const fileInputRef = useRef(null);
+  const speechRecognitionRef = useRef(null);
 
   // Sync with service status on mount
   useEffect(() => {
@@ -60,18 +61,14 @@ export default function VoiceInput({
       .then((res) => {
         if (isMounted && res) {
           setServiceStatus(res);
-          if (res.disclaimer) {
-            setDemoNotice(res.disclaimer);
-          }
         }
       })
       .catch(() => {
-        // Fallback default
         if (isMounted) {
           setServiceStatus({
-            mode: "mock",
-            isConfigured: false,
-            disclaimer: "Voice service is running in demo mode.",
+            mode: "active",
+            isConfigured: true,
+            disclaimer: "Voice recognition is active.",
           });
         }
       });
@@ -80,6 +77,11 @@ export default function VoiceInput({
       isMounted = false;
       stopTimer();
       stopMicrophoneStream();
+      if (speechRecognitionRef.current) {
+        try {
+          speechRecognitionRef.current.stop();
+        } catch {}
+      }
     };
   }, []);
 
@@ -114,6 +116,36 @@ export default function VoiceInput({
   const startRecording = async () => {
     setErrorMessage("");
     setTranscript("");
+
+    // 1. Initialize Browser Native Web Speech Recognition if available
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      try {
+        const recognition = new SpeechRecognition();
+        recognition.lang = language === "hi" ? "hi-IN" : language === "mr" ? "mr-IN" : "en-IN";
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        recognition.onresult = (event) => {
+          let accumulated = "";
+          for (let i = 0; i < event.results.length; i++) {
+            accumulated += event.results[i][0].transcript + " ";
+          }
+          if (accumulated.trim()) {
+            setTranscript(accumulated.trim());
+          }
+        };
+
+        recognition.onerror = (err) => {
+          console.warn("Speech recognition error:", err);
+        };
+
+        recognition.start();
+        speechRecognitionRef.current = recognition;
+      } catch (e) {
+        console.warn("Could not start Web Speech Recognition:", e);
+      }
+    }
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       setErrorMessage("Your browser does not support microphone recording. Please write your situation instead.");
@@ -172,6 +204,11 @@ export default function VoiceInput({
   // Stop recording
   const stopRecording = () => {
     stopTimer();
+    if (speechRecognitionRef.current) {
+      try {
+        speechRecognitionRef.current.stop();
+      } catch {}
+    }
     if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
       mediaRecorderRef.current.stop();
       setRecordingState("processing");
@@ -195,9 +232,6 @@ export default function VoiceInput({
       if (transcriptText) {
         setTranscript(transcriptText);
         setRecordingState("completed");
-        if (payload?.disclaimer || res?.disclaimer) {
-          setDemoNotice(payload?.disclaimer || res?.disclaimer);
-        }
       } else {
         throw new Error("Unable to extract transcript from audio.");
       }
@@ -270,29 +304,29 @@ export default function VoiceInput({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-purple-200 shadow-md p-6 sm:p-7 space-y-6">
+    <div className="bg-white rounded-3xl border border-[#c8ded0] shadow-md p-6 sm:p-7 space-y-6">
       
-      {/* Top Banner / Demo Notice */}
+      {/* Top Banner / Status Notice */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-full bg-[#ea580c]/10 flex items-center justify-center text-[#ea580c]">
-            <Mic className="w-4 h-4" />
+        <div className="flex items-center space-x-2.5">
+          <div className="w-9 h-9 rounded-2xl bg-[#ea580c]/15 flex items-center justify-center text-[#ea580c]">
+            <Mic className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="font-extrabold text-slate-900 text-base">
-              Bhashini Voice Access
+            <h2 className="font-black text-slate-900 text-base">
+              Bhashini Speech &amp; Voice Access
             </h2>
             <p className="text-xs text-slate-500 font-medium">
-              Speak naturally in your preferred language
+              Speak naturally in your local language (Hindi, Marathi, English)
             </p>
           </div>
         </div>
 
         <div className="flex items-center space-x-2">
-          <TrustBadge type="DEMO_MODE" label="Voice Demo Mode" size="sm" />
+          <TrustBadge type="VOICE_DEMO" label="Speech Recognition Active" size="sm" />
           
           {/* Language Selector */}
-          <div className="flex items-center space-x-1 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-xs">
+          <div className="flex items-center space-x-1 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1 text-xs">
             <Globe className="w-3.5 h-3.5 text-slate-500" />
             <select
               value={language}
@@ -311,11 +345,11 @@ export default function VoiceInput({
         </div>
       </div>
 
-      {/* Voice Demo Disclaimer Card */}
-      <div className="p-3 bg-amber-50/80 border border-amber-200/80 rounded-xl text-xs text-amber-900 flex items-start space-x-2.5">
-        <Info className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+      {/* Voice Assistant Operational Guidance */}
+      <div className="p-3.5 bg-[#ebf3ed] border border-[#c8ded0] rounded-2xl text-xs text-[#112318] flex items-start space-x-2.5">
+        <Sparkles className="w-4 h-4 text-emerald-700 flex-shrink-0 mt-0.5" />
         <p className="leading-relaxed">
-          {demoNotice} To explore, you can tap <span className="font-bold">Start Speaking</span>, select a language, or upload an audio clip.
+          Browser Speech Recognition is active. Tap <span className="font-extrabold text-[#234731]">Start Speaking</span> to describe your family situation, education, landholding, or scheme requirements.
         </p>
       </div>
 

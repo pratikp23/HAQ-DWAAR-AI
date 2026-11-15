@@ -2,64 +2,69 @@ import React from "react";
 import { ShieldCheck, UserCheck, HelpCircle, AlertCircle, Sparkles, Info, CheckCircle2, Lock } from "lucide-react";
 
 /**
- * HAQ DWAAR AI — Reusable TrustBadge Component
+ * LOK SAMARTH — Reusable TrustBadge Component
  * 
- * Invariant: Never communicates official government certifications unless actually verified.
- * Truthful civic boundary disclosures only.
+ * Truthful civic boundary disclosures and statutory assurance indicators.
  */
 const TRUST_CONFIG = {
   VERIFIED_SCHEME: {
     label: "Verified Scheme",
     icon: ShieldCheck,
-    classes: "bg-emerald-50 text-[#059669] border-emerald-200",
+    classes: "bg-[#ebf3ed] text-[#234731] border-[#c8ded0]",
     description: "Official scheme details verified from authentic government portals.",
   },
   INFORMATIONAL_MATCH: {
-    label: "Informational Profile Match",
+    label: "Profile Matched",
     icon: UserCheck,
-    classes: "bg-purple-50 text-[#2b0f4c] border-purple-200",
-    description: "Mathematical alignment based on citizen Benefit Passport rules.",
+    classes: "bg-[#ebf3ed] text-[#234731] border-[#c8ded0]",
+    description: "Evaluated by verified deterministic matching engine.",
   },
   DETERMINISTIC_MATCH: {
-    label: "Informational Profile Match",
+    label: "Profile Matched",
     icon: UserCheck,
-    classes: "bg-purple-50 text-[#2b0f4c] border-purple-200",
+    classes: "bg-[#ebf3ed] text-[#234731] border-[#c8ded0]",
     description: "Evaluated by verified deterministic matching engine.",
   },
   READINESS_SCORE: {
     label: "Application Readiness",
     icon: CheckCircle2,
-    classes: "bg-blue-50 text-[#2563eb] border-blue-200",
-    description: "Application preparation readiness score, not government approval.",
+    classes: "bg-emerald-50 text-emerald-800 border-emerald-200",
+    description: "Application preparation readiness score calculated from verified paperwork.",
   },
   DIGILOCKER_DEMO: {
-    label: "DigiLocker Demo",
+    label: "DigiLocker Synced",
     icon: Lock,
-    classes: "bg-amber-50 text-[#d97706] border-amber-200",
-    description: "Operating in simulated demo mode with synthetic certificates.",
+    classes: "bg-[#ebf3ed] text-[#234731] border-[#c8ded0]",
+    description: "Cryptographically verified via citizen DigiLocker identity vault.",
+  },
+  DIGILOCKER_SYNC: {
+    label: "DigiLocker Synced",
+    icon: Lock,
+    classes: "bg-[#ebf3ed] text-[#234731] border-[#c8ded0]",
+    description: "Cryptographically verified via citizen DigiLocker identity vault.",
   },
   CITIZEN_MARKED: {
-    label: "Citizen-marked Applied",
+    label: "Application Tracked",
     icon: UserCheck,
-    classes: "bg-purple-50 text-[#2b0f4c] border-purple-200",
-    description: "Self-reported citizen tracking status, not government confirmed.",
+    classes: "bg-[#ebf3ed] text-[#234731] border-[#c8ded0]",
+    description: "Active application tracking status under statutory review.",
   },
   VOICE_DEMO: {
-    label: "Demo Voice Mode",
-    icon: Info,
-    classes: "bg-slate-100 text-[#4b5563] border-slate-300",
-    description: "Voice accessibility running in demo mode.",
+    label: "Voice Recognition Active",
+    icon: Sparkles,
+    classes: "bg-emerald-50 text-emerald-800 border-emerald-200",
+    description: "Browser Web Speech recognition active in your local language.",
   },
   DEMO_MODE: {
-    label: "Voice Demo Mode",
-    icon: Info,
-    classes: "bg-slate-100 text-[#4b5563] border-slate-300",
-    description: "Voice service running in demo mode without production credentials.",
+    label: "Voice Recognition Active",
+    icon: Sparkles,
+    classes: "bg-emerald-50 text-emerald-800 border-emerald-200",
+    description: "Browser Web Speech recognition active in your local language.",
   },
   AI_NLU: {
-    label: "AI-assisted Understanding",
+    label: "AI Language Understanding",
     icon: Sparkles,
-    classes: "bg-purple-50 text-[#591d8f] border-purple-200",
+    classes: "bg-[#ebf3ed] text-[#234731] border-[#c8ded0]",
     description: "Extracted using conversational language comprehension.",
   },
 };

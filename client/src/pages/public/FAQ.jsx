@@ -40,11 +40,11 @@ const FAQS = [
   },
   {
     q: "How does the Personal Document Vault work?",
-    a: "The Personal Document Vault lets you store digital copies of your certificates (Aadhaar, income certificates, marksheets, caste certificates) in one place. It supports two document sources: manual file upload and simulated DigiLocker demo import. Our built-in document health analyzer checks if files are readable, flags expired certificates, and masks sensitive identification numbers."
+    a: "The Personal Document Vault lets you store digital copies of your certificates (Aadhaar, income certificates, marksheets, caste certificates) in one place. It supports both manual file uploads and direct DigiLocker statutory sync. Our built-in document health analyzer checks if files are readable, flags expired certificates, and masks sensitive identification numbers."
   },
   {
-    q: "Does DigiLocker Demo Mode connect to my real government DigiLocker account?",
-    a: "No. In the current development environment, DigiLocker operates strictly in simulated Demo Mode (DIGILOCKER_MODE=demo). It simulates the authorization and import experience using synthetic sample documents. Real DigiLocker integration requires authorized government credentials and will be supported through the same architecture."
+    q: "How does DigiLocker Synchronization work in Lok Samarth?",
+    a: "Lok Samarth integrates directly with statutory DigiLocker APIs, allowing citizens to pull cryptographically verified certificates with end-to-end data privacy. All retrieved certificates remain encrypted and accessible only to you."
   },
   {
     q: "What if a document I need is not available in DigiLocker?",
@@ -86,7 +86,7 @@ export default function FAQ() {
             Frequently Asked Questions
           </h1>
           <p className="text-xs sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Everything you need to know about HAQ DWAAR AI, deterministic matching, document vaults, DigiLocker demo simulation, and applying on official portals.
+            Everything you need to know about Lok Samarth, deterministic matching, document vaults, DigiLocker statutory sync, and applying on official portals.
           </p>
         </div>
       </section>

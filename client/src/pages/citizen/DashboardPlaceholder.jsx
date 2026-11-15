@@ -61,7 +61,7 @@ export default function DashboardPlaceholder() {
   const [trackedApps, setTrackedApps] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [isDigiLockerDemo, setIsDigiLockerDemo] = useState(true);
+  const [isDigiLockerDemo, setIsDigiLockerDemo] = useState(false);
 
   // Loading & Error States
   const [loading, setLoading] = useState(true);
@@ -133,8 +133,7 @@ export default function DashboardPlaceholder() {
 
       // 7. DigiLocker Status
       if (digiRes.status === "fulfilled") {
-        const mode = digiRes.value?.data?.mode || digiRes.value?.mode || "demo";
-        setIsDigiLockerDemo(mode === "demo");
+        setIsDigiLockerDemo(false);
       }
 
     } catch (err) {

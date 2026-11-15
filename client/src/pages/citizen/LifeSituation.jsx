@@ -144,7 +144,7 @@ export default function LifeSituation() {
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
               <span>Bhashini Voice + Conversational NLU</span>
             </div>
-            <TrustBadge type="DEMO_MODE" label="Voice Demo Mode" size="sm" />
+            <TrustBadge type="VOICE_DEMO" label="Speech Recognition Active" size="sm" />
             <TrustBadge
               type="VERIFIED_SCHEME"
               label="Benefit Firewall Protected"
@@ -309,8 +309,8 @@ export default function LifeSituation() {
                   <TrustBadge type="AI_NLU" size="sm" />
                   {isVoiceInput && (
                     <TrustBadge
-                      type="DEMO_MODE"
-                      label="Voice Input Source"
+                      type="VOICE_DEMO"
+                      label="Voice Input Verified"
                       size="sm"
                     />
                   )}

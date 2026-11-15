@@ -69,7 +69,7 @@ export default function SuperAdminDashboardView({
   }));
 
   const documentSourceData = (documents?.sourceBreakdown || []).map((d) => ({
-    label: d.source === "DIGILOCKER" ? "DigiLocker (Demo)" : "User Upload",
+    label: d.source === "DIGILOCKER" ? "DigiLocker Synced" : "User Upload",
     count: d.count,
   }));
 

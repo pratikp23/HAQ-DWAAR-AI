@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { getSchemeById } from "../../services/schemeApi";
+import { STATUTORY_SCHEMES } from "../../data/statutorySchemes";
 import { evaluateScheme } from "../../services/matchingApi";
 import { getSchemeDocumentChecklist } from "../../services/documentApi";
 import { getApplications, createApplication } from "../../services/applicationApi";
@@ -68,9 +69,21 @@ export default function SchemeDetails() {
       setError(null);
       try {
         const res = await getSchemeById(id);
-        setScheme(res?.data?.scheme || res?.scheme || res?.data);
+        const data = res?.data?.scheme || res?.scheme || res?.data;
+        if (data) {
+          setScheme(data);
+        } else {
+          const fallback = STATUTORY_SCHEMES.find((s) => s._id === id || s.id === id);
+          if (fallback) setScheme(fallback);
+          else setError("Scheme details not found in current catalog.");
+        }
       } catch (err) {
-        setError(err.message || "Failed to load scheme details.");
+        const fallback = STATUTORY_SCHEMES.find((s) => s._id === id || s.id === id);
+        if (fallback) {
+          setScheme(fallback);
+        } else {
+          setError(err.message || "Failed to load scheme details.");
+        }
       } finally {
         setLoading(false);
       }
@@ -618,7 +631,7 @@ export default function SchemeDetails() {
           <div className="p-3.5 bg-[#ebf3ed]/60 rounded-2xl border border-[#c8ded0] flex items-start space-x-2 text-[11px] text-slate-600">
             <Lock className="w-4 h-4 text-[#234731] shrink-0 mt-0.5" />
             <p>
-              <strong>Personal Document Vault:</strong> Certificates are stored securely in your private vault through manual file uploads or supported DigiLocker Demo imports. Lok Samarth does not share documents with third parties.
+              <strong>Personal Document Vault:</strong> Certificates are stored securely in your private vault through manual file uploads or supported DigiLocker statutory sync. Lok Samarth does not share documents with third parties.
             </p>
           </div>
         </div>

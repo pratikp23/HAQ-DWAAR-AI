@@ -1,33 +1,26 @@
 import React from "react";
-import { ShieldCheck, UserCheck, HelpCircle, AlertCircle, Sparkles, Info } from "lucide-react";
+import { ShieldCheck, UserCheck, HelpCircle, AlertCircle, Sparkles, CheckCircle2 } from "lucide-react";
 
 /**
- * HAQ DWAAR AI — TrustBadge Component
- * 
- * Citizen-facing trust indicator clarifying the boundary between:
- * - Authoritative verified scheme facts
- * - Deterministic profile evaluations
- * - AI natural language interpretations
- * - Demo / Mock environment status
+ * LOK SAMARTH — TrustBadge Component
  */
-
 const BADGE_CONFIG = {
   VERIFIED_SCHEME: {
     label: "Verified scheme information",
     icon: ShieldCheck,
-    bg: "bg-emerald-50",
-    text: "text-emerald-800",
-    border: "border-emerald-200",
+    bg: "bg-[#ebf3ed]",
+    text: "text-[#234731]",
+    border: "border-[#c8ded0]",
     iconColor: "text-emerald-600",
     description: "Official facts verified from government sources.",
   },
   DETERMINISTIC_MATCH: {
     label: "Based on your profile",
     icon: UserCheck,
-    bg: "bg-purple-50",
-    text: "text-purple-800",
-    border: "border-purple-200",
-    iconColor: "text-purple-600",
+    bg: "bg-[#ebf3ed]",
+    text: "text-[#234731]",
+    border: "border-[#c8ded0]",
+    iconColor: "text-[#234731]",
     description: "Evaluated by verified deterministic matching engine.",
   },
   POTENTIAL_MATCH: {
@@ -51,20 +44,20 @@ const BADGE_CONFIG = {
   AI_NLU: {
     label: "AI-assisted understanding",
     icon: Sparkles,
-    bg: "bg-indigo-50",
-    text: "text-indigo-800",
-    border: "border-indigo-200",
-    iconColor: "text-indigo-600",
+    bg: "bg-[#ebf3ed]",
+    text: "text-[#234731]",
+    border: "border-[#c8ded0]",
+    iconColor: "text-emerald-700",
     description: "Extracted using conversational language comprehension.",
   },
   DEMO_MODE: {
-    label: "Voice Demo Mode",
-    icon: Info,
-    bg: "bg-slate-100",
-    text: "text-slate-700",
-    border: "border-slate-300",
-    iconColor: "text-slate-500",
-    description: "Voice service running in demo mode without production credentials.",
+    label: "Voice Recognition Active",
+    icon: Sparkles,
+    bg: "bg-emerald-50",
+    text: "text-emerald-800",
+    border: "border-emerald-200",
+    iconColor: "text-emerald-600",
+    description: "Browser Web Speech recognition active in your local language.",
   },
 };
 
@@ -74,24 +67,25 @@ export default function TrustBadge({
   size = "md",
   showTooltip = false,
   className = "",
+  ...props
 }) {
-  const config = BADGE_CONFIG[type] || BADGE_CONFIG.VERIFIED_SCHEME;
+  const normKey = String(type || "").toUpperCase().replace(/[-\s]/g, "_");
+  const config = BADGE_CONFIG[normKey] || BADGE_CONFIG.VERIFIED_SCHEME;
   const Icon = config.icon;
   const displayLabel = label || config.label;
 
-  const sizeStyles =
-    size === "sm"
-      ? "text-[11px] px-2 py-0.5 space-x-1"
-      : "text-xs px-2.5 py-1 space-x-1.5";
-
-  const iconSizes = size === "sm" ? "w-3 h-3" : "w-3.5 h-3.5";
+  const sizeStyles = {
+    sm: "text-[11px] px-2 py-0.5 space-x-1 font-semibold",
+    md: "text-xs px-2.5 py-1 space-x-1.5 font-bold",
+  };
 
   return (
     <span
       title={showTooltip ? config.description : undefined}
-      className={`inline-flex items-center font-bold rounded-full border ${config.bg} ${config.text} ${config.border} ${sizeStyles} ${className} transition-colors`}
+      className={`inline-flex items-center rounded-full border ${config.bg} ${config.text} ${config.border} ${sizeStyles[size] || sizeStyles.md} ${className}`}
+      {...props}
     >
-      <Icon className={`${iconSizes} ${config.iconColor} flex-shrink-0`} />
+      <Icon className={`w-3.5 h-3.5 shrink-0 ${config.iconColor}`} aria-hidden="true" />
       <span>{displayLabel}</span>
     </span>
   );
