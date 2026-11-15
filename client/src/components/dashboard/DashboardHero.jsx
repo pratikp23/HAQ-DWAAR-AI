@@ -150,9 +150,12 @@ export default function DashboardHero({
           <Link to="/dashboard/documents" className="block w-[205px] sm:w-[215px] shrink-0 group">
             <Card className="w-full gap-2 p-3.5 bg-white border border-slate-200/90 hover:border-emerald-500 hover:shadow-md transition-all duration-200 rounded-2xl cursor-pointer">
               <div className="flex items-center justify-between">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-black border border-emerald-100 shadow-2xs group-hover:scale-105 transition-transform">
-                  <FolderCheck className="w-6 h-6 text-emerald-700" />
-                </div>
+                <img
+                  alt="Personal Document Vault"
+                  className="pointer-events-none aspect-square w-14 rounded-2xl object-contain select-none drop-shadow-sm group-hover:scale-110 transition-transform"
+                  loading="lazy"
+                  src="/icons/doc-vault.png"
+                />
                 <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-bold border border-emerald-200">
                   Vault
                 </span>
@@ -183,9 +186,12 @@ export default function DashboardHero({
           <div className="w-[205px] sm:w-[215px] shrink-0">
             <Card className="w-full gap-2 p-3.5 bg-white border border-slate-200/90 hover:border-[#234731] hover:shadow-md transition-all duration-200 rounded-2xl">
               <div className="flex items-center justify-between">
-                <div className="w-12 h-12 rounded-2xl bg-[#ebf3ed] text-[#234731] flex items-center justify-center font-black border border-[#c8ded0] shadow-2xs">
-                  <Coins className="w-6 h-6 text-[#234731]" />
-                </div>
+                <img
+                  alt="Total Annual Welfare Benefits"
+                  className="pointer-events-none aspect-square w-14 rounded-2xl object-cover select-none shadow-xs group-hover:scale-105 transition-transform"
+                  loading="lazy"
+                  src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=300&auto=format&fit=crop&q=80"
+                />
                 <span className="px-2 py-0.5 rounded-full bg-[#ebf3ed] text-[#234731] text-[10px] font-bold border border-[#c8ded0]">
                   Entitled
                 </span>
