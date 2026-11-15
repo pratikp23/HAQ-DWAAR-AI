@@ -15,7 +15,9 @@ import {
   ArrowRightLeft,
   Settings,
   AlertTriangle,
-  ExternalLink
+  ExternalLink,
+  Inbox,
+  Radio,
 } from "lucide-react";
 import MetricCard from "../MetricCard";
 import AttentionPanel from "../AttentionPanel";
@@ -93,8 +95,9 @@ export default function SuperAdminDashboardView({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center space-x-2">
-              <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-600 text-white shadow-xs">
-                ⚙️ Platform Super Administrator
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-600 text-white shadow-xs">
+                <Settings className="w-3 h-3 text-white shrink-0" />
+                <span>Platform Super Administrator</span>
               </span>
               <span className="text-purple-300 text-xs font-semibold">
                 Central System &amp; Governance Overseer
@@ -119,17 +122,31 @@ export default function SuperAdminDashboardView({
         </div>
 
         {/* Global Administrative Shortcuts */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-purple-800/60">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-3 border-t border-purple-800/60">
           <Link
-            to="/admin/officers"
+            to="/admin/applications"
             className="p-3 bg-white/10 hover:bg-white/15 rounded-2xl border border-white/15 flex items-center justify-between text-xs transition group"
           >
             <div className="space-y-0.5">
               <div className="font-extrabold text-white flex items-center space-x-1.5">
-                <ArrowRightLeft className="w-4 h-4 text-orange-400" />
-                <span>1. Officer Succession Console</span>
+                <Inbox className="w-4 h-4 text-emerald-400" />
+                <span>1. Quick Apply Packets Desk</span>
               </div>
-              <div className="text-[11px] text-purple-300">Reassign scheme portfolios on retirement</div>
+              <div className="text-[11px] text-purple-300">Inspect dossiers &amp; DigiLocker certs</div>
+            </div>
+            <span className="text-orange-400 font-black text-sm group-hover:translate-x-1 transition-transform">→</span>
+          </Link>
+
+          <Link
+            to="/admin/scheme-sync"
+            className="p-3 bg-white/10 hover:bg-white/15 rounded-2xl border border-white/15 flex items-center justify-between text-xs transition group"
+          >
+            <div className="space-y-0.5">
+              <div className="font-extrabold text-white flex items-center space-x-1.5">
+                <Radio className="w-4 h-4 text-orange-400" />
+                <span>2. Gov Scheme Sync</span>
+              </div>
+              <div className="text-[11px] text-purple-300">data.gov.in &amp; PIB live ingestion</div>
             </div>
             <span className="text-orange-400 font-black text-sm group-hover:translate-x-1 transition-transform">→</span>
           </Link>
@@ -141,9 +158,9 @@ export default function SuperAdminDashboardView({
             <div className="space-y-0.5">
               <div className="font-extrabold text-white flex items-center space-x-1.5">
                 <Shield className="w-4 h-4 text-purple-300" />
-                <span>2. Cross-Ministry Scheme Catalog</span>
+                <span>3. Scheme Catalog</span>
               </div>
-              <div className="text-[11px] text-purple-300">All 8+ categories &amp; Gazette audit</div>
+              <div className="text-[11px] text-purple-300">Rules &amp; document specifications</div>
             </div>
             <span className="text-orange-400 font-black text-sm group-hover:translate-x-1 transition-transform">→</span>
           </Link>
@@ -155,9 +172,9 @@ export default function SuperAdminDashboardView({
             <div className="space-y-0.5">
               <div className="font-extrabold text-white flex items-center space-x-1.5">
                 <AlertTriangle className="w-4 h-4 text-rose-400" />
-                <span>3. Platform-Wide Fraud Audit</span>
+                <span>4. Platform Fraud Audit</span>
               </div>
-              <div className="text-[11px] text-purple-300">Citizen grievances across all ministries</div>
+              <div className="text-[11px] text-purple-300">Citizen grievances &amp; audits</div>
             </div>
             <span className="text-rose-400 font-black text-sm group-hover:translate-x-1 transition-transform">→</span>
           </Link>

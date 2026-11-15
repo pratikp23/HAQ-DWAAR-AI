@@ -8,7 +8,8 @@ import {
   Eye,
   RefreshCw,
   Users,
-  Check
+  Check,
+  X
 } from "lucide-react";
 import {
   getOfficerApplications,
@@ -315,10 +316,11 @@ export default function ChiefOfficerDashboardView({ user }) {
                 Documents of {inspectingApp.applicantName} ({inspectingApp.department})
               </h3>
               <button
+                type="button"
                 onClick={() => setInspectingApp(null)}
-                className="text-xs font-bold text-slate-400 hover:text-slate-600"
+                className="text-xs font-bold text-slate-400 hover:text-slate-600 p-1 rounded-lg"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 

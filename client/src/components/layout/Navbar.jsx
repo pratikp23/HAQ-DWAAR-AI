@@ -40,8 +40,9 @@ export default function Navbar({ forceRender = false }) {
     if (isAuthenticated) {
       getUnreadCount()
         .then((res) => {
-          if (isMounted && res.data?.data?.unreadCount !== undefined) {
-            setUnreadCount(res.data.data.unreadCount);
+          const count = res?.data?.unreadCount ?? res?.unreadCount ?? res?.data?.data?.unreadCount;
+          if (isMounted && count !== undefined) {
+            setUnreadCount(count);
           }
         })
         .catch(() => {});
@@ -104,7 +105,7 @@ export default function Navbar({ forceRender = false }) {
   const currentLang = languages.find((l) => l.code === language) || languages[0];
 
   return (
-    <nav className="bg-white border-b border-purple-100/90 sticky top-0 z-40 shadow-xs">
+    <nav className="bg-white border-b border-[#234731]/20 sticky top-0 z-40 shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo & Tagline */}
@@ -113,20 +114,20 @@ export default function Navbar({ forceRender = false }) {
             onClick={(e) => handleNavClick(e, "top")}
             className="flex items-center space-x-3 group"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#240b49] flex items-center justify-center text-white font-black text-xl shadow-xs group-hover:bg-[#1e0a3c] transition">
-              <ShieldCheck className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-xl bg-[#112318] flex items-center justify-center text-white font-black text-xl shadow-xs group-hover:bg-[#234731] transition">
+              <ShieldCheck className="w-6 h-6 text-amber-400" />
             </div>
             <div>
               <div className="flex items-center space-x-1.5">
                 <span className="font-extrabold text-base sm:text-lg tracking-tight text-slate-900">
-                  {t("brandTitle", "हकद्वार")} • HAQ DWAAR <span className="text-[#591d8f]">AI</span>
+                  LOK SAMARTH
                 </span>
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-purple-50 text-[#591d8f] border border-purple-200 uppercase tracking-wider hidden sm:inline-block">
-                  {t("civicAi", "Civic AI")}
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase tracking-wider hidden sm:inline-block">
+                  Citizen Gateway
                 </span>
               </div>
               <p className="text-[11px] text-slate-600 font-semibold tracking-tight -mt-0.5">
-                {t("brandSubtitle", "Scheme se Application Tak")}
+                Your Right • Your Benefit • Your Empowerment
               </p>
             </div>
           </Link>
@@ -137,7 +138,7 @@ export default function Navbar({ forceRender = false }) {
               onClick={(e) => handleNavClick(e, "top")}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
                 isHomePage && !location.hash
-                  ? "bg-purple-50 text-[#591d8f]"
+                  ? "bg-emerald-50 text-emerald-800"
                   : "text-slate-700 hover:text-slate-950 hover:bg-slate-100"
               }`}
             >
@@ -148,7 +149,7 @@ export default function Navbar({ forceRender = false }) {
               to="/browse-schemes"
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
                 location.pathname === "/browse-schemes"
-                  ? "bg-purple-50 text-[#591d8f]"
+                  ? "bg-emerald-50 text-emerald-800"
                   : "text-slate-700 hover:text-slate-950 hover:bg-slate-100"
               }`}
             >
@@ -186,9 +187,9 @@ export default function Navbar({ forceRender = false }) {
             {isAuthenticated && (
               <Link
                 to={user?.role === "admin" ? "/admin" : "/dashboard"}
-                className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#591d8f] bg-purple-50 hover:bg-purple-100 transition flex items-center gap-1.5 border border-purple-200"
+                className="px-3 py-1.5 rounded-lg text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 transition flex items-center gap-1.5 border border-emerald-200"
               >
-                <LayoutDashboard className="w-3.5 h-3.5 text-[#591d8f]" />
+                <LayoutDashboard className="w-3.5 h-3.5 text-emerald-700" />
                 <span>{user?.role === "admin" ? "Admin Console" : "Dashboard"}</span>
               </Link>
             )}
@@ -200,16 +201,16 @@ export default function Navbar({ forceRender = false }) {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setLangDropdownOpen(!langDropdownOpen)}
-                className="inline-flex items-center px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-800 hover:text-slate-950 bg-slate-100/80 hover:bg-slate-200/80 border border-slate-200 transition"
+                className="inline-flex items-center px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-800 hover:text-slate-950 bg-slate-100/80 hover:bg-slate-200/80 border border-slate-200 transition cursor-pointer"
                 aria-label="Change Language"
               >
-                <Globe className="w-3.5 h-3.5 mr-1 text-[#591d8f]" />
+                <Globe className="w-3.5 h-3.5 mr-1 text-emerald-700" />
                 <span>{currentLang?.flag} {currentLang?.label} ({currentLang?.short})</span>
                 <ChevronDown className="w-3 h-3 ml-1 text-slate-500" />
               </button>
 
               {langDropdownOpen && (
-                <div className="absolute right-0 mt-1.5 w-40 bg-white rounded-2xl shadow-xl border border-purple-100 py-1 z-50 animate-fade-in">
+                <div className="absolute right-0 mt-1.5 w-40 bg-white rounded-2xl shadow-xl border border-slate-200 py-1 z-50 animate-fade-in">
                   <div className="px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-100">
                     भाषा चुनें (Language)
                   </div>
@@ -220,15 +221,15 @@ export default function Navbar({ forceRender = false }) {
                         setLanguage(l.code);
                         setLangDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-3 py-2 text-xs font-bold flex items-center justify-between hover:bg-purple-50 transition ${
-                        language === l.code ? "text-[#591d8f] bg-purple-50/60" : "text-slate-700"
+                      className={`w-full text-left px-3 py-2 text-xs font-bold flex items-center justify-between hover:bg-emerald-50 transition ${
+                        language === l.code ? "text-emerald-800 bg-emerald-50/60" : "text-slate-700"
                       }`}
                     >
                       <span className="flex items-center space-x-2">
                         <span>{l.flag}</span>
                         <span>{l.label}</span>
                       </span>
-                      {language === l.code && <Check className="w-3.5 h-3.5 text-[#591d8f]" />}
+                      {language === l.code && <Check className="w-3.5 h-3.5 text-emerald-700" />}
                     </button>
                   ))}
                 </div>
@@ -262,7 +263,7 @@ export default function Navbar({ forceRender = false }) {
 
                 <Link
                   to={user?.role === "admin" ? "/admin" : "/dashboard"}
-                  className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-extrabold bg-[#240b49] hover:bg-[#1e0a3c] text-white shadow-xs transition"
+                  className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-extrabold bg-[#112318] hover:bg-[#234731] text-white shadow-xs transition active:scale-95"
                 >
                   <UserCheck className="w-4 h-4 mr-1.5" />
                   {user?.role === "admin" ? t("adminConsole", "Admin Console") : t("myDashboard", "My Dashboard")}
@@ -270,7 +271,7 @@ export default function Navbar({ forceRender = false }) {
 
                 <button
                   onClick={handleLogout}
-                  className="inline-flex items-center px-3 py-2 rounded-xl text-xs font-extrabold text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-rose-200 transition"
+                  className="inline-flex items-center px-3 py-2 rounded-xl text-xs font-extrabold text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-rose-200 transition cursor-pointer"
                   title="Sign Out"
                 >
                   <LogOut className="w-3.5 h-3.5 mr-1" />
@@ -287,7 +288,7 @@ export default function Navbar({ forceRender = false }) {
                 </Link>
                 <Link
                   to="/register"
-                  className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-extrabold bg-[#240b49] hover:bg-[#1e0a3c] text-white shadow-xs transition"
+                  className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-extrabold bg-[#112318] hover:bg-[#234731] text-white shadow-xs transition active:scale-95"
                 >
                   {t("register", "Get Started")}
                   <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
@@ -311,7 +312,7 @@ export default function Navbar({ forceRender = false }) {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               type="button"
-              className="p-2 rounded-lg text-slate-700 hover:text-slate-950 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#591d8f] focus-visible:ring-offset-2"
+              className="p-2 rounded-lg text-slate-700 hover:text-slate-950 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700 focus-visible:ring-offset-2"
               aria-label="Toggle navigation menu"
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-menu-drawer"
@@ -331,38 +332,38 @@ export default function Navbar({ forceRender = false }) {
           <div className="space-y-1">
             <button
               onClick={(e) => handleNavClick(e, "top")}
-              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-[#591d8f]"
+              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-emerald-700"
             >
               {t("navHome", "Home")}
             </button>
             <Link
               to="/browse-schemes"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-[#591d8f]"
+              className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-emerald-700"
             >
               {t("navBrowseSchemes", "Browse Schemes")}
             </Link>
             <button
               onClick={(e) => handleNavClick(e, "how-it-works")}
-              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-[#591d8f]"
+              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-emerald-700"
             >
               {t("navHowItWorks", "How It Works")}
             </button>
             <button
               onClick={(e) => handleNavClick(e, "features")}
-              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-[#591d8f]"
+              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-emerald-700"
             >
               {t("navFeatures", "Features")}
             </button>
             <button
               onClick={(e) => handleNavClick(e, "about")}
-              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-[#591d8f]"
+              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-emerald-700"
             >
               {t("navAbout", "About")}
             </button>
             <button
               onClick={(e) => handleNavClick(e, "faq")}
-              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-[#591d8f]"
+              className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-emerald-700"
             >
               {t("navFaq", "FAQ")}
             </button>
@@ -378,7 +379,7 @@ export default function Navbar({ forceRender = false }) {
                   onClick={() => setLanguage(l.code)}
                   className={`px-2 py-1 rounded-lg text-xs font-bold ${
                     language === l.code
-                      ? "bg-[#240b49] text-white"
+                      ? "bg-[#112318] text-white"
                       : "bg-slate-100 text-slate-700"
                   }`}
                   aria-label={`Switch language to ${l.label}`}
@@ -398,35 +399,35 @@ export default function Navbar({ forceRender = false }) {
               <Link
                 to="/dashboard"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-purple-50 hover:text-[#591d8f]"
+                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-900"
               >
                 Dashboard Overview
               </Link>
               <Link
                 to="/dashboard/benefit-passport"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-purple-50 hover:text-[#591d8f]"
+                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-900"
               >
                 Benefit Passport
               </Link>
               <Link
                 to="/dashboard/documents"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-purple-50 hover:text-[#591d8f]"
+                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-900"
               >
                 Document Vault
               </Link>
               <Link
                 to="/dashboard/applications"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-purple-50 hover:text-[#591d8f]"
+                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-900"
               >
                 Tracked Applications
               </Link>
               <Link
                 to="/dashboard/notifications"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-purple-50 hover:text-[#591d8f]"
+                className="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-900"
               >
                 <span>Alerts &amp; Notifications</span>
                 {unreadCount > 0 && (
@@ -447,21 +448,21 @@ export default function Navbar({ forceRender = false }) {
               <Link
                 to="/admin"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-purple-50 hover:text-[#591d8f]"
+                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-900"
               >
                 Analytics Dashboard
               </Link>
               <Link
                 to="/admin/schemes"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-purple-50 hover:text-[#591d8f]"
+                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-900"
               >
                 Manage Schemes
               </Link>
               <Link
                 to="/admin/notifications"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-purple-50 hover:text-[#591d8f]"
+                className="block px-3 py-2 rounded-lg text-xs font-bold text-slate-800 hover:bg-emerald-50 hover:text-emerald-900"
               >
                 Notification Analyzer
               </Link>
@@ -474,7 +475,7 @@ export default function Navbar({ forceRender = false }) {
                 <Link
                   to={user?.role === "admin" ? "/admin" : "/dashboard"}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block w-full text-center px-4 py-2.5 rounded-xl text-xs font-extrabold bg-[#240b49] text-white shadow-xs"
+                  className="block w-full text-center px-4 py-2.5 rounded-xl text-xs font-extrabold bg-[#112318] text-white shadow-xs"
                 >
                   {user?.role === "admin" ? t("adminConsole", "Admin Console") : t("myDashboard", "My Dashboard")}
                 </Link>
@@ -503,7 +504,7 @@ export default function Navbar({ forceRender = false }) {
                 <Link
                   to="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-center px-3 py-2 rounded-xl text-xs font-extrabold bg-[#240b49] text-white shadow-xs"
+                  className="text-center px-3 py-2 rounded-xl text-xs font-extrabold bg-[#112318] text-white shadow-xs"
                 >
                   {t("register", "Get Started")}
                 </Link>

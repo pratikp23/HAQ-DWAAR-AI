@@ -13,7 +13,10 @@ import {
   UserCheck,
   BadgeCheck,
   FileText,
-  Sparkles
+  Sparkles,
+  CreditCard,
+  PenTool,
+  Check
 } from "lucide-react";
 import { applyOfficerLicense } from "../../services/officerApi";
 import { SAMPLE_GOVT_DOCS } from "../../utils/govtDocumentSamples";
@@ -104,44 +107,44 @@ export default function OfficerApply() {
   };
 
   return (
-    <div className="bg-[#f7f5fa] min-h-[calc(100vh-4rem)] py-8 px-4 sm:px-6 lg:px-8">
+    <div className="bg-[#f8faf8] min-h-[calc(100vh-4rem)] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto space-y-6">
         
         {/* Navigation back */}
         <div className="flex items-center justify-between">
           <Link
             to="/login"
-            className="inline-flex items-center text-xs font-bold text-slate-600 hover:text-[#2b0f4c] transition"
+            className="inline-flex items-center text-xs font-bold text-slate-600 hover:text-[#234731] transition"
           >
             <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
             <span>Return to Login</span>
           </Link>
 
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-purple-100 text-[#2b0f4c] border border-purple-200">
-            <Lock className="w-3 h-3 mr-1 text-[#591d8f]" />
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#ebf3ed] text-[#234731] border border-[#c8ded0]">
+            <Lock className="w-3 h-3 mr-1 text-[#234731]" />
             Official Authorization Gateway
           </span>
         </div>
 
         {/* Hero Header */}
-        <div className="bg-gradient-to-r from-[#1e0a3c] via-[#240b49] to-[#2b0f4c] text-white p-6 sm:p-8 rounded-3xl shadow-xl border border-purple-900/40 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-[#112318] via-[#1b3524] to-[#234731] text-white p-6 sm:p-8 rounded-3xl shadow-xl border border-emerald-900/40 relative overflow-hidden">
           <div className="relative z-10 space-y-2">
-            <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-orange-400 mb-3 shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-amber-400 mb-3 shadow-sm">
               <Building2 className="w-6 h-6" />
             </div>
             <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-              Category Admin Clearance & Verification
+              Category Admin Clearance &amp; Verification
             </h1>
-            <p className="text-xs sm:text-sm text-purple-200 max-w-xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-200 max-w-xl leading-relaxed">
               In accordance with platform governance, all Category Admins are verified government personnel.
               Submit your credentials below for review by the <strong>Chief Nodal Verification Authority</strong>.
             </p>
           </div>
-          <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-purple-600/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
         </div>
 
         {/* Application Form or Success Notice */}
-        <div className="bg-white rounded-3xl border border-[#e9e1f5] shadow-sm p-6 sm:p-8">
+        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8">
           {submittedApp ? (
             <div className="text-center py-6 space-y-5">
               <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center shadow-xs">
@@ -154,14 +157,14 @@ export default function OfficerApply() {
                 <p className="text-xs text-slate-600 leading-relaxed">
                   Your credentials have been securely routed to the <strong>Chief Nodal Verification Desk</strong>.
                   Once authenticated against departmental records, your Category Admin rights for{" "}
-                  <strong className="text-purple-900 font-bold">{submittedApp.department}</strong> will be activated.
+                  <strong className="text-[#234731] font-bold">{submittedApp.department}</strong> will be activated.
                 </p>
               </div>
 
-              <div className="p-4 bg-purple-50/70 border border-purple-200 rounded-2xl text-left max-w-md mx-auto space-y-2 text-xs">
+              <div className="p-4 bg-[#ebf3ed]/70 border border-[#c8ded0] rounded-2xl text-left max-w-md mx-auto space-y-2 text-xs">
                 <div className="flex justify-between text-slate-700">
                   <span className="font-semibold">Application Reference:</span>
-                  <span className="font-mono font-bold text-[#2b0f4c]">{submittedApp.applicationId}</span>
+                  <span className="font-mono font-bold text-[#234731]">{submittedApp.applicationId}</span>
                 </div>
                 <div className="flex justify-between text-slate-700">
                   <span className="font-semibold">Assigned Department:</span>
@@ -178,7 +181,7 @@ export default function OfficerApply() {
               <div className="pt-2">
                 <Link
                   to="/"
-                  className="inline-flex items-center px-6 py-2.5 rounded-xl font-bold text-xs bg-[#240b49] text-white hover:bg-[#1e0a3c] transition shadow-xs"
+                  className="inline-flex items-center px-6 py-2.5 rounded-xl font-bold text-xs bg-[#234731] text-white hover:bg-[#183323] transition shadow-xs"
                 >
                   Return to Home
                 </Link>
@@ -193,8 +196,8 @@ export default function OfficerApply() {
                 </div>
               )}
 
-              <div className="p-3.5 bg-purple-50/60 border border-purple-200 rounded-2xl text-[11px] text-[#2b0f4c] flex items-start space-x-2">
-                <UserCheck className="w-4 h-4 text-[#591d8f] shrink-0 mt-0.5" />
+              <div className="p-3.5 bg-[#ebf3ed]/60 border border-[#c8ded0] rounded-2xl text-[11px] text-[#234731] flex items-start space-x-2">
+                <UserCheck className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
                 <span>
                   <strong>Strict Anti-Impersonation Protocol:</strong> Public users cannot register as administrators.
                   Category Admins are restricted strictly to managing schemes within their verified department.
@@ -262,12 +265,12 @@ export default function OfficerApply() {
                     onChange={handleChange}
                     className="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs bg-white text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-[#591d8f]"
                   >
-                    <option value="KISAN">🌾 Agriculture & Farmers Welfare (KISAN)</option>
-                    <option value="STUDENT">🎓 Education & Skill Development (STUDENT)</option>
-                    <option value="HEALTH">🏥 Health & Family Welfare (HEALTH)</option>
-                    <option value="BUSINESS">💼 MSME, Industry & Commerce (BUSINESS)</option>
-                    <option value="EMPLOYMENT">👷 Labour, Employment & Social Security (EMPLOYMENT)</option>
-                    <option value="GENERAL">🏛️ General & Social Justice (GENERAL)</option>
+                    <option value="KISAN">Agriculture &amp; Farmers Welfare (KISAN)</option>
+                    <option value="STUDENT">Education &amp; Skill Development (STUDENT)</option>
+                    <option value="HEALTH">Health &amp; Family Welfare (HEALTH)</option>
+                    <option value="BUSINESS">MSME, Industry &amp; Commerce (BUSINESS)</option>
+                    <option value="EMPLOYMENT">Labour, Employment &amp; Social Security (EMPLOYMENT)</option>
+                    <option value="GENERAL">General &amp; Social Justice (GENERAL)</option>
                   </select>
                 </div>
               </div>
@@ -361,7 +364,7 @@ export default function OfficerApply() {
                     title="Attach sample government documents for instant testing"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-[#ea580c]" />
-                    <span>⚡ 1-Click Attach Sample Docs</span>
+                    <span>1-Click Attach Sample Docs</span>
                   </button>
                 </div>
 
@@ -370,9 +373,15 @@ export default function OfficerApply() {
                   {/* 1. Employee ID Card */}
                   <div className="p-3 rounded-2xl border border-slate-200 bg-white space-y-1.5 shadow-2xs">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-slate-800">🪪 1. Govt Employee ID Card</span>
+                      <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                        <CreditCard className="w-4 h-4 text-purple-700 shrink-0" />
+                        <span>1. Govt Employee ID Card</span>
+                      </span>
                       {formData.employeeIdCardUrl ? (
-                        <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Attached ✓</span>
+                        <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 inline-flex items-center gap-1">
+                          <Check className="w-3 h-3 text-emerald-600" />
+                          <span>Attached</span>
+                        </span>
                       ) : (
                         <span className="text-[10px] font-bold text-slate-400">Required</span>
                       )}
@@ -392,9 +401,15 @@ export default function OfficerApply() {
                   {/* 2. Authorization Letter */}
                   <div className="p-3 rounded-2xl border border-slate-200 bg-white space-y-1.5 shadow-2xs">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-slate-800">📜 2. Nomination / Auth Letter</span>
+                      <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                        <FileText className="w-4 h-4 text-purple-700 shrink-0" />
+                        <span>2. Nomination / Auth Letter</span>
+                      </span>
                       {formData.authorizationLetterUrl ? (
-                        <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Attached ✓</span>
+                        <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 inline-flex items-center gap-1">
+                          <Check className="w-3 h-3 text-emerald-600" />
+                          <span>Attached</span>
+                        </span>
                       ) : (
                         <span className="text-[10px] font-bold text-slate-400">Required</span>
                       )}
@@ -414,9 +429,15 @@ export default function OfficerApply() {
                   {/* 3. Posting Order */}
                   <div className="p-3 rounded-2xl border border-slate-200 bg-white space-y-1.5 shadow-2xs">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-slate-800">🏛️ 3. Ministry Posting Order</span>
+                      <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                        <Building2 className="w-4 h-4 text-purple-700 shrink-0" />
+                        <span>3. Ministry Posting Order</span>
+                      </span>
                       {formData.postingOrderUrl ? (
-                        <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Attached ✓</span>
+                        <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 inline-flex items-center gap-1">
+                          <Check className="w-3 h-3 text-emerald-600" />
+                          <span>Attached</span>
+                        </span>
                       ) : (
                         <span className="text-[10px] font-bold text-slate-400">Required</span>
                       )}
@@ -436,9 +457,15 @@ export default function OfficerApply() {
                   {/* 4. Specimen Signature & Seal */}
                   <div className="p-3 rounded-2xl border border-slate-200 bg-white space-y-1.5 shadow-2xs">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-slate-800">🖋️ 4. Specimen Sign &amp; Seal</span>
+                      <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                        <PenTool className="w-4 h-4 text-purple-700 shrink-0" />
+                        <span>4. Specimen Sign &amp; Seal</span>
+                      </span>
                       {formData.specimenSignatureUrl ? (
-                        <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Attached ✓</span>
+                        <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 inline-flex items-center gap-1">
+                          <Check className="w-3 h-3 text-emerald-600" />
+                          <span>Attached</span>
+                        </span>
                       ) : (
                         <span className="text-[10px] font-bold text-slate-400">Required</span>
                       )}
@@ -468,7 +495,7 @@ export default function OfficerApply() {
                   value={formData.justification}
                   onChange={handleChange}
                   placeholder="Specify schemes or statutory responsibilities assigned under your departmental jurisdiction..."
-                  className="w-full p-3 border border-slate-200 rounded-xl text-xs bg-slate-50 focus:bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#591d8f] resize-none"
+                  className="w-full p-3 border border-slate-200 rounded-xl text-xs bg-slate-50 focus:bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#234731] resize-none"
                 />
               </div>
 
@@ -481,7 +508,7 @@ export default function OfficerApply() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full sm:w-auto px-6 py-2.5 rounded-xl font-bold text-xs bg-[#240b49] hover:bg-[#1e0a3c] text-white flex items-center justify-center space-x-2 transition shadow-md shadow-purple-950/20 disabled:opacity-50 cursor-pointer"
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-xl font-bold text-xs bg-[#234731] hover:bg-[#183323] text-white flex items-center justify-center space-x-2 transition shadow-md shadow-emerald-950/20 disabled:opacity-50 cursor-pointer"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>{submitting ? "Submitting Credentials..." : "Submit for Nodal Verification"}</span>

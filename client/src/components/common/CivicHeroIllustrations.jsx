@@ -40,7 +40,7 @@ export function CitizenFamilyIllustration({ className = "w-full h-auto max-h-[34
         <rect x="14" y="40" width="150" height="8" rx="4" fill="#0f172a" />
         <rect x="14" y="54" width="110" height="6" rx="3" fill="#64748b" />
         <rect x="14" y="68" width="130" height="14" rx="7" fill="#ea580c" fillOpacity="0.15" />
-        <text x="22" y="78" fill="#c2410c" fontSize="8" fontWeight="bold">Direct Scholar Gateway ✓</text>
+        <text x="22" y="78" fill="#c2410c" fontSize="8" fontWeight="bold">Direct Scholar Gateway</text>
       </g>
 
       {/* Floating Scheme Notification Card Right */}
@@ -52,7 +52,7 @@ export function CitizenFamilyIllustration({ className = "w-full h-auto max-h-[34
         <rect x="14" y="40" width="140" height="8" rx="4" fill="#0f172a" />
         <rect x="14" y="54" width="100" height="6" rx="3" fill="#64748b" />
         <rect x="14" y="68" width="145" height="14" rx="7" fill="#10b981" fillOpacity="0.15" />
-        <text x="22" y="78" fill="#047857" fontSize="8" fontWeight="bold">Verified Gazette Criteria ✓</text>
+        <text x="22" y="78" fill="#047857" fontSize="8" fontWeight="bold">Verified Gazette Criteria</text>
       </g>
 
       {/* Citizen Representation Silhouettes */}
@@ -166,15 +166,15 @@ export function DocumentReadinessIllustration({ className = "w-full h-auto max-h
       {/* Document Stack in Vault */}
       <g transform="translate(100, 145)">
         <rect x="10" y="0" width="160" height="35" rx="8" fill="#ffffff" stroke="#e9e1f5" />
-        <text x="25" y="22" fill="#0f172a" fontSize="9" fontWeight="bold">📄 Income Certificate</text>
+        <text x="25" y="22" fill="#0f172a" fontSize="9" fontWeight="bold">Income Certificate</text>
         <circle cx="150" cy="18" r="6" fill="#10b981" />
         
         <rect x="10" y="45" width="160" height="35" rx="8" fill="#ffffff" stroke="#e9e1f5" />
-        <text x="25" y="67" fill="#0f172a" fontSize="9" fontWeight="bold">📄 Domicile Certificate</text>
+        <text x="25" y="67" fill="#0f172a" fontSize="9" fontWeight="bold">Domicile Certificate</text>
         <circle cx="150" cy="63" r="6" fill="#10b981" />
 
         <rect x="10" y="90" width="160" height="35" rx="8" fill="#ffffff" stroke="#e9e1f5" />
-        <text x="25" y="112" fill="#0f172a" fontSize="9" fontWeight="bold">📄 Marksheet / Proof</text>
+        <text x="25" y="112" fill="#0f172a" fontSize="9" fontWeight="bold">Marksheet / Proof</text>
         <circle cx="150" cy="108" r="6" fill="#10b981" />
       </g>
 
@@ -184,7 +184,7 @@ export function DocumentReadinessIllustration({ className = "w-full h-auto max-h
         
         <rect x="15" y="15" width="150" height="32" rx="8" fill="#f8f5fc" />
         <text x="25" y="32" fill="#2b0f4c" fontSize="10" fontWeight="bold">APPLICATION READY</text>
-        <text x="25" y="42" fill="#10b981" fontSize="8" fontWeight="bold">Checklist Complete ✓</text>
+        <text x="25" y="42" fill="#10b981" fontSize="8" fontWeight="bold">Checklist Complete</text>
 
         {/* Readiness Checklist items */}
         <g transform="translate(15, 60)">
@@ -245,15 +245,15 @@ export function RuleMatchingIllustration({ className = "w-full h-auto max-h-[340
         <g transform="translate(15, 55)">
           <rect width="100" height="26" rx="6" fill="#ffffff" fillOpacity="0.1" />
           <circle cx="12" cy="13" r="5" fill="#10b981" />
-          <text x="24" y="16" fill="#ffffff" fontSize="8">Age &lt;= 25 ✓</text>
+          <text x="24" y="16" fill="#ffffff" fontSize="8">Age &lt;= 25 (Pass)</text>
 
           <rect y="36" width="100" height="26" rx="6" fill="#ffffff" fillOpacity="0.1" />
           <circle cx="12" cy="49" r="5" fill="#10b981" />
-          <text x="24" y="52" fill="#ffffff" fontSize="8">Income &lt; 6L ✓</text>
+          <text x="24" y="52" fill="#ffffff" fontSize="8">Income &lt; 6L (Pass)</text>
 
           <rect y="72" width="100" height="26" rx="6" fill="#ffffff" fillOpacity="0.1" />
           <circle cx="12" cy="85" r="5" fill="#10b981" />
-          <text x="24" y="88" fill="#ffffff" fontSize="8">State: MP ✓</text>
+          <text x="24" y="88" fill="#ffffff" fontSize="8">State: MP (Pass)</text>
 
           <rect y="105" width="100" height="18" rx="9" fill="#10b981" />
           <text x="18" y="117" fill="#ffffff" fontSize="8" fontWeight="bold">0% AI Hallucination</text>
@@ -314,7 +314,7 @@ export function OfficialPortalGatewayIllustration({ className = "w-full h-auto m
         <text x="15" y="25" fill="#2b0f4c" fontSize="9" fontWeight="bold">HAQ DWAAR AI</text>
         <text x="15" y="38" fill="#64748b" fontSize="8">Readiness &amp; Vault</text>
         <rect x="15" y="52" width="85" height="24" rx="6" fill="#e0e7ff" />
-        <text x="25" y="67" fill="#3730a3" fontSize="8" fontWeight="bold">Ready to Apply ✓</text>
+        <text x="25" y="67" fill="#3730a3" fontSize="8" fontWeight="bold">Ready to Apply</text>
       </g>
 
       <path d="M175 185 L188 185" stroke="#ea580c" strokeWidth="4" strokeLinecap="round" />

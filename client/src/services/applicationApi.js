@@ -42,7 +42,7 @@ export const deleteApplication = async (id) => {
 };
 
 /**
- * ⚡ 1-Click Quick Apply to Department Nodal Queue
+ * 1-Click Quick Apply to Department Nodal Queue
  * Packages Benefit Passport, eligibility snapshot, and documents
  * @param {Object} payload - { schemeId, notes, evaluation }
  */
@@ -65,4 +65,21 @@ export const getDepartmentQueue = async (params = {}) => {
  */
 export const reviewDepartmentApplication = async (id, payload) => {
   return await api.put(`/applications/${id}/review`, payload);
+};
+
+/**
+ * Admin Desk: Fetch incoming Quick Apply Application Dossiers
+ * @param {Object} params - { department, status, submissionType, search }
+ */
+export const getAdminApplicationsQueue = async (params = {}) => {
+  return await api.get("/admin/applications", { params });
+};
+
+/**
+ * Admin Desk: Audit and take action on an Application Packet
+ * @param {string} id - Application Tracker ID
+ * @param {Object} payload - { actionTaken: "APPROVED" | "REJECTED" | "NEEDS_DOCUMENTS", remarks }
+ */
+export const reviewAdminApplication = async (id, payload) => {
+  return await api.put(`/admin/applications/${id}/review`, payload);
 };

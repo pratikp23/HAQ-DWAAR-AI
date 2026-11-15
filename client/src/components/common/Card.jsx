@@ -35,7 +35,7 @@ export default function Card({
     standard: "bg-white border border-[#e9e1f5] shadow-[0_1px_3px_0_rgba(36,11,73,0.04)]",
     compact: "bg-white border border-[#e9e1f5] shadow-[0_1px_2px_0_rgba(36,11,73,0.03)]",
     large: "bg-white border border-[#e9e1f5] shadow-[0_4px_12px_0_rgba(36,11,73,0.05)]",
-    interactive: "bg-white border border-[#e9e1f5] hover:border-[#591d8f]/30 hover:shadow-[0_4px_12px_0_rgba(36,11,73,0.08)] cursor-pointer transition-all duration-150",
+    interactive: "bg-white border border-[#e9e1f5] hover:border-[#591d8f]/30 hover:shadow-[0_4px_12px_0_rgba(36,11,73,0.08)] active:scale-[0.99] cursor-pointer transition-all duration-150",
     soft: "bg-[#fbf9fe] border border-[#e9e1f5] shadow-none",
   };
 
@@ -54,9 +54,9 @@ export default function Card({
   );
 }
 
-Card.Header = function CardHeader({ children, className = "" }) {
+Card.Header = function CardHeader({ children, className = "", divider = false }) {
   return (
-    <div className={`pb-3 mb-3 border-b border-[#e9e1f5] flex items-center justify-between ${className}`}>
+    <div className={`flex flex-col ${divider ? "pb-3 mb-3 border-b border-[#e9e1f5]" : ""} ${className}`}>
       {children}
     </div>
   );
@@ -64,7 +64,7 @@ Card.Header = function CardHeader({ children, className = "" }) {
 
 Card.Title = function CardTitle({ children, className = "" }) {
   return (
-    <h3 className={`font-bold text-base sm:text-lg text-[#0f172a] tracking-tight ${className}`}>
+    <h3 className={`font-bold text-sm sm:text-base text-[#0f172a] tracking-tight leading-snug ${className}`}>
       {children}
     </h3>
   );
@@ -72,20 +72,26 @@ Card.Title = function CardTitle({ children, className = "" }) {
 
 Card.Description = function CardDescription({ children, className = "" }) {
   return (
-    <p className={`text-xs sm:text-sm text-[#4b5563] mt-0.5 ${className}`}>
+    <p className={`text-xs text-[#64748b] mt-0.5 leading-relaxed ${className}`}>
       {children}
     </p>
   );
 };
 
 Card.Body = function CardBody({ children, className = "" }) {
-  return <div className={className}>{children}</div>;
+  return <div className={`flex-1 ${className}`}>{children}</div>;
 };
 
-Card.Footer = function CardFooter({ children, className = "" }) {
+Card.Footer = function CardFooter({ children, className = "", divider = false }) {
   return (
-    <div className={`pt-3 mt-3 border-t border-[#e9e1f5] flex items-center justify-between ${className}`}>
+    <div className={`flex items-center justify-between ${divider ? "pt-3 mt-3 border-t border-[#e9e1f5]" : ""} ${className}`}>
       {children}
     </div>
   );
 };
+
+export const CardHeader = Card.Header;
+export const CardBody = Card.Body;
+export const CardFooter = Card.Footer;
+export const CardTitle = Card.Title;
+export const CardDescription = Card.Description;

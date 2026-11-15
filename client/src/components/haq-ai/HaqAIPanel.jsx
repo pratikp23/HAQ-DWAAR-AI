@@ -164,9 +164,9 @@ export default function HaqAIPanel() {
         <div className="flex items-center justify-between px-2">
           <span className="text-[11px] text-slate-500 font-medium">
             {isListening
-              ? "🎙️ बोलिए, मैं सुन रही हूँ..."
+              ? "बोलिए, मैं सुन रही हूँ..."
               : isSpeaking
-              ? "🔊 बोल रही हूँ..."
+              ? "बोल रही हूँ..."
               : "बोलने के लिए माइक दबाएँ"}
           </span>
 

@@ -22,7 +22,8 @@ import {
   Sparkles,
   Eye,
   FileText,
-  Check
+  Check,
+  X
 } from "lucide-react";
 import {
   getOfficerApplications,
@@ -72,9 +73,10 @@ export default function AdminOfficers() {
     setLoadingApps(true);
     try {
       const res = await getOfficerApplications(appFilter);
-      if (res?.success) {
-        setApplications(res.data.applications || []);
-        if (res.data.counts) setAppCounts(res.data.counts);
+      const data = res?.data || res;
+      if (res?.success || res?.data?.success || data?.applications) {
+        setApplications(data.applications || res.applications || []);
+        if (data.counts || res.counts) setAppCounts(data.counts || res.counts);
       }
     } catch (err) {
       console.error("Failed to fetch officer applications:", err);
@@ -87,8 +89,9 @@ export default function AdminOfficers() {
     setLoadingOfficers(true);
     try {
       const res = await getActiveOfficers(deptFilter);
-      if (res?.success) {
-        setOfficers(res.data.officers || []);
+      const data = res?.data || res;
+      if (res?.success || res?.data?.success || data?.officers) {
+        setOfficers(data.officers || res.officers || []);
       }
     } catch (err) {
       console.error("Failed to fetch officers directory:", err);
@@ -277,7 +280,7 @@ export default function AdminOfficers() {
             </div>
 
             <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-[11px] text-amber-900">
-              💡 <strong>Ready for Testing:</strong> Officer can now sign in at <code>/login</code> under the "Administrator" tab using these credentials to manage {approvedModalData.department} schemes.
+              <strong>Ready for Testing:</strong> Officer can now sign in at <code>/login</code> under the "Administrator" tab using these credentials to manage {approvedModalData.department} schemes.
             </div>
 
             <div className="flex gap-2 pt-2">
@@ -334,17 +337,17 @@ export default function AdminOfficers() {
                 onClick={() => setInspectingApp(null)}
                 className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition text-sm font-bold cursor-pointer"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Document Tabs */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 shrink-0">
               {[
-                { id: "idCard", label: "🪪 1. Employee ID Card", key: "employeeIdCardUrl" },
-                { id: "authLetter", label: "📜 2. Auth Letter", key: "authorizationLetterUrl" },
-                { id: "postingOrder", label: "🏛️ 3. Posting Order", key: "postingOrderUrl" },
-                { id: "seal", label: "🖋️ 4. Seal & Stamp", key: "specimenSignatureUrl" },
+                { id: "idCard", label: "1. Employee ID Card", key: "employeeIdCardUrl" },
+                { id: "authLetter", label: "2. Auth Letter", key: "authorizationLetterUrl" },
+                { id: "postingOrder", label: "3. Posting Order", key: "postingOrderUrl" },
+                { id: "seal", label: "4. Seal & Stamp", key: "specimenSignatureUrl" },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -635,26 +638,26 @@ export default function AdminOfficers() {
                         className="px-2.5 py-1 rounded-lg text-[10px] font-black bg-[#2b0f4c] text-white hover:bg-[#1e0a3c] transition flex items-center gap-1 cursor-pointer shadow-2xs"
                       >
                         <Eye className="w-3 h-3 text-orange-400" />
-                        <span>🔍 Inspect All Documents</span>
+                        <span>Inspect All Documents</span>
                       </button>
                     </div>
 
                     <div className="grid grid-cols-2 gap-1.5 text-[10px]">
                       <div className="p-1.5 bg-white rounded-lg border border-purple-100 flex items-center justify-between">
-                        <span className="truncate">🪪 Employee ID</span>
-                        <span className="text-emerald-700 font-bold">✓ Attached</span>
+                        <span className="truncate">Employee ID Card</span>
+                        <span className="text-emerald-700 font-bold">Attached</span>
                       </div>
                       <div className="p-1.5 bg-white rounded-lg border border-purple-100 flex items-center justify-between">
-                        <span className="truncate">📜 Auth Letter</span>
-                        <span className="text-emerald-700 font-bold">✓ Attached</span>
+                        <span className="truncate">Auth Letter</span>
+                        <span className="text-emerald-700 font-bold">Attached</span>
                       </div>
                       <div className="p-1.5 bg-white rounded-lg border border-purple-100 flex items-center justify-between">
-                        <span className="truncate">🏛️ Posting Order</span>
-                        <span className="text-emerald-700 font-bold">✓ Attached</span>
+                        <span className="truncate">Posting Order</span>
+                        <span className="text-emerald-700 font-bold">Attached</span>
                       </div>
                       <div className="p-1.5 bg-white rounded-lg border border-purple-100 flex items-center justify-between">
-                        <span className="truncate">🖋️ Seal &amp; Stamp</span>
-                        <span className="text-emerald-700 font-bold">✓ Attached</span>
+                        <span className="truncate">Seal &amp; Stamp</span>
+                        <span className="text-emerald-700 font-bold">Attached</span>
                       </div>
                     </div>
                   </div>
@@ -889,12 +892,12 @@ export default function AdminOfficers() {
                 className="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs bg-white text-slate-800 font-medium"
               >
                 <option value="ALL">All Associated Department Schemes</option>
-                <option value="KISAN">🌾 Agriculture (KISAN)</option>
-                <option value="STUDENT">🎓 Education (STUDENT)</option>
-                <option value="HEALTH">🏥 Health (HEALTH)</option>
-                <option value="BUSINESS">💼 MSME / Business (BUSINESS)</option>
-                <option value="EMPLOYMENT">👷 Employment (EMPLOYMENT)</option>
-                <option value="GENERAL">🏛️ General (GENERAL)</option>
+                <option value="KISAN">Agriculture (KISAN)</option>
+                <option value="STUDENT">Education (STUDENT)</option>
+                <option value="HEALTH">Health (HEALTH)</option>
+                <option value="BUSINESS">MSME / Business (BUSINESS)</option>
+                <option value="EMPLOYMENT">Employment (EMPLOYMENT)</option>
+                <option value="GENERAL">General (GENERAL)</option>
               </select>
             </div>
 

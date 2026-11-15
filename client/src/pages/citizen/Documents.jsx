@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../../components/layout/Navbar";
 import { useLanguage } from "../../context/LanguageContext";
+import Chip from "../../components/common/Chip";
 import {
   getDocuments,
   uploadDocument,
@@ -14,6 +14,7 @@ import {
   getDigiLockerDocuments,
   importDigiLockerDocument,
 } from "../../services/digilockerApi";
+import { Check, CheckCircle2, X } from "lucide-react";
 
 const DOCUMENT_TYPES = [
   "Aadhaar",
@@ -99,8 +100,9 @@ export default function Documents() {
       setLoading(true);
       setErrorMessage("");
       const res = await getDocuments();
-      if (res.success) {
-        setDocuments(res.documents || []);
+      const docs = res?.documents || res?.data?.documents || (Array.isArray(res) ? res : []);
+      if (res?.success || res?.data?.success || docs) {
+        setDocuments(docs);
       }
     } catch (err) {
       console.error(err);
@@ -142,8 +144,10 @@ export default function Documents() {
       formData.append("documentType", selectedType);
 
       const res = await uploadDocument(formData);
-      if (res.success) {
-        setSuccessMessage(`'${res.document.documentType}' uploaded to your Document Vault.`);
+      const doc = res?.document || res?.data?.document;
+      if (res?.success || res?.data?.success || doc) {
+        const docName = doc?.documentType || selectedType;
+        setSuccessMessage(`'${docName}' uploaded to your Document Vault.`);
         setSelectedFile(null);
         const fileInput = document.getElementById("doc-file-input");
         if (fileInput) fileInput.value = null;
@@ -217,11 +221,12 @@ export default function Documents() {
 
       // Fetch available synthetic documents
       const docsRes = await getDigiLockerDocuments();
-      if (docsRes.success) {
-        setDigiLockerDocs(docsRes.documents || []);
+      const docsList = docsRes?.documents || docsRes?.data?.documents;
+      if (docsRes?.success || docsList) {
+        setDigiLockerDocs(docsList || []);
         setDigiLockerStep(2);
       } else {
-        setDigiLockerError(docsRes.reason || "Unable to list DigiLocker documents.");
+        setDigiLockerError(docsRes?.reason || docsRes?.message || "Unable to list DigiLocker documents.");
       }
     } catch (err) {
       setDigiLockerError(err.message || "Consent verification failed.");
@@ -237,8 +242,10 @@ export default function Documents() {
       setDigiLockerSuccess("");
 
       const res = await importDigiLockerDocument(docId);
-      if (res.success) {
-        setDigiLockerSuccess(`'${res.document.documentType}' imported to your Document Vault successfully!`);
+      const importedDoc = res?.document || res?.data?.document;
+      if (res?.success || importedDoc) {
+        const docName = importedDoc?.documentType || "Document";
+        setDigiLockerSuccess(`'${docName}' imported to your Document Vault successfully!`);
         // Mark as imported locally in the modal
         setDigiLockerDocs((prev) =>
           prev.map((d) => (d.id === docId ? { ...d, alreadyImported: true } : d))
@@ -274,24 +281,20 @@ export default function Documents() {
   });
 
   return (
-    <div className="min-h-screen bg-[#f7f5fa] text-[#0f172a] pb-16">
-      {/* Universal GovTech Top Navigation */}
-      <Navbar />
-
-      <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-8 space-y-8">
-        {/* Top Header Card */}
-        <div className="bg-gradient-to-r from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] rounded-2xl p-6 md:p-8 text-white shadow-lg border border-[#591d8f]/30">
+    <div className="w-full px-3 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6 sm:space-y-8 max-w-7xl mx-auto">
+      {/* Top Header Card */}
+        <div className="bg-gradient-to-r from-[#112318] via-[#1a3826] to-[#234731] rounded-2xl p-6 md:p-8 text-white shadow-lg border border-[#234731]/60">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#ea580c]/20 border border-[#ea580c]/50 text-[#ffedd5] text-xs font-bold">
-                <span>{t("documentsTitle", "Personal Document Vault")}</span>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-[#ebf3ed] text-xs font-bold">
+                <span>Lok Samarth Document Vault</span>
                 <span>•</span>
                 <span>DigiLocker Direct API</span>
               </div>
               <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
                 {t("documentsTitle", "My Document Vault")}
               </h1>
-              <p className="text-[#e2e8f0] max-w-2xl text-sm font-medium leading-relaxed">
+              <p className="text-[#c8ded0] max-w-2xl text-sm font-medium leading-relaxed">
                 {t("documentsSub", "Keep your benefit-related documents in one personal vault. Upload documents yourself or import them through simulated DigiLocker, and reuse those documents when checking different government schemes.")}
               </p>
             </div>
@@ -301,7 +304,7 @@ export default function Documents() {
               <button
                 data-haq-target="open-document-upload"
                 onClick={() => setShowUploadForm(!showUploadForm)}
-                className="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition-all"
+                className="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md hover:shadow-lg active:scale-95 transition-all"
               >
                 <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -312,7 +315,7 @@ export default function Documents() {
               <button
                 data-haq-target="open-digilocker-import"
                 onClick={handleOpenDigiLocker}
-                className="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-bold bg-[#ea580c] hover:bg-[#c2410c] text-white shadow-md transition-all"
+                className="inline-flex items-center px-4 py-2.5 rounded-xl text-sm font-bold bg-[#ea580c] hover:bg-[#c2410c] text-white shadow-md hover:shadow-lg active:scale-95 transition-all"
               >
                 <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
@@ -323,8 +326,8 @@ export default function Documents() {
           </div>
 
           {/* Informational Readiness Disclaimer */}
-          <div className="mt-6 bg-[#140628]/80 border border-[#591d8f]/50 rounded-xl p-4 flex items-start gap-3 text-xs md:text-sm text-[#cbd5e1] font-medium">
-            <svg className="w-5 h-5 text-[#fb923c] shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="mt-6 bg-[#112318]/90 border border-emerald-900/50 rounded-xl p-4 flex items-start gap-3 text-xs md:text-sm text-[#cbd5e1] font-medium">
+            <svg className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div className="leading-relaxed">
@@ -337,14 +340,14 @@ export default function Documents() {
       {successMessage && (
         <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center justify-between shadow-sm">
           <span>{successMessage}</span>
-          <button onClick={() => setSuccessMessage("")} className="text-emerald-700 hover:text-emerald-900 font-bold ml-2">✕</button>
+          <button onClick={() => setSuccessMessage("")} className="text-emerald-700 hover:text-emerald-900 ml-2 p-1 rounded-md hover:bg-emerald-100 transition"><X className="w-4 h-4" /></button>
         </div>
       )}
 
       {errorMessage && (
         <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm flex items-center justify-between shadow-sm">
           <span>{errorMessage}</span>
-          <button onClick={() => setErrorMessage("")} className="text-red-700 hover:text-red-900 font-bold ml-2">✕</button>
+          <button onClick={() => setErrorMessage("")} className="text-red-700 hover:text-red-900 ml-2 p-1 rounded-md hover:bg-red-100 transition"><X className="w-4 h-4" /></button>
         </div>
       )}
 
@@ -654,18 +657,18 @@ export default function Documents() {
         <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden space-y-0">
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-blue-900 to-indigo-900 text-white p-6 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-[#112318] via-[#1a3826] to-[#234731] text-white p-6 flex items-center justify-between border-b border-[#234731]">
               <div className="space-y-1">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-800/80 text-blue-200 text-xs font-semibold border border-blue-700">
-                  <span>DigiLocker Demo Mode</span>
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 text-[#ebf3ed] text-xs font-semibold border border-white/20">
+                  <span>Lok Samarth DigiLocker Demo</span>
                 </div>
-                <h3 className="text-xl font-bold">Import from DigiLocker</h3>
+                <h3 className="text-xl font-black">Import from DigiLocker</h3>
               </div>
               <button
                 onClick={() => setIsDigiLockerOpen(false)}
-                className="text-blue-200 hover:text-white text-2xl font-light"
+                className="text-white/70 hover:text-white p-1 rounded-lg hover:bg-white/10 transition cursor-pointer"
               >
-                ✕
+                <X className="w-5 h-5" />
               </button>
             </div>
 
@@ -674,14 +677,14 @@ export default function Documents() {
               {digiLockerError && (
                 <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-800 flex items-center justify-between">
                   <span>{digiLockerError}</span>
-                  <button onClick={() => setDigiLockerError("")} className="font-bold ml-2">✕</button>
+                  <button onClick={() => setDigiLockerError("")} className="font-bold ml-2 p-0.5"><X className="w-3.5 h-3.5" /></button>
                 </div>
               )}
 
               {digiLockerSuccess && (
                 <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-center justify-between">
                   <span>{digiLockerSuccess}</span>
-                  <button onClick={() => setDigiLockerSuccess("")} className="font-bold ml-2">✕</button>
+                  <button onClick={() => setDigiLockerSuccess("")} className="font-bold ml-2 p-0.5"><X className="w-3.5 h-3.5" /></button>
                 </div>
               )}
 
@@ -701,16 +704,16 @@ export default function Documents() {
                     <span className="font-bold text-slate-900 block text-sm">The simulation demonstrates:</span>
                     <ul className="space-y-1.5 pl-1">
                       <li className="flex items-center gap-2">
-                        <span className="text-emerald-600 font-bold">✓</span> Citizen authorization &amp; consent flow
+                        <Check className="w-4 h-4 text-emerald-600 shrink-0" /> Citizen authorization &amp; consent flow
                       </li>
                       <li className="flex items-center gap-2">
-                        <span className="text-emerald-600 font-bold">✓</span> DigiLocker synthetic document directory
+                        <Check className="w-4 h-4 text-emerald-600 shrink-0" /> DigiLocker synthetic document directory
                       </li>
                       <li className="flex items-center gap-2">
-                        <span className="text-emerald-600 font-bold">✓</span> Direct import into your Personal Document Vault
+                        <Check className="w-4 h-4 text-emerald-600 shrink-0" /> Direct import into your Personal Document Vault
                       </li>
                       <li className="flex items-center gap-2">
-                        <span className="text-emerald-600 font-bold">✓</span> Automatic document health &amp; scheme readiness check
+                        <Check className="w-4 h-4 text-emerald-600 shrink-0" /> Automatic document health &amp; scheme readiness check
                       </li>
                     </ul>
                   </div>
@@ -772,8 +775,9 @@ export default function Documents() {
 
                           <div>
                             {item.alreadyImported ? (
-                              <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold text-slate-500 bg-slate-200 border border-slate-300">
-                                ✓ In Vault
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 bg-slate-200 border border-slate-300">
+                                <Check className="w-3.5 h-3.5 text-slate-500" />
+                                <span>In Vault</span>
                               </span>
                             ) : (
                               <button
@@ -820,7 +824,6 @@ export default function Documents() {
           </div>
         </div>
       )}
-      </div>
     </div>
   );
 }

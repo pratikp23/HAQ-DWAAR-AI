@@ -5,13 +5,14 @@ import {
   LayoutDashboard, 
   Search, 
   Mic, 
-  UserCheck,
+  UserCheck, 
   FolderCheck, 
   Briefcase,
   Compass,
   Info,
   HelpCircle,
-  LogIn
+  LogIn,
+  Sparkles
 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useHaqAI } from "../../context/HaqAIContext";
@@ -25,7 +26,7 @@ import { useHaqAI } from "../../context/HaqAIContext";
  * 1. Home (Public portal /)
  * 2. Dashboard (/dashboard)
  * 3. Explore Schemes (/dashboard/schemes)
- * [ 🎙️ AI MITTRA ] (Prominent Center Raised Voice Mic)
+ * [ AI MITTRA ] (Prominent Center Raised Voice Mic)
  * 4. Benefit Passport (/dashboard/benefit-passport)
  * 5. Documents Vault (/dashboard/documents)
  * 6. Applications (/dashboard/applications)
@@ -34,7 +35,7 @@ import { useHaqAI } from "../../context/HaqAIContext";
  * 1. Home (/)
  * 2. Browse Schemes (/browse-schemes)
  * 3. Benefits (/browse-schemes)
- * [ 🎙️ AI MITTRA ] (Center Raised Voice Mic)
+ * [ AI MITTRA ] (Center Raised Voice Mic)
  * 4. How It Works (/#how-it-works)
  * 5. About (/#about)
  * 6. Sign In (/login)
@@ -45,13 +46,6 @@ export default function MobileBottomNav() {
   const { toggleAssistant } = useHaqAI();
 
   const citizenNavItems = [
-    {
-      label: "Home",
-      shortLabel: "Home",
-      to: "/",
-      icon: Home,
-      active: location.pathname === "/",
-    },
     {
       label: "Dashboard",
       shortLabel: "Dash",
@@ -66,8 +60,14 @@ export default function MobileBottomNav() {
       icon: Search,
       active:
         location.pathname.startsWith("/dashboard/schemes") ||
-        location.pathname.startsWith("/browse-schemes") ||
-        location.pathname.startsWith("/dashboard/recommendations"),
+        (location.pathname.startsWith("/schemes/") && !location.pathname.startsWith("/dashboard/recommendations")),
+    },
+    {
+      label: "Matches",
+      shortLabel: "Matches",
+      to: "/dashboard/recommendations",
+      icon: Sparkles,
+      active: location.pathname.startsWith("/dashboard/recommendations"),
     },
     {
       isVoice: true,

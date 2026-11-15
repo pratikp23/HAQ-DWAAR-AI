@@ -157,11 +157,11 @@ export default function ReportSchemeModal({ scheme, isOpen, onClose }) {
                   onChange={(e) => setReason(e.target.value)}
                   className="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs bg-white text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-red-500"
                 >
-                  <option value="FAKE_OR_FRAUD">🚨 Suspected Fake or Fraudulent Scheme</option>
-                  <option value="BROKEN_OR_UNAUTHORIZED_LINK">🔗 Unauthorized / Phishing / Broken Portal URL</option>
-                  <option value="INCORRECT_ELIGIBILITY_RULES">📋 Inaccurate Eligibility Criteria or Benefits</option>
-                  <option value="EXPIRED_OR_DISCONTINUED">⏳ Scheme Expired / Officially Discontinued</option>
-                  <option value="OTHER_INACCURACY">❓ Other Inaccuracy or Guideline Violation</option>
+                  <option value="FAKE_OR_FRAUD">Suspected Fake or Fraudulent Scheme</option>
+                  <option value="BROKEN_OR_UNAUTHORIZED_LINK">Unauthorized / Phishing / Broken Portal URL</option>
+                  <option value="INCORRECT_ELIGIBILITY_RULES">Inaccurate Eligibility Criteria or Benefits</option>
+                  <option value="EXPIRED_OR_DISCONTINUED">Scheme Expired / Officially Discontinued</option>
+                  <option value="OTHER_INACCURACY">Other Inaccuracy or Guideline Violation</option>
                 </select>
               </div>
 

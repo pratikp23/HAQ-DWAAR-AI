@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import Navbar from "../../components/layout/Navbar";
-import Footer from "../../components/layout/Footer";
 import {
   getApplicationById,
   updateApplication,
@@ -24,6 +22,7 @@ import {
   Building2,
   Copy,
   Check,
+  Compass,
 } from "lucide-react";
 
 const STAGES = [
@@ -126,32 +125,24 @@ export default function ApplicationDetails() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col">
-        <Navbar />
-        <div className="flex-1 flex items-center justify-center p-8">
-          <div className="w-8 h-8 border-3 border-blue-700 border-t-transparent rounded-full animate-spin" />
-        </div>
-        <Footer />
+      <div className="w-full min-h-[50vh] flex items-center justify-center p-8">
+        <div className="w-8 h-8 border-3 border-[#591d8f] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (error || !application) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col">
-        <Navbar />
-        <main className="flex-1 max-w-4xl mx-auto px-4 py-12 text-center">
-          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
-          <h2 className="text-lg font-bold text-slate-900">Application Record Not Found</h2>
-          <p className="text-xs text-slate-500 mt-1">{error || "The requested tracking record could not be loaded."}</p>
-          <Link
-            to="/dashboard/applications"
-            className="mt-4 inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold bg-blue-700 text-white"
-          >
-            Back to Application Tracker
-          </Link>
-        </main>
-        <Footer />
+      <div className="max-w-4xl mx-auto px-4 py-12 text-center">
+        <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-3" />
+        <h2 className="text-lg font-bold text-slate-900">Application Record Not Found</h2>
+        <p className="text-xs text-slate-500 mt-1">{error || "The requested tracking record could not be loaded."}</p>
+        <Link
+          to="/dashboard/applications"
+          className="mt-4 inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold bg-[#591d8f] text-white"
+        >
+          Back to Application Tracker
+        </Link>
       </div>
     );
   }
@@ -160,12 +151,9 @@ export default function ApplicationDetails() {
   const currentStageIndex = STAGES.findIndex((s) => s.key === currentStatus);
 
   return (
-    <div className="min-h-screen bg-[#f7f5fa] flex flex-col text-[#0f172a]">
-      <Navbar />
-
-      <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-8">
-        {/* Navigation Breadcrumb */}
-        <div className="mb-4">
+    <div className="w-full px-3 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6 max-w-7xl mx-auto">
+      {/* Navigation Breadcrumb */}
+      <div className="mb-2">
           <Link
             to="/dashboard/applications"
             className="inline-flex items-center text-xs font-semibold text-slate-600 hover:text-slate-900 transition"
@@ -193,13 +181,22 @@ export default function ApplicationDetails() {
             </div>
 
             {scheme?._id && (
-              <Link
-                to={`/dashboard/readiness/${scheme._id}`}
-                className="inline-flex items-center px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition flex-shrink-0"
-              >
-                <FileCheck2 className="w-4 h-4 mr-1.5 text-emerald-700" />
-                Check Preparation Readiness
-              </Link>
+              <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
+                <Link
+                  to={`/dashboard/coach/${scheme._id}`}
+                  className="inline-flex items-center px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition"
+                >
+                  <Compass className="w-4 h-4 mr-1.5 text-emerald-700" />
+                  SchemeCoach
+                </Link>
+                <Link
+                  to={`/dashboard/readiness/${scheme._id}`}
+                  className="inline-flex items-center px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition"
+                >
+                  <FileCheck2 className="w-4 h-4 mr-1.5 text-emerald-700" />
+                  Check Readiness
+                </Link>
+              </div>
             )}
           </div>
 
@@ -246,9 +243,9 @@ export default function ApplicationDetails() {
                   }}
                   className={`p-3 rounded-xl text-center border transition-all ${
                     isCurrent
-                      ? "bg-[#240b49] border-[#240b49] text-white font-bold shadow-md ring-2 ring-[#591d8f]/30"
+                      ? "bg-[#112318] border-[#112318] text-white font-bold shadow-md ring-2 ring-[#234731]/40"
                       : isPast
-                      ? "bg-[#240b49]/10 border-[#240b49]/20 text-[#240b49] font-semibold hover:bg-[#240b49]/15"
+                      ? "bg-emerald-50 border-emerald-200 text-emerald-900 font-semibold hover:bg-emerald-100"
                       : "bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100"
                   }`}
                 >
@@ -309,15 +306,15 @@ export default function ApplicationDetails() {
 
         {/* Ministry Nodal Officer Direct Queue & Dossier Section */}
         {application.submissionType === "QUICK_APPLY" && (
-          <div className="mt-6 bg-white rounded-2xl border-2 border-purple-200 p-6 shadow-sm space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-purple-100">
+          <div className="mt-6 bg-white rounded-2xl border-2 border-emerald-200 p-6 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-emerald-100">
               <div className="flex items-center space-x-2.5">
-                <div className="w-9 h-9 rounded-xl bg-purple-100 text-purple-800 flex items-center justify-center font-bold">
-                  <Sparkles className="w-5 h-5 text-purple-700" />
+                <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                  <Sparkles className="w-5 h-5 text-emerald-700" />
                 </div>
                 <div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-[10px] font-black uppercase tracking-wider bg-purple-600 text-white px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-700 text-white px-2 py-0.5 rounded-full">
                       1-Click Quick Apply Dossier
                     </span>
                     <span className="text-xs text-slate-500 font-medium">
@@ -332,12 +329,12 @@ export default function ApplicationDetails() {
 
               {/* Reference Code with Copy button */}
               {application.referenceNumber && (
-                <div className="flex items-center space-x-2 bg-purple-50 px-3 py-1.5 rounded-xl border border-purple-200 self-start sm:self-auto">
-                  <span className="text-xs font-mono font-black text-purple-900">{application.referenceNumber}</span>
+                <div className="flex items-center space-x-2 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 self-start sm:self-auto">
+                  <span className="text-xs font-mono font-black text-emerald-950">{application.referenceNumber}</span>
                   <button
                     type="button"
                     onClick={() => handleCopyRef(application.referenceNumber)}
-                    className="p-1 text-purple-700 hover:text-purple-900 rounded hover:bg-purple-100 transition cursor-pointer"
+                    className="p-1 text-emerald-700 hover:text-emerald-900 rounded hover:bg-emerald-100 transition cursor-pointer"
                     title="Copy Reference Number"
                   >
                     {copiedRef ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
@@ -444,12 +441,12 @@ export default function ApplicationDetails() {
         )}
 
         {/* Official Application Portal Gateway */}
-        <div className="mt-6 bg-gradient-to-r from-blue-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-6 shadow-xs space-y-3">
+        <div className="mt-6 bg-gradient-to-r from-[#112318] via-[#1a3826] to-[#234731] text-white rounded-2xl p-6 shadow-xs border border-[#234731]/60 space-y-3">
           <div className="flex items-center space-x-2">
-            <ShieldCheck className="w-5 h-5 text-blue-400" />
+            <ShieldCheck className="w-5 h-5 text-amber-400" />
             <h3 className="font-bold text-base">Official Government Application Channel</h3>
           </div>
-          <p className="text-xs text-slate-300 leading-relaxed">
+          <p className="text-xs text-[#c8ded0] leading-relaxed">
             When you are ready to apply, proceed directly to the authentic government portal. Remember that clicking this link opens the government portal in a new tab. When finished submitting, return here to mark your application as "Applied".
           </p>
 
@@ -459,14 +456,14 @@ export default function ApplicationDetails() {
                 href={scheme.officialApplicationUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center px-4 py-2.5 rounded-xl text-xs font-bold bg-blue-500 hover:bg-blue-400 text-slate-950 transition shadow"
+                className="inline-flex items-center px-4 py-2.5 rounded-xl text-xs font-bold bg-[#ea580c] hover:bg-[#c2410c] text-white transition shadow active:scale-95"
               >
                 Open Official Portal
                 <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
               </a>
             ) : (
               <div className="text-xs text-amber-300 bg-amber-950/40 border border-amber-800 p-2.5 rounded-xl">
-                Official application link is not available in HAQ DWAAR AI for this scheme. Please check the official gazette source.
+                Official application link is not available in Lok Samarth for this scheme. Please check the official gazette source.
               </div>
             )}
           </div>
@@ -544,9 +541,6 @@ export default function ApplicationDetails() {
             </button>
           </div>
         </div>
-      </main>
-
-      <Footer />
     </div>
   );
 }

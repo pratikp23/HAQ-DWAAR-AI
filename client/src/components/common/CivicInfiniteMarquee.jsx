@@ -1,4 +1,5 @@
 import React from "react";
+import { Building2 } from "lucide-react";
 import {
   DigiLockerLogo,
   BhashiniLogo,
@@ -165,7 +166,8 @@ export default function CivicInfiniteMarquee() {
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#065f46]"></span>
             </span>
             <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-[#04241d] flex items-center gap-1.5">
-              <span>🏛️ Integrated Digital Public Infrastructure (DPI) &amp; Union Ministries</span>
+              <Building2 className="w-4 h-4 text-[#065f46] shrink-0" />
+              <span>Integrated Digital Public Infrastructure (DPI) &amp; Union Ministries</span>
               <span className="hidden md:inline text-slate-400 font-semibold">/ डिजिटल पब्लिक इंफ्रास्ट्रक्चर एवं संबद्ध मंत्रालय</span>
             </span>
           </div>

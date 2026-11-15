@@ -166,6 +166,23 @@ async function seedGovernanceUsers() {
     );
     console.log("✓ Category Admin (EMPLOYMENT) created: employment.admin@gov.in (Password: Labour@123)");
 
+    // 8. Standard Demo Citizen Account
+    const citizenEmail = "citizen.demo@haqdwaar.in";
+    const citizenPasswordHash = await bcrypt.hash("Citizen@123", 10);
+    await User.findOneAndUpdate(
+      { email: citizenEmail },
+      {
+        $set: {
+          name: "Rameshwar Patel",
+          email: citizenEmail,
+          passwordHash: citizenPasswordHash,
+          role: "citizen",
+        },
+      },
+      { upsert: true, new: true }
+    );
+    console.log("✓ Demo Citizen created: citizen.demo@haqdwaar.in (Password: Citizen@123)");
+
     console.log("========================================================");
     console.log("  All Governance Accounts Successfully Synced!");
     console.log("========================================================");

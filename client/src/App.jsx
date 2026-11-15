@@ -30,10 +30,14 @@ import Readiness from "./pages/citizen/Readiness";
 import Applications from "./pages/citizen/Applications";
 import ApplicationDetails from "./pages/citizen/ApplicationDetails";
 import Notifications from "./pages/citizen/Notifications";
+import SchemeCoach from "./pages/citizen/SchemeCoach";
+import CitizenProfile from "./pages/citizen/CitizenProfile";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminSchemes from "./pages/admin/AdminSchemes";
+import AdminApplications from "./pages/admin/AdminApplications";
+import SchemeSync from "./pages/admin/SchemeSync";
 import AdminNotifications from "./pages/admin/AdminNotifications";
 import NotificationReview from "./pages/admin/NotificationReview";
 import AdminOfficers from "./pages/admin/AdminOfficers";
@@ -57,6 +61,7 @@ function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/officer/apply" element={<OfficerApply />} />
+                <Route path="/profile" element={<CitizenProfile />} />
 
                 {/* Anchor Redirects for landing page sections */}
                 <Route path="/how-it-works" element={<Navigate to="/#how-it-works" replace />} />
@@ -88,7 +93,9 @@ function App() {
                 <Route path="/dashboard/readiness/:schemeId" element={<Readiness />} />
                 <Route path="/dashboard/applications" element={<Applications />} />
                 <Route path="/dashboard/applications/:id" element={<ApplicationDetails />} />
+                <Route path="/dashboard/coach/:schemeId" element={<SchemeCoach />} />
                 <Route path="/dashboard/notifications" element={<Notifications />} />
+                <Route path="/dashboard/profile" element={<CitizenProfile />} />
               </Route>
 
               {/* ======================================================== */}
@@ -104,7 +111,9 @@ function App() {
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/schemes" element={<AdminSchemes />} />
-                <Route path="/admin/officers" element={<AdminOfficers />} />
+                <Route path="/admin/scheme-sync" element={<SchemeSync />} />
+                <Route path="/admin/applications" element={<AdminApplications />} />
+                <Route path="/admin/officers" element={<Navigate to="/admin/applications" replace />} />
                 <Route path="/admin/grievances" element={<AdminGrievances />} />
                 <Route path="/admin/notifications" element={<AdminNotifications />} />
                 <Route path="/admin/notifications/:id" element={<NotificationReview />} />

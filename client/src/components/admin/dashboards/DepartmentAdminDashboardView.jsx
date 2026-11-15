@@ -251,7 +251,7 @@ export default function DepartmentAdminDashboardView({ user }) {
           }`}
         >
           <Inbox className="w-4 h-4" />
-          <span>📥 Applications Queue ({deptApplications.length})</span>
+          <span>Applications Queue ({deptApplications.length})</span>
         </button>
 
         <button
@@ -264,7 +264,7 @@ export default function DepartmentAdminDashboardView({ user }) {
           }`}
         >
           <Layers className="w-4 h-4" />
-          <span>🏛️ Ministry Schemes ({deptSchemes.length})</span>
+          <span>Ministry Schemes ({deptSchemes.length})</span>
         </button>
 
         <button
@@ -277,7 +277,7 @@ export default function DepartmentAdminDashboardView({ user }) {
           }`}
         >
           <ShieldAlert className="w-4 h-4" />
-          <span>⚠️ Citizen Grievances ({deptReports.length})</span>
+          <span>Citizen Grievances ({deptReports.length})</span>
         </button>
       </div>
 
@@ -309,7 +309,7 @@ export default function DepartmentAdminDashboardView({ user }) {
               <Inbox className="w-8 h-8 mx-auto text-slate-400" />
               <p className="font-semibold text-slate-700">No applications received yet in this queue.</p>
               <p className="text-slate-400">
-                When citizens click "⚡ Quick Apply to Nodal Queue" on any {department} scheme, their full Benefit Passport and documents will appear here.
+                When citizens click "1-Click Quick Apply" on any {department} scheme, their full Benefit Passport and documents will appear here.
               </p>
             </div>
           ) : (

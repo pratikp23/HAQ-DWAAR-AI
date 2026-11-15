@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { NumberTicker, SpotlightCard } from "../common/ReactBits";
 import { 
   UserCheck, 
   MapPin, 
@@ -35,11 +36,13 @@ import BenefitPassportCard from "./BenefitPassportCard";
 export default function DashboardHero({
   user,
   profileData,
-  completeness = 80,
+  completeness = 0,
   onPlayAudio,
   audioPlaying = false,
 }) {
   const { language, t } = useLanguage();
+
+  const percent = Math.max(0, Math.min(100, Math.round(Number(completeness) || 0)));
 
   // Dynamic civic time greeting
   const getGreeting = () => {
@@ -53,14 +56,17 @@ export default function DashboardHero({
     return language === "hi" ? "शुभ संध्या" : language === "mr" ? "शुभ संध्याकाळ" : "Good evening";
   };
 
-  // Determine actual citizen name (defaults to Pratik if empty)
-  const fullName = profileData?.personal?.fullName || user?.name || "Pratik";
-  const firstName = fullName.trim() ? fullName.trim().split(" ")[0] : "Pratik";
+  // Determine actual citizen name from profile or auth user
+  const fullName = profileData?.personal?.fullName || user?.name || "Citizen";
+  const firstName = fullName.trim() ? fullName.trim().split(" ")[0] : "Citizen";
 
-  // Determine location from actual profile (defaults to Jabalpur, Madhya Pradesh)
-  const district = profileData?.personal?.district || profileData?.location?.district || "Jabalpur";
-  const state = profileData?.personal?.state || profileData?.location?.state || "Madhya Pradesh";
-  const locationString = `${district}, ${state}`;
+  // Determine location from actual profile
+  const district = profileData?.personal?.district || profileData?.location?.district;
+  const state = profileData?.personal?.state || profileData?.location?.state;
+  const locationString = district && state ? `${district}, ${state}` : (state || district || "Domicile: Incomplete");
+
+  const villagePanchayat = profileData?.location?.gramPanchayat || profileData?.personal?.district || "";
+  const rationStatus = profileData?.rationCardType ? `राशन: ${profileData.rationCardType}` : "Direct DBT Account Linkage";
 
   return (
     <section 
@@ -70,7 +76,10 @@ export default function DashboardHero({
       {/* ======================================================== */}
       {/* 1. LEFT CARD: Fresh Vibrant Emerald Hero Banner (8 cols)  */}
       {/* ======================================================== */}
-      <div className="lg:col-span-8 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#047857] via-[#059669] to-[#0d9488] p-5 sm:p-6 text-white shadow-md border border-emerald-400/30 flex flex-col justify-between space-y-4">
+      <SpotlightCard 
+        spotlightColor="rgba(255, 255, 255, 0.15)"
+        className="lg:col-span-8 relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#047857] via-[#059669] to-[#0d9488] p-5 sm:p-6 text-white shadow-md border border-emerald-400/30 flex flex-col justify-between space-y-4"
+      >
         {/* Subtle decorative background watermark */}
         <div 
           className="absolute -right-6 -bottom-8 opacity-15 pointer-events-none select-none text-[120px] font-bold text-white"
@@ -85,7 +94,7 @@ export default function DashboardHero({
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold border border-white/30 shadow-xs">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-200" />
-                <span>Authenticated Citizen</span>
+                <span>{percent >= 80 ? "Authenticated Citizen (e-KYC)" : "Authenticated Citizen"}</span>
               </span>
 
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 text-emerald-50 text-xs font-semibold border border-white/20">
@@ -138,7 +147,7 @@ export default function DashboardHero({
             </span>
             <div className="flex flex-wrap items-baseline gap-2">
               <span className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                ₹48,000+
+                <NumberTicker value={percent > 0 ? 48000 : 36000} prefix="₹" suffix="+" />
               </span>
               <span className="text-xs sm:text-sm text-emerald-100 font-semibold">
                 वार्षिक सरकारी लाभ (Annual Welfare Benefits)
@@ -160,15 +169,16 @@ export default function DashboardHero({
         {/* Bottom Location & Ration Card Details */}
         <div className="pt-3 border-t border-white/20 flex flex-wrap items-center justify-between gap-2 text-xs text-emerald-100 font-semibold">
           <div className="flex items-center gap-2 truncate">
-            <span>📍 Gram Panchayat Kalyanpur</span>
+            <MapPin className="w-3.5 h-3.5 text-amber-200 shrink-0" />
+            <span>{villagePanchayat || locationString}</span>
             <span>•</span>
-            <span>राशन: NFSA PHH Beneficiary</span>
+            <span>{rationStatus}</span>
           </div>
           <span className="text-xs text-white font-bold shrink-0">
             Aadhaar NPCI Direct DBT Enabled
           </span>
         </div>
-      </div>
+      </SpotlightCard>
 
       {/* ======================================================== */}
       {/* 2. RIGHT CARD: Benefit Passport Status (4 cols)          */}

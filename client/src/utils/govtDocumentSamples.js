@@ -12,7 +12,7 @@ export const SAMPLE_EMPLOYEE_ID = `data:image/svg+xml;utf8,${encodeURIComponent(
   <rect width="600" height="70" fill="#1e0a3c"/>
   <rect y="70" width="600" height="8" fill="#ea580c"/>
   <circle cx="50" cy="35" r="22" fill="#ffffff"/>
-  <text x="50" y="42" font-family="Arial" font-size="20" font-weight="bold" fill="#1e0a3c" text-anchor="middle">🏛️</text>
+  <text x="50" y="40" font-family="Arial" font-size="11" font-weight="black" fill="#1e0a3c" text-anchor="middle">GOV</text>
   <text x="85" y="32" font-family="Arial" font-size="16" font-weight="bold" fill="#ffffff">GOVERNMENT OF INDIA / भारत सरकार</text>
   <text x="85" y="52" font-family="Arial" font-size="12" fill="#fb923c">MINISTRY OF AGRICULTURE &amp; FARMERS WELFARE</text>
   
@@ -54,7 +54,7 @@ export const SAMPLE_AUTHORIZATION_LETTER = `data:image/svg+xml;utf8,${encodeURIC
   
   <!-- Header -->
   <circle cx="300" cy="70" r="24" fill="#1e0a3c"/>
-  <text x="300" y="77" font-family="Arial" font-size="20" fill="#ffffff" text-anchor="middle">🏛️</text>
+  <text x="300" y="75" font-family="Arial" font-size="11" font-weight="black" fill="#ffffff" text-anchor="middle">IND</text>
   <text x="300" y="115" font-family="Georgia" font-size="15" font-weight="bold" fill="#1e0a3c" text-anchor="middle">भारत सरकार / GOVERNMENT OF INDIA</text>
   <text x="300" y="133" font-family="Arial" font-size="12" font-weight="bold" fill="#475569" text-anchor="middle">MINISTRY OF AGRICULTURE &amp; FARMERS WELFARE</text>
   <text x="300" y="150" font-family="Arial" font-size="10" fill="#64748b" text-anchor="middle">DEPARTMENT OF AGRICULTURE &amp; COOPERATION, KRISHI BHAWAN, NEW DELHI</text>
@@ -164,7 +164,7 @@ export const SAMPLE_SPECIMEN_SIGNATURE = `data:image/svg+xml;utf8,${encodeURICom
   <text x="445" y="180" font-family="Arial" font-size="8" font-weight="bold" fill="#1d4ed8" text-anchor="middle">★ KRISHI BHAWAN ★</text>
   <text x="445" y="195" font-family="Arial" font-size="8" font-weight="black" fill="#1d4ed8" text-anchor="middle">OFFICE OF NODAL OFFICER</text>
 
-  <text x="40" y="280" font-family="Arial" font-size="10" font-weight="bold" fill="#059669">✓ Attested by Establishment Branch, Ministry of Agriculture</text>
+  <text x="40" y="280" font-family="Arial" font-size="10" font-weight="bold" fill="#059669">Attested by Establishment Branch, Ministry of Agriculture</text>
   <text x="40" y="295" font-family="Courier" font-size="9" fill="#64748b">Verification Token: STAMP-2026-9921-VERIFIED</text>
 </svg>
 `)}`;

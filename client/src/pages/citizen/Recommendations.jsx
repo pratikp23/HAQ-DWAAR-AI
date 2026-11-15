@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getRecommendations } from "../../services/matchingApi";
-import Navbar from "../../components/layout/Navbar";
 import { useLanguage } from "../../context/LanguageContext";
+import Chip from "../../components/common/Chip";
+import { SpotlightCard } from "../../components/common/ReactBits";
 import {
   Sparkles,
   CheckCircle,
@@ -16,7 +17,8 @@ import {
   Shield,
   FileText,
   HelpCircle,
-  Info
+  Info,
+  Compass
 } from "lucide-react";
 
 export default function Recommendations() {
@@ -33,9 +35,11 @@ export default function Recommendations() {
     setError(null);
     try {
       const res = await getRecommendations();
-      if (res?.data) {
-        setRecommendations(res.data.recommendations || []);
-        setProfileCompleteness(res.data.profileCompleteness || 0);
+      const payload = res?.data || res;
+      if (payload) {
+        const recs = payload.recommendations || (Array.isArray(payload) ? payload : []);
+        setRecommendations(recs);
+        setProfileCompleteness(payload.profileCompleteness || res?.profileCompleteness || 0);
       }
     } catch (err) {
       setError(err.message || "Failed to load personalized recommendations.");
@@ -62,31 +66,25 @@ export default function Recommendations() {
   const potentialCount = recommendations.filter((r) => r.classification === "POTENTIAL_MATCH").length;
 
   return (
-    <div className="min-h-screen bg-[#f7f5fa] text-[#0f172a] pb-16">
-      {/* Universal GovTech Top Navigation */}
-      <Navbar />
-
-      {/* Main Content Area */}
-      <main className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-8 space-y-8">
-        
-        {/* Page Hero Banner */}
-        <div className="bg-gradient-to-r from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] rounded-2xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden border border-[#591d8f]/30">
+    <div className="w-full px-3 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6 sm:space-y-8 max-w-7xl mx-auto">
+      {/* Page Hero Banner */}
+        <div className="bg-gradient-to-r from-[#112318] via-[#1b3524] to-[#234731] rounded-2xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden border border-emerald-800/40">
           <div className="max-w-3xl space-y-3">
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-[#ea580c]/20 border border-[#ea580c]/50 text-xs font-bold text-[#ffedd5]">
-              <Sparkles className="w-3.5 h-3.5 text-[#fb923c]" />
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-xs font-bold text-emerald-100">
+              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
               <span>{t("topRecommendedTitle", "Personalized Matching Engine")}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
               {t("benefitsForYou", "Benefits & Entitlements For You")}
             </h1>
-            <p className="text-[#e2e8f0] text-sm font-medium leading-relaxed">
+            <p className="text-slate-200 text-sm font-medium leading-relaxed">
               {t("benefitsSubtitle", "Based on the information in your Benefit Passport. Every match is evaluated deterministically against authentic government scheme criteria.")}
             </p>
           </div>
 
           {/* Informational Disclaimer Card */}
-          <div className="mt-5 p-3.5 bg-[#140628]/80 border border-[#591d8f]/50 rounded-xl text-xs text-[#cbd5e1] flex items-start space-x-2.5 max-w-2xl font-medium">
-            <Info className="w-4 h-4 flex-shrink-0 text-[#fb923c] mt-0.5" />
+          <div className="mt-5 p-3.5 bg-black/30 border border-white/10 rounded-xl text-xs text-slate-300 flex items-start space-x-2.5 max-w-2xl font-medium">
+            <Info className="w-4 h-4 flex-shrink-0 text-amber-300 mt-0.5" />
             <p>
               Ordering is arranged <span className="font-bold text-white">based on your profile information</span> and deterministic rule checks. This is an informational profile match and does not represent an eligibility probability or government approval.
             </p>
@@ -100,7 +98,7 @@ export default function Recommendations() {
               onClick={() => setFilterType("ALL")}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm ${
                 filterType === "ALL"
-                  ? "bg-[#240b49] text-white shadow-md ring-2 ring-[#591d8f]/30"
+                  ? "bg-[#234731] text-white shadow-md ring-2 ring-emerald-500/30"
                   : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"
               }`}
             >
@@ -191,19 +189,19 @@ export default function Recommendations() {
               const isPotential = rec.classification === "POTENTIAL_MATCH";
 
               return (
-                <div
+                <SpotlightCard
                   key={rec.schemeId}
-                  className="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow transition-shadow overflow-hidden"
+                  className="rounded-3xl border border-[#e9e1f5] shadow-xs hover:shadow-md transition-shadow overflow-hidden"
                 >
                   <div className="p-5 sm:p-6 space-y-4">
                     {/* Header Row */}
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                       <div className="space-y-1.5">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="px-2.5 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-blue-50 text-blue-800 border border-blue-200">
+                          <Chip size="sm" variant="flat" color="primary">
                             {rec.category}
-                          </span>
-                          <span className="text-xs text-slate-500">
+                          </Chip>
+                          <span className="text-xs text-slate-500 font-medium">
                             {rec.state === "All-India" || rec.state === "All India"
                               ? "Central (All-India)"
                               : `State: ${rec.state}`}
@@ -223,27 +221,24 @@ export default function Recommendations() {
                       <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 flex-shrink-0">
                         {/* Status Classification Badge */}
                         {isMatched && (
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                            <CheckCircle className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+                          <Chip size="sm" variant="flat" color="success" startContent={<CheckCircle className="w-3.5 h-3.5 mr-1" />}>
                             Matches Profile
-                          </span>
+                          </Chip>
                         )}
                         {isPotential && (
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-200">
-                            <AlertTriangle className="w-3.5 h-3.5 mr-1 text-amber-600" />
+                          <Chip size="sm" variant="flat" color="warning" startContent={<AlertTriangle className="w-3.5 h-3.5 mr-1" />}>
                             Potential Match
-                          </span>
+                          </Chip>
                         )}
                         {!isMatched && !isPotential && (
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                            <XCircle className="w-3.5 h-3.5 mr-1 text-slate-500" />
+                          <Chip size="sm" variant="flat" color="default" startContent={<XCircle className="w-3.5 h-3.5 mr-1" />}>
                             Criteria Not Met
-                          </span>
+                          </Chip>
                         )}
 
                         {/* Profile Match Score */}
                         <div className="text-right">
-                          <div className="text-xs text-slate-500">Profile Match Score</div>
+                          <div className="text-[11px] text-slate-500 font-medium">Match Score</div>
                           <div className="text-lg font-black text-slate-900">
                             {rec.matchScore}
                             <span className="text-xs font-normal text-slate-400">/100</span>
@@ -373,7 +368,7 @@ export default function Recommendations() {
                     <div className="pt-3 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 text-xs">
                       <button
                         onClick={() => toggleExpand(rec.schemeId)}
-                        className="inline-flex items-center font-bold text-[#240b49] hover:text-[#591d8f] transition-colors"
+                        className="inline-flex items-center font-bold text-[#234731] hover:text-[#183323] transition-colors"
                       >
                         {isExpanded ? (
                           <>
@@ -398,27 +393,33 @@ export default function Recommendations() {
                           </a>
                         )}
                         <Link
+                          to={`/dashboard/coach/${rec.schemeId}`}
+                          className="inline-flex items-center px-3.5 py-2 rounded-xl font-bold bg-[#ebf3ed] text-[#234731] hover:bg-[#dceade] border border-[#c8ded0] transition-all text-xs"
+                        >
+                          <Compass className="w-3.5 h-3.5 mr-1" />
+                          <span>Coach</span>
+                        </Link>
+                        <Link
                           to={`/dashboard/readiness/${rec.schemeId}`}
-                          className="inline-flex items-center px-3.5 py-2 rounded-xl font-bold bg-[#ea580c] hover:bg-[#c2410c] text-white shadow-sm transition-all text-xs"
+                          className="inline-flex items-center px-3.5 py-2 rounded-xl font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-xs transition-all text-xs"
                         >
                           {t("checkReadiness", "Check Readiness")} →
                         </Link>
                         <Link
                           to={`/dashboard/schemes/${rec.schemeId}`}
-                          className="inline-flex items-center px-4 py-2 rounded-xl font-bold bg-[#240b49] hover:bg-[#1e0a3c] text-white shadow-sm transition-all text-xs"
+                          className="inline-flex items-center px-4 py-2 rounded-xl font-bold bg-[#234731] hover:bg-[#183323] text-white shadow-xs transition-all text-xs"
                         >
                           {t("details", "Details")} <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                         </Link>
                       </div>
                     </div>
                   </div>
-                </div>
+                </SpotlightCard>
               );
             })}
           </div>
         )}
 
-      </main>
     </div>
   );
 }

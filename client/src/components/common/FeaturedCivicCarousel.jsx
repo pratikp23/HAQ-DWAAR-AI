@@ -19,7 +19,7 @@ import {
  * - 4 Core Platform Feature Highlights
  * - 4 DPI Policy & Citizen Reality Highlights (Bhashini Dialect Intent, Rejection Shield, Cyber-Cafe Extortion Shield, Statutory DBT & PIB FactCheck)
  * 
- * 💡 TO ADD IMAGES OR BANNERS IN THE FUTURE:
+ * TO ADD IMAGES OR BANNERS IN THE FUTURE:
  * Simply add an `image: "/path/to/image.png"` or `image: "https://..."` property
  * to any slide below!
  */

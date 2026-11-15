@@ -23,6 +23,7 @@ export default function BenefitJourney({
   completeness = 0,
   vaultDocCount = 0,
   trackedApps = [],
+  matchedSchemes = [],
 }) {
   // Determine active stage deterministically:
   let currentStageIndex = 2; // Default to Stage 3: Prepare
@@ -44,6 +45,9 @@ export default function BenefitJourney({
   } else {
     currentStageIndex = 0; // Stage 1: Discover
   }
+
+  const firstSchemeId = matchedSchemes?.[0]?._id || matchedSchemes?.[0]?.schemeId;
+  const readinessUrl = firstSchemeId ? `/dashboard/readiness/${firstSchemeId}` : "/dashboard/schemes";
 
   const stages = [
     {
@@ -76,7 +80,7 @@ export default function BenefitJourney({
       title: "Readiness Plan",
       desc: "Identify blockers before applying",
       icon: Sparkles,
-      to: "/dashboard/readiness/scheme-post-matric-scholarship",
+      to: readinessUrl,
     },
     {
       step: "05",
@@ -197,8 +201,11 @@ export default function BenefitJourney({
                   </p>
                 </div>
 
-                <div className="pt-2 border-t border-purple-100 text-xs font-semibold text-emerald-700 flex items-center justify-between">
-                  <span>✓ Completed</span>
+                <div className="pt-2 border-t border-purple-100 text-xs font-bold text-emerald-700 flex items-center justify-between">
+                  <span className="flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Completed</span>
+                  </span>
                   <ArrowRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-slate-400" />
                 </div>
               </Link>

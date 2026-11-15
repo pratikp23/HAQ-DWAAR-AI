@@ -2,19 +2,19 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { translations } from "./translations";
 
 export const LANGUAGES = [
-  { code: "hi", label: "हिंदी", englishLabel: "Hindi", region: "National / Hindi Belt", flag: "🇮🇳", short: "HI" },
-  { code: "en", label: "English", englishLabel: "English", region: "All-India / Global", flag: "🇬🇧", short: "EN" },
-  { code: "bho", label: "भोजपुरी", englishLabel: "Bhojpuri", region: "Purvanchal & Bihar", flag: "🇮🇳", short: "BHO" },
-  { code: "bgc", label: "बुंदेलखंडी", englishLabel: "Bundelkhandi", region: "Madhya Pradesh (Bundelkhand)", flag: "🇮🇳", short: "BUN" },
-  { code: "mvy", label: "मालवी / निमाड़ी", englishLabel: "Malvi / Nimadi", region: "Madhya Pradesh (Malwa & Nimar)", flag: "🇮🇳", short: "MLV" },
-  { code: "mr", label: "मराठी", englishLabel: "Marathi", region: "Maharashtra & MP Border", flag: "🇮🇳", short: "MR" },
-  { code: "bn", label: "বাংলা", englishLabel: "Bengali", region: "West Bengal & Tripura", flag: "🇮🇳", short: "BN" },
-  { code: "te", label: "తెలుగు", englishLabel: "Telugu", region: "Andhra Pradesh & Telangana", flag: "🇮🇳", short: "TE" },
-  { code: "ta", label: "தமிழ்", englishLabel: "Tamil", region: "Tamil Nadu & Puducherry", flag: "🇮🇳", short: "TA" },
-  { code: "gu", label: "ગુજરાતી", englishLabel: "Gujarati", region: "Gujarat & Western MP", flag: "🇮🇳", short: "GU" },
-  { code: "kn", label: "ಕನ್ನಡ", englishLabel: "Kannada", region: "Karnataka", flag: "🇮🇳", short: "KN" },
-  { code: "or", label: "ଓଡ଼ିଆ", englishLabel: "Odia", region: "Odisha", flag: "🇮🇳", short: "OR" },
-  { code: "pa", label: "ਪੰਜਾਬੀ", englishLabel: "Punjabi", region: "Punjab & Northern India", flag: "🇮🇳", short: "PA" }
+  { code: "hi", label: "हिंदी", englishLabel: "Hindi", region: "National / Hindi Belt", short: "HI" },
+  { code: "en", label: "English", englishLabel: "English", region: "All-India / Global", short: "EN" },
+  { code: "bho", label: "भोजपुरी", englishLabel: "Bhojpuri", region: "Purvanchal & Bihar", short: "BHO" },
+  { code: "bgc", label: "बुंदेलखंडी", englishLabel: "Bundelkhandi", region: "Madhya Pradesh (Bundelkhand)", short: "BUN" },
+  { code: "mvy", label: "मालवी / निमाड़ी", englishLabel: "Malvi / Nimadi", region: "Madhya Pradesh (Malwa & Nimar)", short: "MLV" },
+  { code: "mr", label: "मराठी", englishLabel: "Marathi", region: "Maharashtra & MP Border", short: "MR" },
+  { code: "bn", label: "বাংলা", englishLabel: "Bengali", region: "West Bengal & Tripura", short: "BN" },
+  { code: "te", label: "తెలుగు", englishLabel: "Telugu", region: "Andhra Pradesh & Telangana", short: "TE" },
+  { code: "ta", label: "தமிழ்", englishLabel: "Tamil", region: "Tamil Nadu & Puducherry", short: "TA" },
+  { code: "gu", label: "ગુજરાતી", englishLabel: "Gujarati", region: "Gujarat & Western MP", short: "GU" },
+  { code: "kn", label: "ಕನ್ನಡ", englishLabel: "Kannada", region: "Karnataka", short: "KN" },
+  { code: "or", label: "ଓଡ଼ିଆ", englishLabel: "Odia", region: "Odisha", short: "OR" },
+  { code: "pa", label: "ਪੰਜਾਬੀ", englishLabel: "Punjabi", region: "Punjab & Northern India", short: "PA" }
 ];
 
 const LanguageContext = createContext();

@@ -11,6 +11,7 @@ import {
   Sparkles,
   ArrowRight,
   Volume2,
+  Lock,
 } from "lucide-react";
 import { getBhashiniStatus, speechToText } from "../../services/bhashiniApi";
 import TrustBadge from "../firewall/TrustBadge";
@@ -188,11 +189,14 @@ export default function VoiceInput({
         language,
       });
 
-      if (res?.data?.transcript) {
-        setTranscript(res.data.transcript);
+      const payload = res?.data || res;
+      const transcriptText = payload?.transcript || res?.transcript;
+
+      if (transcriptText) {
+        setTranscript(transcriptText);
         setRecordingState("completed");
-        if (res.data.disclaimer) {
-          setDemoNotice(res.data.disclaimer);
+        if (payload?.disclaimer || res?.disclaimer) {
+          setDemoNotice(payload?.disclaimer || res?.disclaimer);
         }
       } else {
         throw new Error("Unable to extract transcript from audio.");
@@ -227,8 +231,11 @@ export default function VoiceInput({
         language,
       });
 
-      if (res?.data?.transcript) {
-        setTranscript(res.data.transcript);
+      const payload = res?.data || res;
+      const transcriptText = payload?.transcript || res?.transcript;
+
+      if (transcriptText) {
+        setTranscript(transcriptText);
         setRecordingState("completed");
       } else {
         throw new Error("Could not transcribe uploaded audio file.");
@@ -485,8 +492,11 @@ export default function VoiceInput({
       )}
 
       {/* Privacy note */}
-      <div className="text-[11px] text-slate-400 border-t border-slate-100 pt-3 flex items-center justify-between">
-        <span>🔒 Voice recordings are not permanently stored and are processed only for benefit discovery.</span>
+      <div className="text-[11px] text-slate-500 border-t border-slate-100 pt-3 flex items-center justify-between">
+        <span className="flex items-center gap-1.5">
+          <Lock className="w-3 h-3 text-slate-400 shrink-0" />
+          <span>Voice recordings are not permanently stored and are processed only for benefit discovery.</span>
+        </span>
         {onCancel && (
           <button
             type="button"

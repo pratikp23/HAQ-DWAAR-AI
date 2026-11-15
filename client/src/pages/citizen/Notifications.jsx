@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../../components/layout/Navbar";
-import Footer from "../../components/layout/Footer";
 import { useLanguage } from "../../context/LanguageContext";
+import Chip from "../../components/common/Chip";
 import {
   getCitizenNotifications,
   markNotificationAsRead,
@@ -46,7 +45,8 @@ export default function Notifications() {
       if (filterType !== "ALL") params.type = filterType;
       if (filterStatus !== "ALL") params.status = filterStatus;
       const res = await getCitizenNotifications(params);
-      setNotifications(res.data?.data?.notifications || []);
+      const list = res?.data?.notifications || res?.notifications || res?.data?.data?.notifications || (Array.isArray(res) ? res : []);
+      setNotifications(list);
     } catch (err) {
       console.error("Failed to load notifications:", err);
       setError(err.message || "Failed to load notifications.");
@@ -116,25 +116,22 @@ export default function Notifications() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col text-slate-900">
-      <Navbar />
-
-      <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-8 space-y-6">
-        {/* GovTech Hero Banner */}
-        <div className="bg-gradient-to-r from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] rounded-2xl p-6 sm:p-8 text-white shadow-lg border border-[#591d8f]/30">
+    <div className="w-full px-3 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6 sm:space-y-8 max-w-7xl mx-auto">
+      {/* GovTech Hero Banner */}
+        <div className="bg-gradient-to-r from-[#112318] via-[#1a3826] to-[#234731] rounded-2xl p-6 sm:p-8 text-white shadow-lg border border-[#234731]/60">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div className="space-y-3">
-              <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-[#ea580c]/20 border border-[#ea580c]/50 text-xs font-bold text-[#ffedd5]">
-                <Sparkles className="w-3.5 h-3.5 text-[#fb923c]" />
+              <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-bold text-[#ebf3ed]">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                 <span>{t("notificationsTitle", "Citizen Notifications & Alerts")}</span>
                 <span>•</span>
                 <span>Real-Time Government Monitor</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center">
-                <Bell className="w-7 h-7 mr-2.5 text-[#fb923c]" />
+                <Bell className="w-7 h-7 mr-2.5 text-amber-400" />
                 {t("notificationsTitle", "Notification & Alert Center")}
               </h1>
-              <p className="text-[#e2e8f0] text-sm font-medium leading-relaxed max-w-xl">
+              <p className="text-[#c8ded0] text-sm font-medium leading-relaxed max-w-xl">
                 {t("notificationsSub", "Personalized deadline reminders, document health alerts, and application updates.")}
               </p>
             </div>
@@ -143,7 +140,7 @@ export default function Notifications() {
               <button
                 onClick={handleTriggerCycle}
                 disabled={triggering}
-                className="inline-flex items-center px-3.5 py-2.5 rounded-xl text-xs font-bold bg-white hover:bg-slate-100 text-slate-800 border border-slate-200 shadow-sm transition-all cursor-pointer"
+                className="inline-flex items-center px-3.5 py-2.5 rounded-xl text-xs font-bold bg-white hover:bg-slate-100 text-slate-800 border border-slate-200 shadow-sm transition-all cursor-pointer active:scale-95"
                 title="Re-evaluate proactive alerts against current database state"
               >
                 <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${triggering ? "animate-spin" : ""}`} />
@@ -152,7 +149,7 @@ export default function Notifications() {
 
               <button
                 onClick={handleMarkAllRead}
-                className="inline-flex items-center px-4 py-2.5 rounded-xl text-xs font-bold bg-[#ea580c] hover:bg-[#c2410c] text-white shadow-md transition-all cursor-pointer"
+                className="inline-flex items-center px-4 py-2.5 rounded-xl text-xs font-bold bg-[#ea580c] hover:bg-[#c2410c] text-white shadow-md transition-all cursor-pointer active:scale-95"
               >
                 <Check className="w-3.5 h-3.5 mr-1" />
                 Mark All as Read
@@ -176,7 +173,7 @@ export default function Notifications() {
                 onClick={() => setFilterType(t.id)}
                 className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all shadow-sm ${
                   filterType === t.id
-                    ? "bg-[#240b49] text-white font-black shadow-md ring-2 ring-[#591d8f]/30"
+                    ? "bg-[#112318] text-white font-black shadow-md ring-2 ring-[#234731]/40"
                     : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100"
                 }`}
               >
@@ -189,7 +186,7 @@ export default function Notifications() {
             <button
               onClick={() => setFilterStatus("ALL")}
               className={`px-2.5 py-1 rounded-md ${
-                filterStatus === "ALL" ? "font-bold text-blue-700 underline" : "text-slate-500 hover:text-slate-800"
+                filterStatus === "ALL" ? "font-bold text-emerald-800 underline" : "text-slate-500 hover:text-slate-800"
               }`}
             >
               All
@@ -198,7 +195,7 @@ export default function Notifications() {
             <button
               onClick={() => setFilterStatus("UNREAD")}
               className={`px-2.5 py-1 rounded-md ${
-                filterStatus === "UNREAD" ? "font-bold text-blue-700 underline" : "text-slate-500 hover:text-slate-800"
+                filterStatus === "UNREAD" ? "font-bold text-emerald-800 underline" : "text-slate-500 hover:text-slate-800"
               }`}
             >
               Unread
@@ -286,7 +283,7 @@ export default function Notifications() {
                     {notif.metadata?.actionUrl && (
                       <Link
                         to={notif.metadata.actionUrl}
-                        className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-700 hover:bg-blue-800 text-white shadow-xs transition"
+                        className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-[#112318] hover:bg-[#234731] text-white shadow-xs transition active:scale-95"
                       >
                         Take Action
                       </Link>
@@ -315,9 +312,6 @@ export default function Notifications() {
             })}
           </div>
         )}
-      </main>
-
-      <Footer />
     </div>
   );
 }

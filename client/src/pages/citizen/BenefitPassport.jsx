@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../../components/layout/Navbar";
 import { useLanguage } from "../../context/LanguageContext";
 import { getProfile, updateProfile } from "../../services/profileApi";
 import ProfileCompleteness from "../../components/passport/ProfileCompleteness";
+import { PillTabs } from "../../components/common/ReactBits";
+import Chip from "../../components/common/Chip";
 import { 
   ArrowLeft, 
   Save, 
@@ -17,7 +18,9 @@ import {
   Sprout, 
   HeartHandshake, 
   Settings,
-  Sparkles
+  Sparkles,
+  Check,
+  Plus
 } from "lucide-react";
 
 const GENDER_OPTIONS = ["Male", "Female", "Transgender", "Other", "Prefer not to say"];
@@ -69,6 +72,19 @@ export default function BenefitPassport() {
   const [completeness, setCompleteness] = useState(0);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
+  const [activeSection, setActiveSection] = useState("all");
+  const [saveSuccessModalOpen, setSaveSuccessModalOpen] = useState(false);
+
+  const PASSPORT_TABS = [
+    { id: "all", label: "All Sections" },
+    { id: "personal", label: "1. Personal", icon: User },
+    { id: "location", label: "2. Location", icon: MapPin },
+    { id: "education", label: "3. Education", icon: GraduationCap },
+    { id: "occupation", label: "4. Occupation", icon: Briefcase },
+    { id: "kisan", label: "5. Agriculture", icon: Sprout },
+    { id: "needs", label: "6. Needs & Goals", icon: HeartHandshake },
+    { id: "preferences", label: "7. Preferences", icon: Settings },
+  ];
 
   // Form State
   const [personal, setPersonal] = useState({
@@ -122,9 +138,9 @@ export default function BenefitPassport() {
       setError(null);
       try {
         const res = await getProfile();
-        const p = res?.data?.profile;
+        const p = res?.data?.profile || res?.profile || res?.data;
         if (isMounted && p) {
-          setCompleteness(res.data.profileCompleteness || 0);
+          setCompleteness(res?.data?.profileCompleteness ?? res?.profileCompleteness ?? 0);
 
           setPersonal({
             age: p.personal?.age !== null && p.personal?.age !== undefined ? p.personal.age : "",
@@ -287,8 +303,10 @@ export default function BenefitPassport() {
 
     try {
       const res = await updateProfile(payload);
-      setCompleteness(res.data.profileCompleteness || 0);
+      const newCompleteness = res.data?.profileCompleteness ?? res.profileCompleteness ?? completeness;
+      setCompleteness(newCompleteness);
       setMessage("Benefit Passport saved successfully!");
+      setSaveSuccessModalOpen(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       setError(err.message || "Failed to save Benefit Passport. Please check your connection.");
@@ -307,18 +325,13 @@ export default function BenefitPassport() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f5fa] text-[#0f172a] pb-20">
-      {/* Universal GovTech Top Navigation */}
-      <Navbar />
-
-      {/* Main Container */}
-      <main className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 pt-8 pb-12 space-y-6">
-        {/* Page Hero Banner */}
-        <div className="bg-gradient-to-r from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] rounded-2xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden border border-[#591d8f]/30">
+    <div className="w-full px-3 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6 sm:space-y-8 max-w-7xl mx-auto">
+      {/* Page Hero Banner */}
+        <div className="bg-gradient-to-r from-[#112318] via-[#1b3524] to-[#234731] rounded-2xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden border border-emerald-800/40">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="space-y-2">
-              <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-[#ea580c]/20 border border-[#ea580c]/50 text-xs font-bold text-[#ffedd5]">
-                <Sparkles className="w-3.5 h-3.5 text-[#fb923c]" />
+              <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-xs font-bold text-emerald-100">
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                 <span>{t("benefitPassportTitle", "Citizen Benefit Passport")}</span>
                 <span>•</span>
                 <span>{completeness}% {t("verifiedCount", "Verified")}</span>
@@ -326,8 +339,8 @@ export default function BenefitPassport() {
               <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
                 {t("benefitPassportTitle", "Your Benefit Passport")}
               </h1>
-              <p className="text-[#e2e8f0] text-sm font-medium leading-relaxed max-w-xl">
-                {t("benefitPassportSub", "Keep your profile up to date so HaqDwaar can calculate your eligibility across state and central government schemes.")}
+              <p className="text-slate-200 text-sm font-medium leading-relaxed max-w-xl">
+                {t("benefitPassportSub", "Keep your profile up to date so Lok Samarth can calculate your deterministic eligibility across state and central government schemes.")}
               </p>
             </div>
 
@@ -373,8 +386,19 @@ export default function BenefitPassport() {
           </div>
         )}
 
+        {/* Section Navigation Tabs (HeroUI PillTabs) */}
+        <div className="overflow-x-auto pb-1">
+          <PillTabs
+            tabs={PASSPORT_TABS}
+            activeTab={activeSection}
+            onTabChange={(tabId) => setActiveSection(tabId)}
+            className="w-full sm:w-auto"
+          />
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Section 1: Personal Details */}
+          {(activeSection === "all" || activeSection === "personal") && (
           <div data-haq-target="passport-personal" className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center space-x-2.5 pb-2 border-b border-slate-100">
               <User className="w-5 h-5 text-blue-700" />
@@ -440,8 +464,10 @@ export default function BenefitPassport() {
               </div>
             </div>
           </div>
+          )}
 
           {/* Section 2: Location */}
+          {(activeSection === "all" || activeSection === "location") && (
           <div data-haq-target="passport-location" className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center space-x-2.5 pb-2 border-b border-slate-100">
               <MapPin className="w-5 h-5 text-indigo-700" />
@@ -499,8 +525,10 @@ export default function BenefitPassport() {
               </div>
             </div>
           </div>
+          )}
 
           {/* Section 3: Education */}
+          {(activeSection === "all" || activeSection === "education") && (
           <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center space-x-2.5 pb-2 border-b border-slate-100">
               <GraduationCap className="w-5 h-5 text-emerald-700" />
@@ -559,8 +587,10 @@ export default function BenefitPassport() {
               </div>
             </div>
           </div>
+          )}
 
           {/* Section 4: Occupation & Income */}
+          {(activeSection === "all" || activeSection === "occupation") && (
           <div data-haq-target="passport-economic" className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center space-x-2.5 pb-2 border-b border-slate-100">
               <Briefcase className="w-5 h-5 text-amber-700" />
@@ -614,8 +644,10 @@ export default function BenefitPassport() {
               </div>
             </div>
           </div>
+          )}
 
           {/* Section 5: Farmer Information (Conditional / Toggleable) */}
+          {(activeSection === "all" || activeSection === "kisan") && (
           <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <div className="flex items-center space-x-2.5">
@@ -691,8 +723,10 @@ export default function BenefitPassport() {
               </p>
             )}
           </div>
+          )}
 
           {/* Section 6: Needs & Benefit Goals */}
+          {(activeSection === "all" || activeSection === "needs") && (
           <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center space-x-2.5 pb-2 border-b border-slate-100">
               <HeartHandshake className="w-5 h-5 text-rose-600" />
@@ -711,21 +745,23 @@ export default function BenefitPassport() {
                     type="button"
                     key={item}
                     onClick={() => toggleNeed(item)}
-                    className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all inline-flex items-center gap-1.5 ${
                       selected
                         ? "bg-blue-700 text-white border-blue-700 shadow-sm"
                         : "bg-slate-50 text-slate-700 border-slate-300 hover:bg-slate-100"
                     }`}
                   >
-                    {selected ? "✓ " : "+ "}
-                    {item}
+                    {selected ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+                    <span>{item}</span>
                   </button>
                 );
               })}
             </div>
           </div>
+          )}
 
           {/* Section 7: Communication Preferences */}
+          {(activeSection === "all" || activeSection === "preferences") && (
           <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
             <div className="flex items-center space-x-2.5 pb-2 border-b border-slate-100">
               <Settings className="w-5 h-5 text-slate-700" />
@@ -779,6 +815,7 @@ export default function BenefitPassport() {
               </div>
             </div>
           </div>
+          )}
 
           {/* Bottom Save Bar */}
           <div className="sticky bottom-4 z-20 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-slate-200 shadow-xl flex items-center justify-between gap-4">
@@ -814,7 +851,49 @@ export default function BenefitPassport() {
             </div>
           </div>
         </form>
-      </main>
+
+      {/* Post-Save High-Impact Success Modal */}
+      {saveSuccessModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
+          <div className="bg-white rounded-3xl max-w-md w-full border border-purple-200 shadow-2xl p-6 text-center space-y-4">
+            <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
+              <CheckCircle2 className="w-8 h-8" />
+            </div>
+            <div>
+              <span className="text-[10px] font-black uppercase tracking-wider text-[#ea580c] block">
+                Benefit Passport Updated
+              </span>
+              <h3 className="text-xl font-black text-slate-900 mt-1">
+                Passport {completeness}% Complete!
+              </h3>
+              <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+                Lok Samarth's deterministic matching engine has recalculated your eligibility across verified government schemes based on your updated criteria.
+              </p>
+            </div>
+            <div className="pt-2 flex flex-col gap-2">
+              <Link
+                to="/dashboard/recommendations"
+                className="w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-black bg-[#234731] hover:bg-[#183323] text-white shadow-md transition text-center"
+              >
+                View Your Matched Schemes &rarr;
+              </Link>
+              <Link
+                to="/dashboard"
+                className="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition"
+              >
+                Return to Citizen Dashboard
+              </Link>
+              <button
+                type="button"
+                onClick={() => setSaveSuccessModalOpen(false)}
+                className="text-xs text-slate-500 hover:text-slate-800 py-1 transition cursor-pointer"
+              >
+                Stay and Continue Editing
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

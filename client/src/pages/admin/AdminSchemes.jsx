@@ -18,7 +18,8 @@ import {
   AlertCircle,
   ExternalLink,
   Layers,
-  LogOut
+  LogOut,
+  X
 } from "lucide-react";
 
 export default function AdminSchemes() {
@@ -54,7 +55,7 @@ export default function AdminSchemes() {
     setError(null);
     try {
       const res = await getSchemes({ status: statusFilter });
-      setSchemes(res?.data?.schemes || []);
+      setSchemes(res?.data?.schemes || res?.schemes || (Array.isArray(res) ? res : []));
     } catch (err) {
       setError(err.message || "Failed to load admin schemes list.");
     } finally {
@@ -146,95 +147,39 @@ export default function AdminSchemes() {
 
   return (
     <div className="min-h-screen bg-[#f7f5fa] text-[#0f172a] pb-20">
-      {/* Top Header (only when standalone) */}
-      {!inLayout && (
-        <header className="bg-slate-900 text-white sticky top-0 z-30 shadow-md">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Link
-                to="/dashboard"
-                className="inline-flex items-center text-xs font-semibold text-slate-300 hover:text-white"
-              >
-                <ArrowLeft className="w-4 h-4 mr-1.5" />
-                Citizen Portal
-              </Link>
-              <div className="flex items-center space-x-2">
-                <Shield className="w-5 h-5 text-indigo-400" />
-                <span className="font-bold text-sm tracking-tight">Admin Scheme Management</span>
-              </div>
-              <span className="text-slate-600">|</span>
-              <Link
-                to="/admin/notifications"
-                className="inline-flex items-center text-xs font-semibold text-slate-300 hover:text-white"
-              >
-                Notification Analyzer →
-              </Link>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="inline-flex items-center px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition-colors"
-              >
-                <Plus className="w-4 h-4 mr-1" />
-                Add Scheme
-              </button>
-              <button
-                onClick={handleLogout}
-                className="inline-flex items-center px-3.5 py-1.5 rounded-lg text-xs font-bold text-rose-300 hover:text-white hover:bg-rose-600/30 border border-rose-400/30 transition-colors"
-                title="Sign Out"
-              >
-                <LogOut className="w-3.5 h-3.5 mr-1" />
-                <span>Log Out</span>
-              </button>
-            </div>
-          </div>
-        </header>
-      )}
-
       {/* Main Container */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 space-y-6">
         
         {/* Page Banner */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-3xl border border-[#e9e1f5] shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-3xl border border-slate-200 shadow-xs">
           <div>
             <div className="flex items-center space-x-2 mb-1">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#2b0f4c] text-white">
-                {user?.role === "category_admin"
-                  ? `${user?.department} Jurisdiction`
-                  : user?.role === "chief_officer"
-                  ? "Chief Officer Audit"
-                  : "Super Admin"}
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#112318] text-white">
+                Platform Administrator
               </span>
-              <span className="text-xs text-purple-700 font-bold">
-                {user?.role === "category_admin"
-                  ? `Officer: ${user?.name || "Nodal Officer"}`
-                  : "Statutory Scheme Registry"}
+              <span className="text-xs text-emerald-800 font-bold">
+                Statutory Scheme Registry &amp; Gazette Compliance
               </span>
             </div>
             <h1 className="text-2xl font-black text-[#0f172a] tracking-tight">
-              {user?.role === "category_admin"
-                ? `${user?.department} Schemes & Gazette Registry`
-                : "Central Schemes & Gazette Compliance Directory"}
+              Central Schemes &amp; Gazette Compliance Directory
             </h1>
             <p className="text-xs sm:text-sm text-[#4b5563] mt-1">
-              {user?.role === "category_admin"
-                ? `Authorized to add, edit, and verify welfare schemes with mandatory Gazette circular references for ${user?.department}.`
-                : "Cross-department schemes oversight, official circular verification, and citizen fraud grievance protection."}
+              Cross-department schemes oversight, deterministic rule specifications, official circular verification, and citizen fraud grievance protection.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
             {/* Status Filters */}
-            <div className="flex items-center space-x-1.5 bg-[#fbf9fe] p-1 rounded-xl border border-[#e9e1f5] text-xs">
+            <div className="flex items-center space-x-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
               {["ALL", "VERIFIED", "DRAFT", "ARCHIVED"].map((st) => (
                 <button
                   key={st}
                   onClick={() => setStatusFilter(st)}
                   className={`px-3 py-1 rounded-lg font-bold transition-colors ${
                     statusFilter === st
-                      ? "bg-[#2b0f4c] text-white"
-                      : "text-[#4b5563] hover:bg-[#f7f5fa]"
+                      ? "bg-[#112318] text-white"
+                      : "text-[#4b5563] hover:bg-slate-200"
                   }`}
                 >
                   {st}
@@ -244,7 +189,7 @@ export default function AdminSchemes() {
 
             <button
               onClick={() => setShowAddModal(true)}
-              className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-black bg-gradient-to-r from-[#ea580c] to-[#f97316] hover:opacity-95 text-white shadow-xs transition-colors cursor-pointer"
+              className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-black bg-gradient-to-r from-[#ea580c] to-[#f97316] hover:opacity-95 text-white shadow-xs transition-colors cursor-pointer active:scale-95"
             >
               <Plus className="w-4 h-4 mr-1" />
               Add Scheme
@@ -297,14 +242,15 @@ export default function AdminSchemes() {
                         <div className="text-slate-500 text-[11px] line-clamp-1">{s.shortDescription}</div>
                       </td>
                       <td className="px-4 py-4">
-                        <span className="font-bold text-purple-900 bg-purple-50 px-2 py-0.5 rounded-md border border-purple-200">{s.category}</span>
+                        <span className="font-bold text-emerald-950 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">{s.category}</span>
                         <div className="text-[10px] text-slate-500 mt-0.5 truncate max-w-[140px]">{s.sourceName}</div>
                       </td>
                       <td className="px-4 py-4 space-y-1">
                         <div className="text-[11px] font-mono text-slate-800">
                           {s.gazetteNumber ? (
-                            <span className="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200">
-                              📜 {s.gazetteNumber}
+                            <span className="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 inline-flex items-center gap-1">
+                              <FileText className="w-3 h-3 text-slate-500 shrink-0" />
+                              <span>{s.gazetteNumber}</span>
                             </span>
                           ) : (
                             <span className="text-slate-400 italic">No Gazette Ref</span>
@@ -315,7 +261,7 @@ export default function AdminSchemes() {
                             href={s.officialApplicationUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[11px] font-bold text-[#591d8f] hover:underline inline-flex items-center"
+                            className="text-[11px] font-bold text-emerald-800 hover:underline inline-flex items-center"
                           >
                             <span>Official Portal (.gov.in)</span>
                             <ExternalLink className="w-3 h-3 ml-1" />
@@ -327,8 +273,9 @@ export default function AdminSchemes() {
                           {s.verificationStatus}
                         </span>
                         {s.isFlagged && (
-                          <div className="text-[10px] font-black text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">
-                            🚩 Flagged ({s.reportedFraudCount || 1} Reports)
+                          <div className="text-[10px] font-black text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200 inline-flex items-center gap-1">
+                            <AlertTriangle className="w-3 h-3 text-rose-600 shrink-0" />
+                            <span>Flagged ({s.reportedFraudCount || 1} Reports)</span>
                           </div>
                         )}
                       </td>
@@ -371,10 +318,11 @@ export default function AdminSchemes() {
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="font-bold text-slate-900 text-base">Add New Government Scheme</h3>
               <button
+                type="button"
                 onClick={() => setShowAddModal(false)}
-                className="text-slate-400 hover:text-slate-600 text-sm font-bold"
+                className="text-slate-400 hover:text-slate-600 text-sm font-bold p-1 rounded-lg"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 

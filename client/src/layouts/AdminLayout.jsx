@@ -11,11 +11,14 @@ import {
   X,
   ArrowLeft,
   Settings,
-  Users
+  Users,
+  Inbox,
+  FileText,
+  Radio,
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { LayoutContext } from "../context/LayoutContext";
-import { getOfficerApplications } from "../services/officerApi";
+import { getAdminApplicationsQueue } from "../services/applicationApi";
 import { getSchemeReports } from "../services/reportApi";
 import { getDefaultAvatar } from "../utils/officerAvatars";
 
@@ -25,7 +28,7 @@ export default function AdminLayout({ children }) {
   const navigate = useNavigate();
 
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-  const [pendingOfficerAppsCount, setPendingOfficerAppsCount] = useState(0);
+  const [pendingApplicationsCount, setPendingApplicationsCount] = useState(0);
   const [pendingGrievancesCount, setPendingGrievancesCount] = useState(0);
 
   const activeAvatar = user?.avatar || getDefaultAvatar(user?.role, user?.department);
@@ -34,16 +37,14 @@ export default function AdminLayout({ children }) {
     let isMounted = true;
     const fetchCounts = async () => {
       try {
-        if (user?.role === "chief_officer" || user?.role === "super_admin") {
-          const appsRes = await getOfficerApplications("PENDING");
-          if (isMounted && appsRes?.data?.success) {
-            setPendingOfficerAppsCount(appsRes.data.data.counts?.pending || 0);
-          }
+        const appsRes = await getAdminApplicationsQueue({ status: "APPLIED" });
+        if (isMounted && appsRes?.data?.success) {
+          setPendingApplicationsCount(appsRes.data.counts?.pending || appsRes.data.count || 0);
         }
 
         const reportsRes = await getSchemeReports("PENDING_INVESTIGATION");
         if (isMounted && reportsRes?.data?.success) {
-          setPendingGrievancesCount(reportsRes.data.data.counts?.pending || 0);
+          setPendingGrievancesCount(reportsRes.data.data?.counts?.pending || 0);
         }
       } catch (err) {
         // Silently catch errors
@@ -54,7 +55,7 @@ export default function AdminLayout({ children }) {
     return () => {
       isMounted = false;
     };
-  }, [user?.role, location.pathname]);
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     try {
@@ -65,104 +66,55 @@ export default function AdminLayout({ children }) {
     }
   };
 
-  // Simple, point-to-point Navigation Items based on role
-  const getNavItems = () => {
-    const commonSettings = {
+  // Single Consolidated Admin Navigation
+  const navItems = [
+    {
+      label: "Dashboard",
+      to: "/admin",
+      icon: LayoutDashboard,
+      active: location.pathname === "/admin" || location.pathname === "/admin/dashboard",
+    },
+    {
+      label: "Scheme Catalog",
+      to: "/admin/schemes",
+      icon: Layers,
+      active: location.pathname.startsWith("/admin/schemes"),
+    },
+    {
+      label: "Gov Scheme Sync",
+      to: "/admin/scheme-sync",
+      icon: Radio,
+      active: location.pathname.startsWith("/admin/scheme-sync"),
+    },
+    {
+      label: "Quick Apply Packets",
+      to: "/admin/applications",
+      icon: Inbox,
+      active: location.pathname.startsWith("/admin/applications"),
+      badge: pendingApplicationsCount > 0 ? pendingApplicationsCount : null,
+      badgeColor: "bg-emerald-500",
+    },
+    {
+      label: "Gazette Analyzer",
+      to: "/admin/notifications",
+      icon: FileText,
+      active: location.pathname.startsWith("/admin/notifications"),
+    },
+    {
+      label: "Citizen Grievances",
+      to: "/admin/grievances",
+      icon: ShieldAlert,
+      active: location.pathname.startsWith("/admin/grievances"),
+      badge: pendingGrievancesCount > 0 ? pendingGrievancesCount : null,
+      badgeColor: "bg-rose-500",
+    },
+    {
       label: "Profile & Settings",
       to: "/admin/profile",
       icon: Settings,
       active: location.pathname === "/admin/profile" || location.pathname === "/admin/settings",
-    };
-
-    if (user?.role === "chief_officer") {
-      return [
-        {
-          label: "Dashboard",
-          to: "/admin",
-          icon: LayoutDashboard,
-          active: location.pathname === "/admin" || location.pathname === "/admin/dashboard",
-        },
-        {
-          label: "Officer Approvals",
-          to: "/admin/officers",
-          icon: UserCheck,
-          active: location.pathname.startsWith("/admin/officers"),
-          badge: pendingOfficerAppsCount > 0 ? pendingOfficerAppsCount : null,
-          badgeColor: "bg-orange-500",
-        },
-        {
-          label: "Fake Scheme Reports",
-          to: "/admin/grievances",
-          icon: ShieldAlert,
-          active: location.pathname.startsWith("/admin/grievances"),
-          badge: pendingGrievancesCount > 0 ? pendingGrievancesCount : null,
-          badgeColor: "bg-rose-500",
-        },
-        commonSettings,
-      ];
-    }
-
-    if (user?.role === "category_admin") {
-      return [
-        {
-          label: "Dashboard",
-          to: "/admin",
-          icon: LayoutDashboard,
-          active: location.pathname === "/admin" || location.pathname === "/admin/dashboard",
-        },
-        {
-          label: `My ${user?.department || ""} Schemes`,
-          to: "/admin/schemes",
-          icon: Layers,
-          active: location.pathname.startsWith("/admin/schemes"),
-        },
-        {
-          label: "Scheme Complaints",
-          to: "/admin/grievances",
-          icon: ShieldAlert,
-          active: location.pathname.startsWith("/admin/grievances"),
-          badge: pendingGrievancesCount > 0 ? pendingGrievancesCount : null,
-          badgeColor: "bg-rose-500",
-        },
-        commonSettings,
-      ];
-    }
-
-    // Default: Super Admin
-    return [
-      {
-        label: "Dashboard",
-        to: "/admin",
-        icon: LayoutDashboard,
-        active: location.pathname === "/admin" || location.pathname === "/admin/dashboard",
-      },
-      {
-        label: "All Schemes",
-        to: "/admin/schemes",
-        icon: Layers,
-        active: location.pathname.startsWith("/admin/schemes"),
-      },
-      {
-        label: "All Officers",
-        to: "/admin/officers",
-        icon: Users,
-        active: location.pathname.startsWith("/admin/officers"),
-        badge: pendingOfficerAppsCount > 0 ? pendingOfficerAppsCount : null,
-        badgeColor: "bg-orange-500",
-      },
-      {
-        label: "All Reports",
-        to: "/admin/grievances",
-        icon: ShieldAlert,
-        active: location.pathname.startsWith("/admin/grievances"),
-        badge: pendingGrievancesCount > 0 ? pendingGrievancesCount : null,
-        badgeColor: "bg-rose-500",
-      },
-      commonSettings,
-    ];
-  };
-
-  const navItems = getNavItems();
+    },
+  ];
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-[#1e0a3c] text-white">
@@ -194,11 +146,7 @@ export default function AdminLayout({ children }) {
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-[9px] uppercase font-black tracking-wider text-orange-400 truncate">
-              {user?.role === "chief_officer"
-                ? "Chief Govt Officer"
-                : user?.role === "category_admin"
-                ? `${user?.department || "Dept"} Admin`
-                : "Super Admin"}
+              Platform Administrator
             </div>
             <div className="text-xs font-bold text-white truncate group-hover:text-orange-300 transition-colors">
               {user?.name || "Administrator"}
@@ -310,10 +258,10 @@ export default function AdminLayout({ children }) {
 
               <span className="font-extrabold text-sm text-[#0f172a]">
                 {user?.role === "chief_officer"
-                  ? "🏛️ Chief Officer Verification Desk"
+                  ? "Chief Officer Verification Desk"
                   : user?.role === "category_admin"
-                  ? `🌾 Ministry of ${user?.department || "Department"} Desk`
-                  : "⚙️ Platform Admin Desk"}
+                  ? `Ministry of ${user?.department || "Department"} Desk`
+                  : "Platform Admin Desk"}
               </span>
             </div>
 

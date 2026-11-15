@@ -49,7 +49,9 @@ export default function LanguageSelector({ variant = "default", className = "" }
         aria-label="Select website language"
       >
         <Globe className="w-3.5 h-3.5 text-[#065f46]" />
-        <span className="text-sm">{currentLang?.flag || "🇮🇳"}</span>
+        <span className="px-1.5 py-0.5 rounded text-[10px] font-black bg-emerald-100 text-emerald-800 shrink-0">
+          {currentLang?.short || "HI"}
+        </span>
         <span className="font-extrabold text-[#0f172a]">{currentLang?.label || "हिंदी"}</span>
         <span className="text-[10px] text-slate-400 hidden sm:inline">({currentLang?.englishLabel || "Hindi"})</span>
         <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${isOpen ? "rotate-180 text-[#065f46]" : ""}`} />
@@ -72,7 +74,7 @@ export default function LanguageSelector({ variant = "default", className = "" }
           {/* Section 1: MP & Regional Dialects */}
           <div className="px-3 py-1">
             <div className="text-[10px] font-extrabold uppercase tracking-wider text-amber-800 bg-amber-50/80 px-2 py-0.5 rounded mb-1 border border-amber-200/60">
-              🌾 Madhya Pradesh &amp; Regional Dialects
+              Madhya Pradesh &amp; Regional Dialects
             </div>
             <div className="space-y-0.5">
               {mpDialects.map((lang) => {
@@ -89,7 +91,9 @@ export default function LanguageSelector({ variant = "default", className = "" }
                     }`}
                   >
                     <div className="flex items-center space-x-2">
-                      <span className="text-base">{lang.flag}</span>
+                      <span className="w-7 h-5 rounded bg-slate-100 text-slate-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-slate-200">
+                        {lang.short}
+                      </span>
                       <div>
                         <div className="text-xs font-bold text-[#0f172a]">{lang.label}</div>
                         <div className="text-[10px] text-slate-500 font-medium">{lang.region}</div>
@@ -122,7 +126,9 @@ export default function LanguageSelector({ variant = "default", className = "" }
                     }`}
                   >
                     <div className="flex items-center space-x-2">
-                      <span className="text-base">{lang.flag}</span>
+                      <span className="w-7 h-5 rounded bg-slate-100 text-slate-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-slate-200">
+                        {lang.short}
+                      </span>
                       <div>
                         <div className="text-xs font-bold text-[#0f172a]">{lang.label}</div>
                         <div className="text-[10px] text-slate-500 font-medium">{lang.englishLabel}</div>
@@ -155,7 +161,9 @@ export default function LanguageSelector({ variant = "default", className = "" }
                     }`}
                   >
                     <div className="flex items-center space-x-1.5 truncate">
-                      <span className="text-sm">{lang.flag}</span>
+                      <span className="w-6 h-5 rounded bg-slate-100 text-slate-700 text-[9px] font-black flex items-center justify-center shrink-0 border border-slate-200">
+                        {lang.short}
+                      </span>
                       <div className="truncate">
                         <div className="text-xs font-bold text-[#0f172a] truncate">{lang.label}</div>
                         <div className="text-[9px] text-slate-500 truncate">{lang.englishLabel}</div>

@@ -118,8 +118,9 @@ export default function BenefitReadinessCard({
                 • OBC, Age &amp; Domicile match
               </span>
             </div>
-            <span className="text-xs sm:text-[13px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 shrink-0">
-              ✓ 100% Eligible
+            <span className="text-xs sm:text-[13px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 shrink-0 flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              <span>100% Eligible</span>
             </span>
           </div>
 
@@ -134,8 +135,9 @@ export default function BenefitReadinessCard({
                 • 4 of 5 ready (Income Cert. needed)
               </span>
             </div>
-            <span className="text-xs sm:text-[13px] font-semibold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 shrink-0">
-              ⚠️ 60% Ready
+            <span className="text-xs sm:text-[13px] font-semibold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 shrink-0 flex items-center gap-1">
+              <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+              <span>60% Ready</span>
             </span>
           </div>
 
@@ -150,8 +152,9 @@ export default function BenefitReadinessCard({
                 • MahaDBT Portal Open
               </span>
             </div>
-            <span className="text-xs sm:text-[13px] font-semibold text-blue-800 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 shrink-0">
-              ✓ Ready to Apply
+            <span className="text-xs sm:text-[13px] font-semibold text-blue-800 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 shrink-0 flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
+              <span>Ready to Apply</span>
             </span>
           </div>
 

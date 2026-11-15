@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { SpotlightCard } from "../common/ReactBits";
 import { 
   Briefcase, 
   Clock, 
@@ -94,21 +95,25 @@ export default function ApplicationTrackerCard({
   const displayList = applications.length > 0 ? applications : defaultMockApps;
 
   return (
-    <section aria-label="Citizen Application Milestones" className="bg-white rounded-3xl p-6 sm:p-7 border border-[#e9e1f5] shadow-xs space-y-4">
+    <SpotlightCard
+      spotlightColor="rgba(89, 29, 143, 0.08)"
+      className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-2xs hover:shadow-md transition-all duration-300 space-y-4"
+    >
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-normal flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <div className="w-1.5 h-6 bg-[#234731] rounded-full shrink-0" />
+            <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
               <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-[#591d8f]" />
               <span>My Applications (आवेदन ट्रैकर)</span>
             </h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs sm:text-sm font-semibold bg-purple-50 text-[#2b0f4c] border border-purple-200">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-50 text-[#2b0f4c] border border-purple-200 shadow-2xs">
               {displayList.length} Active
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-500 font-normal mt-0.5">
+          <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5 ml-4">
             Self-tracked progress from readiness check to official submission
           </p>
         </div>
@@ -161,13 +166,25 @@ export default function ApplicationTrackerCard({
               </div>
 
               <div className="pt-3 border-t border-[#e9e1f5] flex items-center justify-between text-xs sm:text-sm">
-                <Link
-                  to={`/dashboard/applications/${app._id}`}
-                  className="inline-flex items-center text-xs sm:text-sm font-semibold text-[#2b0f4c] hover:text-[#ea580c] transition"
-                >
-                  <span>Track Status</span>
-                  <ArrowRight className="w-4 h-4 ml-1" />
-                </Link>
+                <div className="flex items-center gap-3">
+                  <Link
+                    to={`/dashboard/applications/${app._id}`}
+                    className="inline-flex items-center text-xs sm:text-sm font-semibold text-[#2b0f4c] hover:text-[#ea580c] transition"
+                  >
+                    <span>Track Status</span>
+                    <ArrowRight className="w-4 h-4 ml-1" />
+                  </Link>
+
+                  {(app.schemeId?._id || app.schemeId) && (
+                    <Link
+                      to={`/dashboard/coach/${app.schemeId?._id || app.schemeId}`}
+                      className="inline-flex items-center text-xs font-bold text-[#591d8f] hover:underline"
+                    >
+                      <Compass className="w-3.5 h-3.5 mr-1" />
+                      <span>Coach Guide</span>
+                    </Link>
+                  )}
+                </div>
 
                 {officialUrl && (
                   <a
@@ -194,6 +211,6 @@ export default function ApplicationTrackerCard({
         </p>
       </div>
 
-    </section>
+    </SpotlightCard>
   );
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { SpotlightCard, NumberTicker } from "../common/ReactBits";
 import { 
   ShieldCheck, 
   ArrowRight, 
@@ -20,29 +21,33 @@ import { AadhaarLogo } from "../common/GovLogos";
 export default function BenefitPassportCard({
   user,
   profileData,
-  completeness = 80,
+  completeness = 0,
 }) {
-  const percent = Math.max(0, Math.min(100, Math.round(completeness || 80)));
-  const isComplete = percent >= 85;
+  const percent = Math.max(0, Math.min(100, Math.round(Number(completeness) || 0)));
+  const isComplete = percent >= 80;
 
-  // Extract authentic profile attributes (defaults to Jabalpur, MP)
-  const category = profileData?.personal?.category || "OBC";
-  const state = profileData?.personal?.state || profileData?.location?.state || "Madhya Pradesh";
-  const district = profileData?.personal?.district || profileData?.location?.district || "Jabalpur";
-  const education = profileData?.education?.qualification || "Graduate / Student";
+  // Extract authentic profile attributes
+  const category = profileData?.personal?.category || (percent > 0 ? "General" : "Not Set");
+  const state = profileData?.personal?.state || profileData?.location?.state || "";
+  const district = profileData?.personal?.district || profileData?.location?.district || "";
+  const domicile = district && state ? `${district}, ${state}` : (state || district || (percent > 0 ? "National" : "Not Set"));
+  const education = profileData?.education?.qualification || (percent > 0 ? "Standard" : "Not Set");
   const incomeStr = profileData?.employment?.annualIncome
     ? `₹${(profileData.employment.annualIncome / 100000).toFixed(1)}L/yr`
-    : "< ₹2.5L/yr";
+    : (profileData?.occupation?.incomeRange || (percent > 0 ? "< ₹2.5L/yr" : "Not Set"));
 
   return (
-    <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/90 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between h-full space-y-3.5">
+    <SpotlightCard
+      spotlightColor="rgba(234, 88, 12, 0.08)"
+      className="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col justify-between h-full space-y-3.5"
+    >
       
       {/* 1. Header: Credential Title & Verified Badge */}
       <div className="space-y-2.5">
         <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
           <div>
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
+              <span className={`w-2.5 h-2.5 rounded-full ${isComplete ? "bg-emerald-500" : percent > 0 ? "bg-amber-500" : "bg-slate-300"} shrink-0`} />
               <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-normal">
                 Benefit Passport
               </h2>
@@ -52,9 +57,13 @@ export default function BenefitPassportCard({
             </p>
           </div>
 
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs sm:text-[13px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 shrink-0 shadow-2xs">
+          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs sm:text-[13px] font-semibold border shrink-0 shadow-2xs ${
+            isComplete
+              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+              : "bg-purple-50 text-purple-800 border-purple-200"
+          }`}>
             <AadhaarLogo className="w-4 h-4 shrink-0" />
-            <span>Aadhaar e-KYC</span>
+            <span>{isComplete ? "Aadhaar e-KYC" : "e-KYC Ready"}</span>
           </span>
         </div>
 
@@ -65,7 +74,7 @@ export default function BenefitPassportCard({
               Category
             </span>
             <span className="font-semibold text-slate-800 text-xs sm:text-sm block truncate mt-0.5">
-              {category} (Verified)
+              {category}
             </span>
           </div>
 
@@ -74,7 +83,7 @@ export default function BenefitPassportCard({
               Domicile
             </span>
             <span className="font-semibold text-slate-800 text-xs sm:text-sm block truncate mt-0.5">
-              {district}, {state}
+              {domicile}
             </span>
           </div>
 
@@ -101,8 +110,9 @@ export default function BenefitPassportCard({
         <div className="space-y-1.5 pt-0.5">
           <div className="flex items-center justify-between text-xs sm:text-sm">
             <span className="font-medium text-slate-700">Profile Completeness</span>
-            <span className="font-semibold text-purple-900 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 text-xs sm:text-sm">
-              {percent}% • 4/5 Verified
+            <span className="font-semibold text-purple-900 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200 text-xs sm:text-sm flex items-center gap-1">
+              <NumberTicker value={percent} suffix="%" /> 
+              <span>• {percent >= 80 ? "Verified" : percent > 0 ? "In Progress" : "Pending"}</span>
             </span>
           </div>
 
@@ -114,7 +124,9 @@ export default function BenefitPassportCard({
             className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden border border-slate-200"
           >
             <div 
-              className="h-full rounded-full bg-[#2b0f4c] transition-all duration-700 ease-out"
+              className={`h-full rounded-full transition-all duration-700 ease-out ${
+                isComplete ? "bg-emerald-600" : percent > 30 ? "bg-[#2b0f4c]" : "bg-orange-500"
+              }`}
               style={{ width: `${percent}%` }}
             />
           </div>
@@ -124,10 +136,12 @@ export default function BenefitPassportCard({
         <div className="py-2 px-3 rounded-xl bg-amber-50/80 border border-amber-200/80 text-xs sm:text-[13px] text-amber-950 flex items-center gap-2">
           <Info className="w-4 h-4 text-amber-600 shrink-0" />
           <p className="leading-normal truncate font-normal">
-            {isComplete ? (
+            {percent === 0 ? (
+              <span><strong>Step 1:</strong> Complete your profile to calculate matched welfare schemes.</span>
+            ) : isComplete ? (
               <span>All key criteria verified. Schemes sync automatically.</span>
             ) : (
-              <span><strong>Next:</strong> Upload <em>Income Certificate</em> to unlock 3 more schemes.</span>
+              <span><strong>Next:</strong> Add income &amp; qualification details to unlock more schemes.</span>
             )}
           </p>
         </div>
@@ -144,6 +158,6 @@ export default function BenefitPassportCard({
         </Link>
       </div>
 
-    </div>
+    </SpotlightCard>
   );
 }

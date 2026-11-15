@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { SpotlightCard } from "../common/ReactBits";
 import {
   MapPin,
   Phone,
@@ -97,7 +98,10 @@ export default function CscCenterCard({ user, profileData }) {
   return (
     <>
       {/* CSC Assistance Card with Directly Visible Google Map */}
-      <div className="bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-purple-500/10 rounded-3xl border border-orange-200/90 p-5 sm:p-6 shadow-xs space-y-5 hover:border-orange-300 transition-all">
+      <SpotlightCard
+        spotlightColor="rgba(245, 158, 11, 0.12)"
+        className="bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-purple-500/10 rounded-3xl border border-orange-200/90 p-5 sm:p-6 shadow-2xs hover:shadow-md space-y-5 hover:border-orange-300 transition-all duration-300"
+      >
         
         {/* Top Header & Distance Badge */}
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
@@ -116,9 +120,12 @@ export default function CscCenterCard({ user, profileData }) {
               </span>
             </div>
 
-            <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-              <span>{district} CSC e-Gov Hub</span>
-            </h3>
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-6 bg-[#234731] rounded-full shrink-0" />
+              <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                <span>{district} CSC e-Gov Hub</span>
+              </h3>
+            </div>
             
             <p className="text-xs text-slate-600 flex items-center space-x-1.5">
               <MapPin className="w-3.5 h-3.5 text-orange-500 shrink-0" />
@@ -243,7 +250,8 @@ export default function CscCenterCard({ user, profileData }) {
                     </div>
                     <div className="text-[10px] font-bold text-emerald-700 flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      <span>📍 Pinned Center • 1.2 km away</span>
+                      <MapPin className="w-3 h-3 text-emerald-600 inline" />
+                      <span>Pinned Center • 1.2 km away</span>
                     </div>
                   </div>
                 </div>
@@ -318,12 +326,13 @@ export default function CscCenterCard({ user, profileData }) {
           {/* Quick Route & Directions Banner */}
           <div className="p-3 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2.5">
             <div className="flex items-center space-x-3 text-xs text-slate-600">
-              <span className="font-bold text-slate-800 flex items-center gap-1">
-                🚗 4 min via Civil Lines Rd
+              <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                <Navigation className="w-3.5 h-3.5 text-slate-700 inline" />
+                <span>4 min via Civil Lines Rd</span>
               </span>
               <span className="text-slate-300">•</span>
               <span className="font-bold text-slate-800 flex items-center gap-1">
-                🚶 14 min walk
+                <span>14 min walk</span>
               </span>
               <span className="text-slate-300 hidden sm:inline">•</span>
               <span className="text-orange-700 font-semibold hidden sm:inline">
@@ -393,7 +402,7 @@ export default function CscCenterCard({ user, profileData }) {
           </button>
         </div>
 
-      </div>
+      </SpotlightCard>
 
       {/* MODAL 1: Full-Screen Interactive Pinned Map Modal */}
       {mapModalOpen && (
@@ -411,7 +420,7 @@ export default function CscCenterCard({ user, profileData }) {
                       {district} CSC e-Gov Hub on Google Maps
                     </h3>
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-800">
-                      Pinned 📍
+                      Pinned Center
                     </span>
                   </div>
                   <p className="text-xs text-slate-500">

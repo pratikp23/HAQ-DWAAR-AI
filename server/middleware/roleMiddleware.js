@@ -20,13 +20,11 @@ export const requireRole = (...allowedRoles) => {
 
     const userRole = req.user.role;
 
-    // Legacy 'admin' is treated as super_admin for full backwards compatibility
+    // Unified Admin consolidation: any administrative tier qualifies for full admin oversight
+    const isAdmin = ["admin", "super_admin", "chief_officer", "category_admin"].includes(userRole);
     const effectiveRoles = [userRole];
-    if (userRole === "admin" || userRole === "super_admin") {
-      effectiveRoles.push("admin", "super_admin");
-    }
-    if (userRole === "chief_officer") {
-      effectiveRoles.push("chief_officer", "super_admin", "admin");
+    if (isAdmin) {
+      effectiveRoles.push("admin", "super_admin", "chief_officer", "category_admin");
     }
 
     const hasPermission = allowedRoles.some((role) => effectiveRoles.includes(role));

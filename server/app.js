@@ -22,6 +22,9 @@ import adminAnalyticsRoutes from "./routes/adminAnalyticsRoutes.js";
 import chiefOfficerRoutes from "./routes/chiefOfficerRoutes.js";
 import schemeReportRoutes from "./routes/schemeReportRoutes.js";
 import mittraRoutes from "./routes/mittraRoutes.js";
+import schemeCoachRoutes from "./routes/schemeCoachRoutes.js";
+import schemeIngestionRoutes from "./routes/schemeIngestionRoutes.js";
+import { authRateLimiter, generalApiRateLimiter } from "./middleware/apiRateLimiter.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
 const app = express();
@@ -67,8 +70,9 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Base API Routes
+app.use("/api", generalApiRateLimiter);
 app.use("/api", healthRoutes);
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRateLimiter, authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/schemes", schemeRoutes);
 app.use("/api/admin", adminRoutes);
@@ -86,6 +90,8 @@ app.use("/api/officer", chiefOfficerRoutes);
 app.use("/api/chief", chiefOfficerRoutes);
 app.use("/api/reports", schemeReportRoutes);
 app.use("/api/mittra", mittraRoutes);
+app.use("/api/coach", schemeCoachRoutes);
+app.use("/api/admin/scheme-sync", schemeIngestionRoutes);
 
 // Catch-all 404 handler
 app.use(notFoundHandler);

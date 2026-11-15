@@ -12,7 +12,13 @@ import {
   Globe2, 
   PhoneCall, 
   FileCheck2, 
-  HelpCircle 
+  HelpCircle,
+  Tractor,
+  GraduationCap,
+  Briefcase,
+  Building,
+  Home,
+  Shield
 } from "lucide-react";
 import { LayoutContext } from "../../context/LayoutContext";
 import BrandLogo from "./BrandLogo";
@@ -59,13 +65,13 @@ export default function Footer({ forceRender = false }) {
   };
 
   return (
-    <footer className="bg-gradient-to-b from-[#13072b] via-[#1a0a3a] to-[#0d041c] text-slate-200 border-t border-[#31145f]/80 text-xs selection:bg-[#5f259f] selection:text-white">
+    <footer className="bg-gradient-to-b from-[#112318] via-[#0d1a12] to-[#08120c] text-[#ebf3ed] border-t border-[#234731]/80 text-xs selection:bg-[#ea580c] selection:text-white">
       
       {/* 1. TOP CIVIC TRUST HEADER STRIP */}
-      <div className="border-b border-[#2d1254]/80 py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className="border-b border-[#234731]/60 py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
           
-          {/* Left: PhonePe-Style Logo & Tagline */}
+          {/* Left: Lok Samarth Logo & Tagline */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <BrandLogo
               to="/"
@@ -73,12 +79,12 @@ export default function Footer({ forceRender = false }) {
               showSubtitle={true}
               iconType="fingerprint"
               className="text-white [&_span]:text-white"
-              subtitleColor="text-purple-300"
+              subtitleColor="text-[#c8ded0]"
             />
-            <div className="hidden sm:block h-8 w-[1px] bg-purple-800/60" />
-            <div className="text-[12px] text-purple-200/90 leading-tight">
+            <div className="hidden sm:block h-8 w-[1px] bg-emerald-800/60" />
+            <div className="text-[12px] text-[#c8ded0] leading-tight">
               <span className="font-extrabold text-white">Digital Public Infrastructure</span>
-              <div className="text-[11px] text-purple-300 flex items-center gap-1.5 mt-0.5">
+              <div className="text-[11px] text-[#c8ded0] flex items-center gap-1.5 mt-0.5">
                 <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span>100% Gazette-Verified Citizen Welfare Gateway</span>
               </div>
@@ -87,16 +93,16 @@ export default function Footer({ forceRender = false }) {
 
           {/* Right: Trust Badges */}
           <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#240e4f]/80 border border-purple-500/20 text-purple-200 text-[11px] font-semibold">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[#ebf3ed] text-[11px] font-semibold">
               <Globe2 className="w-3.5 h-3.5 text-emerald-400" />
               <span>13 Indian Languages</span>
             </div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#240e4f]/80 border border-purple-500/20 text-purple-200 text-[11px] font-semibold">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[#ebf3ed] text-[11px] font-semibold">
               <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
               <span>Deterministic Matching</span>
             </div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#240e4f]/80 border border-purple-500/20 text-purple-200 text-[11px] font-semibold">
-              <Lock className="w-3.5 h-3.5 text-cyan-400" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[#ebf3ed] text-[11px] font-semibold">
+              <Lock className="w-3.5 h-3.5 text-amber-400" />
               <span>Zero Data Selling</span>
             </div>
           </div>
@@ -114,35 +120,41 @@ export default function Footer({ forceRender = false }) {
               <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
               <span>Welfare Sectors</span>
             </h4>
-            <ul className="space-y-2 text-purple-200/80 text-[11px]">
+            <ul className="space-y-2 text-[#c8ded0] text-[11px]">
               <li>
-                <Link to="/browse-schemes?category=KISAN" className="hover:text-white transition flex items-center gap-1">
-                  <span>🌾</span> <span>Kisan &amp; Agriculture</span>
+                <Link to="/browse-schemes?category=KISAN" className="hover:text-white transition flex items-center gap-1.5">
+                  <Tractor className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Kisan &amp; Agriculture</span>
                 </Link>
               </li>
               <li>
-                <Link to="/browse-schemes?category=STUDENT" className="hover:text-white transition flex items-center gap-1">
-                  <span>🎓</span> <span>Students &amp; Scholarships</span>
+                <Link to="/browse-schemes?category=STUDENT" className="hover:text-white transition flex items-center gap-1.5">
+                  <GraduationCap className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span>Students &amp; Scholarships</span>
                 </Link>
               </li>
               <li>
-                <Link to="/browse-schemes?category=EMPLOYMENT" className="hover:text-white transition flex items-center gap-1">
-                  <span>💼</span> <span>Employment &amp; Skill</span>
+                <Link to="/browse-schemes?category=EMPLOYMENT" className="hover:text-white transition flex items-center gap-1.5">
+                  <Briefcase className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Employment &amp; Skill</span>
                 </Link>
               </li>
               <li>
-                <Link to="/browse-schemes?category=BUSINESS" className="hover:text-white transition flex items-center gap-1">
-                  <span>🏭</span> <span>MSME &amp; Enterprises</span>
+                <Link to="/browse-schemes?category=BUSINESS" className="hover:text-white transition flex items-center gap-1.5">
+                  <Building className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span>MSME &amp; Enterprises</span>
                 </Link>
               </li>
               <li>
-                <Link to="/browse-schemes?category=HOUSING" className="hover:text-white transition flex items-center gap-1">
-                  <span>🏠</span> <span>Housing &amp; Urban</span>
+                <Link to="/browse-schemes?category=HOUSING" className="hover:text-white transition flex items-center gap-1.5">
+                  <Home className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+                  <span>Housing &amp; Urban</span>
                 </Link>
               </li>
               <li>
-                <Link to="/browse-schemes?category=GENERAL" className="hover:text-white transition flex items-center gap-1">
-                  <span>🛡️</span> <span>Social Security &amp; Pension</span>
+                <Link to="/browse-schemes?category=GENERAL" className="hover:text-white transition flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Social Security &amp; Pension</span>
                 </Link>
               </li>
             </ul>
@@ -154,7 +166,7 @@ export default function Footer({ forceRender = false }) {
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               <span>Citizen Tools</span>
             </h4>
-            <ul className="space-y-2 text-purple-200/80 text-[11px]">
+            <ul className="space-y-2 text-[#c8ded0] text-[11px]">
               <li>
                 <Link to="/dashboard/benefit-passport" className="hover:text-white transition">
                   Benefit Passport
@@ -195,10 +207,10 @@ export default function Footer({ forceRender = false }) {
           {/* Column 3: How It Works & Trust */}
           <div className="space-y-3">
             <h4 className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
               <span>Trust &amp; Process</span>
             </h4>
-            <ul className="space-y-2 text-purple-200/80 text-[11px]">
+            <ul className="space-y-2 text-[#c8ded0] text-[11px]">
               <li>
                 <button
                   type="button"
@@ -251,10 +263,10 @@ export default function Footer({ forceRender = false }) {
           {/* Column 4: Official Direct Gateways */}
           <div className="space-y-3">
             <h4 className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               <span>Official Gateways</span>
             </h4>
-            <ul className="space-y-2 text-purple-200/80 text-[11px]">
+            <ul className="space-y-2 text-[#c8ded0] text-[11px]">
               <li>
                 <a
                   href="https://scholarships.gov.in"
@@ -263,7 +275,7 @@ export default function Footer({ forceRender = false }) {
                   className="hover:text-white transition inline-flex items-center gap-1 group"
                 >
                   <span>National Scholarship (NSP)</span>
-                  <ExternalLink className="w-3 h-3 text-purple-400 group-hover:text-white" />
+                  <ExternalLink className="w-3 h-3 text-emerald-400 group-hover:text-white" />
                 </a>
               </li>
               <li>
@@ -274,7 +286,7 @@ export default function Footer({ forceRender = false }) {
                   className="hover:text-white transition inline-flex items-center gap-1 group"
                 >
                   <span>PM-Kisan Samman Nidhi</span>
-                  <ExternalLink className="w-3 h-3 text-purple-400 group-hover:text-white" />
+                  <ExternalLink className="w-3 h-3 text-emerald-400 group-hover:text-white" />
                 </a>
               </li>
               <li>
@@ -285,7 +297,7 @@ export default function Footer({ forceRender = false }) {
                   className="hover:text-white transition inline-flex items-center gap-1 group"
                 >
                   <span>DigiLocker India</span>
-                  <ExternalLink className="w-3 h-3 text-purple-400 group-hover:text-white" />
+                  <ExternalLink className="w-3 h-3 text-emerald-400 group-hover:text-white" />
                 </a>
               </li>
               <li>
@@ -296,7 +308,7 @@ export default function Footer({ forceRender = false }) {
                   className="hover:text-white transition inline-flex items-center gap-1 group"
                 >
                   <span>MyGov Citizen Portal</span>
-                  <ExternalLink className="w-3 h-3 text-purple-400 group-hover:text-white" />
+                  <ExternalLink className="w-3 h-3 text-emerald-400 group-hover:text-white" />
                 </a>
               </li>
               <li>
@@ -307,7 +319,7 @@ export default function Footer({ forceRender = false }) {
                   className="hover:text-white transition inline-flex items-center gap-1 group"
                 >
                   <span>UMANG App Services</span>
-                  <ExternalLink className="w-3 h-3 text-purple-400 group-hover:text-white" />
+                  <ExternalLink className="w-3 h-3 text-emerald-400 group-hover:text-white" />
                 </a>
               </li>
               <li>
@@ -318,7 +330,7 @@ export default function Footer({ forceRender = false }) {
                   className="hover:text-white transition inline-flex items-center gap-1 group"
                 >
                   <span>DBT Bharat Gateway</span>
-                  <ExternalLink className="w-3 h-3 text-purple-400 group-hover:text-white" />
+                  <ExternalLink className="w-3 h-3 text-emerald-400 group-hover:text-white" />
                 </a>
               </li>
             </ul>
@@ -330,28 +342,28 @@ export default function Footer({ forceRender = false }) {
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
               <span>National Helplines</span>
             </h4>
-            <div className="space-y-2 text-purple-200/80 text-[11px]">
-              <div className="p-2.5 rounded-xl bg-[#240e4f]/60 border border-purple-500/20">
-                <div className="text-[10px] text-purple-300 font-bold uppercase tracking-wider">Citizen Consumer Helpline</div>
+            <div className="space-y-2 text-[#c8ded0] text-[11px]">
+              <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
+                <div className="text-[10px] text-amber-300 font-bold uppercase tracking-wider">Citizen Consumer Helpline</div>
                 <div className="text-white font-extrabold text-sm flex items-center gap-1 mt-0.5">
                   <PhoneCall className="w-3.5 h-3.5 text-emerald-400" />
                   <span>1915</span>
                 </div>
               </div>
-              <div className="p-2.5 rounded-xl bg-[#240e4f]/60 border border-purple-500/20">
-                <div className="text-[10px] text-purple-300 font-bold uppercase tracking-wider">Kisan Call Centre</div>
+              <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
+                <div className="text-[10px] text-amber-300 font-bold uppercase tracking-wider">Kisan Call Centre</div>
                 <div className="text-white font-extrabold text-xs flex items-center gap-1 mt-0.5">
                   <PhoneCall className="w-3.5 h-3.5 text-amber-400" />
                   <span>1800-180-1551</span>
                 </div>
               </div>
-              <div className="p-2.5 rounded-xl bg-[#240e4f]/60 border border-purple-500/20">
-                <div className="text-[10px] text-purple-300 font-bold uppercase tracking-wider">CPGRAMS Grievance</div>
+              <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
+                <div className="text-[10px] text-amber-300 font-bold uppercase tracking-wider">CPGRAMS Grievance</div>
                 <a
                   href="https://pgportal.gov.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-cyan-300 hover:text-white font-bold text-xs inline-flex items-center gap-1 mt-0.5"
+                  className="text-emerald-300 hover:text-white font-bold text-xs inline-flex items-center gap-1 mt-0.5"
                 >
                   <span>pgportal.gov.in</span>
                   <ExternalLink className="w-3 h-3" />
@@ -362,13 +374,12 @@ export default function Footer({ forceRender = false }) {
 
         </div>
 
-        {/* 3. PHONEPE-INSPIRED SECURITY & BIOMETRIC TRUST CARD */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#240d4f] via-[#331168] to-[#1c083d] p-6 sm:p-8 border border-purple-400/20 shadow-xl mb-10">
+        {/* 3. LOK SAMARTH SECURITY & BIOMETRIC TRUST CARD */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#112318] via-[#1a3826] to-[#234731] p-6 sm:p-8 border border-[#234731]/80 shadow-xl mb-10">
           <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             
             <div className="flex items-start gap-4">
-              {/* PhonePe-Style Glowing Fingerprint Badge */}
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#7c3aed] via-[#5f259f] to-[#3b0764] flex items-center justify-center text-white shadow-lg shadow-purple-950/40 ring-2 ring-purple-300/40 shrink-0">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#ea580c] to-[#f97316] flex items-center justify-center text-white shadow-lg shrink-0">
                 <Fingerprint className="w-7 h-7 text-white" strokeWidth={2.4} />
               </div>
               <div className="space-y-1">
@@ -380,8 +391,8 @@ export default function Footer({ forceRender = false }) {
                     Encrypted Vault
                   </span>
                 </div>
-                <p className="text-xs text-purple-200/90 max-w-2xl leading-relaxed">
-                  HAQ DWAAR AI utilizes a zero-commercial-sale architecture. Your personal profile, benefit matches, and uploaded certificates are strictly used to compute eligibility and readiness before you visit authorized government portals.
+                <p className="text-xs text-[#c8ded0] max-w-2xl leading-relaxed">
+                  Lok Samarth utilizes a zero-commercial-sale architecture. Your personal profile, benefit matches, and uploaded certificates are strictly used to compute eligibility and readiness before you visit authorized government portals.
                 </p>
               </div>
             </div>
@@ -389,7 +400,7 @@ export default function Footer({ forceRender = false }) {
             <div className="flex items-center gap-3 shrink-0 w-full sm:w-auto">
               <Link
                 to="/register"
-                className="w-full sm:w-auto text-center px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-extrabold text-xs shadow-md shadow-orange-950/30 transition-all cursor-pointer"
+                className="w-full sm:w-auto text-center px-5 py-2.5 rounded-xl bg-[#ea580c] hover:bg-[#c2410c] text-white font-extrabold text-xs shadow-md active:scale-95 transition-all cursor-pointer"
               >
                 Create Benefit Passport
               </Link>
@@ -399,22 +410,22 @@ export default function Footer({ forceRender = false }) {
         </div>
 
         {/* 4. CIVIC TRUST & LEGAL NON-AGENCY NOTICE */}
-        <div className="p-4 sm:p-5 bg-[#170630]/90 rounded-2xl border border-purple-900/60 text-[11px] text-purple-300/90 space-y-2 leading-relaxed">
-          <div className="flex items-center space-x-2 text-amber-300 font-bold">
+        <div className="p-4 sm:p-5 bg-black/30 rounded-2xl border border-white/10 text-[11px] text-[#c8ded0] space-y-2 leading-relaxed">
+          <div className="flex items-center space-x-2 text-amber-400 font-bold">
             <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" />
             <span className="uppercase tracking-wider text-[10px]">Civic Platform Notice &amp; Disclaimer</span>
           </div>
           <p>
-            <strong>HAQ DWAAR AI is an independent civic assistance platform and is NOT an official government agency or public authority.</strong> All applications, verification of claims, and final benefit disbursements are conducted strictly through authorized government ministries and official portals (such as NSP, PM-Kisan, and State Portals). Scheme summaries and eligibility criteria are curated from published gazettes and official circulars for informational guidance only.
+            <strong>Lok Samarth is an independent civic assistance platform and is NOT an official government agency or public authority.</strong> All applications, verification of claims, and final benefit disbursements are conducted strictly through authorized government ministries and official portals (such as NSP, PM-Kisan, and State Portals). Scheme summaries and eligibility criteria are curated from published gazettes and official circulars for informational guidance only.
           </p>
         </div>
 
         {/* 5. BOTTOM BAR WITH BACK-TO-TOP & COPYRIGHT */}
-        <div className="mt-10 pt-6 border-t border-purple-900/50 flex flex-col sm:flex-row items-center justify-between text-[11px] text-purple-400 gap-4">
+        <div className="mt-10 pt-6 border-t border-[#234731]/60 flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#c8ded0] gap-4">
           <div className="flex items-center space-x-2">
             <span>© 2026</span>
-            <span className="font-extrabold text-purple-200">HAQ DWAAR AI</span>
-            <span>• Developed for India&apos;s 140+ Crore Citizens</span>
+            <span className="font-extrabold text-white">LOK SAMARTH</span>
+            <span>• Your Right • Your Benefit • Your Empowerment</span>
           </div>
 
           <div className="flex flex-wrap items-center gap-4 text-xs font-semibold">
@@ -438,7 +449,7 @@ export default function Footer({ forceRender = false }) {
             <button
               type="button"
               onClick={(e) => handleAnchorClick(e, "top")}
-              className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-[#270d54] hover:bg-[#341170] text-purple-200 hover:text-white transition cursor-pointer border border-purple-500/20"
+              className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-[#ebf3ed] hover:text-white transition cursor-pointer border border-white/10 active:scale-95"
               aria-label="Scroll back to top"
             >
               <ArrowUp className="w-3.5 h-3.5 text-amber-400" />

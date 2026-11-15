@@ -557,29 +557,57 @@ export async function getDepartmentQueue(req, res) {
     }
 
     const filter = {
-      status: { $in: ["APPLIED", "READY_TO_APPLY", "FOLLOW_UP", "COMPLETED", "INTERESTED"] },
+      status: { $in: ["APPLIED", "READY_TO_APPLY", "FOLLOW_UP", "COMPLETED", "INTERESTED", "CANCELLED"] },
     };
 
-    // Category admin only sees their specific ministry department
+    // Filter by department if specified
     if (userRole === "category_admin" && req.user.department && req.user.department !== "ALL") {
       filter.department = req.user.department;
     } else if (req.query.department && req.query.department !== "ALL") {
       filter.department = req.query.department;
     }
 
+    // Filter by status if specified
     if (req.query.status && req.query.status !== "ALL") {
       filter.status = req.query.status;
+    }
+
+    // Filter by submission type if specified (e.g. QUICK_APPLY)
+    if (req.query.submissionType && req.query.submissionType !== "ALL") {
+      filter.submissionType = req.query.submissionType;
+    }
+
+    // Search by Reference Number, Applicant Name, or Phone
+    if (req.query.search && req.query.search.trim() !== "") {
+      const searchRegex = new RegExp(req.query.search.trim(), "i");
+      filter.$or = [
+        { referenceNumber: searchRegex },
+        { "applicantDetails.fullName": searchRegex },
+        { "applicantDetails.phone": searchRegex },
+      ];
     }
 
     const applications = await ApplicationTracker.find(filter)
       .populate("userId", "name email phone")
       .populate("schemeId", "name category benefitSummary state officialApplicationUrl")
       .sort({ updatedAt: -1 })
-      .limit(100);
+      .limit(200);
+
+    // Compute status counts for quick administrative overview
+    const totalCount = await ApplicationTracker.countDocuments({});
+    const pendingCount = await ApplicationTracker.countDocuments({ status: { $in: ["APPLIED", "READY_TO_APPLY"] } });
+    const quickApplyCount = await ApplicationTracker.countDocuments({ submissionType: "QUICK_APPLY" });
+    const completedCount = await ApplicationTracker.countDocuments({ status: "COMPLETED" });
 
     return res.status(200).json({
       success: true,
       count: applications.length,
+      counts: {
+        total: totalCount,
+        pending: pendingCount,
+        quickApply: quickApplyCount,
+        completed: completedCount,
+      },
       data: {
         applications,
       },

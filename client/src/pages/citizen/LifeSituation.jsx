@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import Navbar from "../../components/layout/Navbar";
 import { useLanguage } from "../../context/LanguageContext";
+import Chip from "../../components/common/Chip";
 import {
   analyzeLifeSituation,
   previewMatches,
@@ -136,17 +136,12 @@ export default function LifeSituation() {
   const signals = analysisResult?.extractedProfileSignals;
 
   return (
-    <div className="min-h-screen bg-[#f7f5fa] text-[#0f172a] pb-20">
-      {/* Universal GovTech Top Navigation */}
-      <Navbar />
-
-      {/* Main Container */}
-      <main className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-8 space-y-8">
-        {/* Hero Section */}
-        <div className="bg-gradient-to-r from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] rounded-2xl p-6 sm:p-8 text-white shadow-lg space-y-4 border border-[#591d8f]/30">
+    <div className="w-full px-3 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6 sm:space-y-8 max-w-7xl mx-auto">
+      {/* Hero Section */}
+        <div className="bg-gradient-to-r from-[#112318] via-[#1a3826] to-[#234731] rounded-2xl p-6 sm:p-8 text-white shadow-lg space-y-4 border border-[#234731]/60">
           <div className="flex flex-wrap items-center gap-2">
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-[#ea580c]/20 border border-[#ea580c]/50 text-xs font-bold text-[#ffedd5]">
-              <Sparkles className="w-3.5 h-3.5 text-[#fb923c]" />
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-bold text-[#ebf3ed]">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
               <span>Bhashini Voice + Conversational NLU</span>
             </div>
             <TrustBadge type="DEMO_MODE" label="Voice Demo Mode" size="sm" />
@@ -160,12 +155,12 @@ export default function LifeSituation() {
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
             {t("aiMitraTitle", "Tell Us What You Need")}
           </h1>
-          <p className="text-[#e2e8f0] text-sm font-medium leading-relaxed max-w-2xl">
+          <p className="text-[#c8ded0] text-sm font-medium leading-relaxed max-w-2xl">
             Describe your situation naturally using voice or text. We convert your speech into structured signals to evaluate verified government benefits.
           </p>
 
-          <div className="p-3.5 bg-[#140628]/80 border border-[#591d8f]/50 rounded-xl text-xs text-[#cbd5e1] flex items-start space-x-2.5 font-medium">
-            <Info className="w-4 h-4 flex-shrink-0 text-[#fb923c] mt-0.5" />
+          <div className="p-3.5 bg-[#112318]/90 border border-emerald-900/50 rounded-xl text-xs text-[#cbd5e1] flex items-start space-x-2.5 font-medium">
+            <Info className="w-4 h-4 flex-shrink-0 text-amber-400 mt-0.5" />
             <p>
               AI is used solely to comprehend conversational speech and extract profile signals. Scheme eligibility and benefit amounts are strictly protected and verified by our Benefit Firewall.
             </p>
@@ -180,7 +175,7 @@ export default function LifeSituation() {
               onClick={() => setInputMode("voice")}
               className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 transition-all cursor-pointer ${
                 inputMode === "voice"
-                  ? "bg-[#240b49] text-white shadow-md"
+                  ? "bg-[#112318] text-white shadow-md"
                   : "text-slate-700 hover:text-slate-900"
               }`}
             >
@@ -192,7 +187,7 @@ export default function LifeSituation() {
               onClick={() => setInputMode("text")}
               className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 transition-all cursor-pointer ${
                 inputMode === "text"
-                  ? "bg-[#240b49] text-white shadow-md"
+                  ? "bg-[#112318] text-white shadow-md"
                   : "text-slate-700 hover:text-slate-900"
               }`}
             >
@@ -224,7 +219,7 @@ export default function LifeSituation() {
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="e.g. I am a 20-year-old student doing B.Tech in Madhya Pradesh. My father is a small farmer with 2 acres of land and our annual family income is 2 lakhs. What scholarships or farm subsidies can we apply for?"
-                className="w-full p-4 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#240b49] text-sm text-slate-800 placeholder-slate-400 resize-y"
+                className="w-full p-4 rounded-xl border border-slate-300 focus:ring-2 focus:ring-[#112318] text-sm text-slate-800 placeholder-slate-400 resize-y"
               />
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
@@ -235,7 +230,7 @@ export default function LifeSituation() {
                 <button
                   onClick={handleTextAnalyze}
                   disabled={analyzing || text.trim().length < 3}
-                  className="inline-flex items-center justify-center px-6 py-2.5 rounded-xl font-bold text-xs bg-[#ea580c] hover:bg-[#c2410c] text-white shadow-md transition-all disabled:opacity-50 cursor-pointer"
+                  className="inline-flex items-center justify-center px-6 py-2.5 rounded-xl font-bold text-xs bg-[#ea580c] hover:bg-[#c2410c] text-white shadow-md transition-all disabled:opacity-50 cursor-pointer active:scale-95"
                 >
                   {analyzing ? (
                     <>
@@ -372,8 +367,8 @@ export default function LifeSituation() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {signals?.state && (
-                  <div className="p-3 bg-purple-50/60 border border-purple-100 rounded-xl">
-                    <span className="text-[10px] uppercase font-bold text-purple-700 block">
+                  <div className="p-3 bg-emerald-50/70 border border-emerald-100 rounded-xl">
+                    <span className="text-[10px] uppercase font-bold text-emerald-800 block">
                       State
                     </span>
                     <span className="text-xs font-black text-slate-900">
@@ -382,8 +377,8 @@ export default function LifeSituation() {
                   </div>
                 )}
                 {signals?.category && (
-                  <div className="p-3 bg-purple-50/60 border border-purple-100 rounded-xl">
-                    <span className="text-[10px] uppercase font-bold text-purple-700 block">
+                  <div className="p-3 bg-emerald-50/70 border border-emerald-100 rounded-xl">
+                    <span className="text-[10px] uppercase font-bold text-emerald-800 block">
                       Caste / Social Category
                     </span>
                     <span className="text-xs font-black text-slate-900">
@@ -392,8 +387,8 @@ export default function LifeSituation() {
                   </div>
                 )}
                 {signals?.occupationType && (
-                  <div className="p-3 bg-purple-50/60 border border-purple-100 rounded-xl">
-                    <span className="text-[10px] uppercase font-bold text-purple-700 block">
+                  <div className="p-3 bg-emerald-50/70 border border-emerald-100 rounded-xl">
+                    <span className="text-[10px] uppercase font-bold text-emerald-800 block">
                       Occupation
                     </span>
                     <span className="text-xs font-black text-slate-900">
@@ -402,8 +397,8 @@ export default function LifeSituation() {
                   </div>
                 )}
                 {signals?.qualification && (
-                  <div className="p-3 bg-purple-50/60 border border-purple-100 rounded-xl">
-                    <span className="text-[10px] uppercase font-bold text-purple-700 block">
+                  <div className="p-3 bg-emerald-50/70 border border-emerald-100 rounded-xl">
+                    <span className="text-[10px] uppercase font-bold text-emerald-800 block">
                       Qualification
                     </span>
                     <span className="text-xs font-black text-slate-900">
@@ -412,8 +407,8 @@ export default function LifeSituation() {
                   </div>
                 )}
                 {signals?.annualIncome && (
-                  <div className="p-3 bg-purple-50/60 border border-purple-100 rounded-xl">
-                    <span className="text-[10px] uppercase font-bold text-purple-700 block">
+                  <div className="p-3 bg-emerald-50/70 border border-emerald-100 rounded-xl">
+                    <span className="text-[10px] uppercase font-bold text-emerald-800 block">
                       Annual Income
                     </span>
                     <span className="text-xs font-black text-slate-900">
@@ -442,8 +437,8 @@ export default function LifeSituation() {
                   </div>
                 )}
                 {signals?.age && (
-                  <div className="p-3 bg-purple-50/60 border border-purple-100 rounded-xl">
-                    <span className="text-[10px] uppercase font-bold text-purple-700 block">
+                  <div className="p-3 bg-emerald-50/70 border border-emerald-100 rounded-xl">
+                    <span className="text-[10px] uppercase font-bold text-emerald-800 block">
                       Age
                     </span>
                     <span className="text-xs font-black text-slate-900">
@@ -488,14 +483,14 @@ export default function LifeSituation() {
                   onClick={() => setShowConfirmModal(true)}
                   className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2.5 rounded-xl font-bold text-xs bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 shadow-xs transition-colors cursor-pointer"
                 >
-                  <Save className="w-4 h-4 mr-2 text-purple-700" />
+                  <Save className="w-4 h-4 mr-2 text-emerald-700" />
                   Apply to Benefit Passport
                 </button>
 
                 <button
                   onClick={handlePreviewMatches}
                   disabled={previewing}
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-xl font-bold text-xs bg-[#ea580c] hover:bg-[#c2410c] text-white shadow-md transition-colors disabled:opacity-50 cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-xl font-bold text-xs bg-[#ea580c] hover:bg-[#c2410c] text-white shadow-md transition-colors disabled:opacity-50 cursor-pointer active:scale-95"
                 >
                   {previewing ? (
                     <>
@@ -538,12 +533,12 @@ export default function LifeSituation() {
               {previewRecs.map((rec) => (
                 <div
                   key={rec.schemeId}
-                  className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3.5 hover:border-purple-300 transition-all"
+                  className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3.5 hover:border-emerald-300 transition-all"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                     <div className="space-y-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-purple-50 text-purple-800 border border-purple-200">
+                        <span className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200">
                           {rec.category}
                         </span>
                         <span className="text-xs text-slate-500 font-semibold">
@@ -559,7 +554,7 @@ export default function LifeSituation() {
                     </div>
 
                     <div className="flex items-center space-x-2 flex-shrink-0">
-                      <span className="text-xs font-bold px-3 py-1 rounded-full bg-purple-50 text-purple-900 border border-purple-200">
+                      <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-900 border border-emerald-200">
                         Profile Match:{" "}
                         <strong className="text-[#ea580c]">
                           {rec.matchScore}/100
@@ -594,7 +589,6 @@ export default function LifeSituation() {
             </div>
           </div>
         )}
-      </main>
 
       {/* ======================================================== */}
       {/* EXPLICIT CONFIRMATION MODAL TO UPDATE BENEFIT PASSPORT    */}

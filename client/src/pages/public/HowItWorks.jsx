@@ -13,7 +13,8 @@ import {
   AlertTriangle,
   Info,
   HelpCircle,
-  FileText
+  FileText,
+  Check
 } from "lucide-react";
 import Navbar from "../../components/layout/Navbar";
 import Footer from "../../components/layout/Footer";
@@ -269,13 +270,13 @@ export default function HowItWorks() {
               <span className="font-bold text-emerald-400 block text-sm">
                 What HAQ DWAAR AI Does:
               </span>
-              <ul className="space-y-1.5 text-slate-300">
-                <li>✓ Curates and verifies scheme criteria and document lists</li>
-                <li>✓ Provides transparent deterministic profile matching</li>
-                <li>✓ Explains passed, failed, and missing conditions</li>
-                <li>✓ Stores certificates locally in your personal vault</li>
-                <li>✓ Checks document readability and expiry before submission</li>
-                <li>✓ Provides authentic, verified government portal links</li>
+              <ul className="space-y-2 text-slate-300">
+                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 shrink-0" /> Curates and verifies scheme criteria and document lists</li>
+                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 shrink-0" /> Provides transparent deterministic profile matching</li>
+                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 shrink-0" /> Explains passed, failed, and missing conditions</li>
+                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 shrink-0" /> Stores certificates locally in your personal vault</li>
+                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 shrink-0" /> Checks document readability and expiry before submission</li>
+                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-400 shrink-0" /> Provides authentic, verified government portal links</li>
               </ul>
             </div>
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { 
   Search, 
   Filter, 
@@ -14,19 +14,33 @@ import {
   Info,
   SlidersHorizontal,
   X,
-  Compass
+  Compass,
+  AlertCircle,
+  Tractor,
+  GraduationCap,
+  HeartPulse,
+  Home,
+  Briefcase,
+  Users,
+  Coins,
+  Shield,
+  Layers,
+  Zap
 } from "lucide-react";
 import { getSchemes } from "../../services/schemeApi";
 import { useAuth } from "../../hooks/useAuth";
 import SchemeImageBanner from "../../components/common/SchemeImageBanner";
+import { SpotlightCard } from "../../components/common/ReactBits";
 
 const CATEGORIES = [
-  { id: "ALL", label: "All Categories" },
-  { id: "STUDENT", label: "Students & Education" },
-  { id: "KISAN", label: "Kisan & Agriculture" },
-  { id: "EMPLOYMENT", label: "Employment & Livelihood" },
-  { id: "BUSINESS", label: "Business & MSME" },
-  { id: "GENERAL", label: "General & Welfare" },
+  { id: "ALL", label: "All Schemes", icon: Compass },
+  { id: "KISAN", label: "Kisan & Farming", icon: Tractor },
+  { id: "STUDENT", label: "Students & Youth", icon: GraduationCap },
+  { id: "HEALTH", label: "Healthcare & Swasthya", icon: HeartPulse },
+  { id: "HOUSING", label: "Affordable Housing", icon: Home },
+  { id: "EMPLOYMENT", label: "Jobs & Livelihood", icon: Briefcase },
+  { id: "BUSINESS", label: "MSME & Business", icon: Building },
+  { id: "GENERAL", label: "Social Security", icon: Users },
 ];
 
 const STATES = [
@@ -52,20 +66,22 @@ const STATES = [
 const APPLICATION_METHODS = [
   { id: "ALL", label: "All Application Methods" },
   { id: "ONLINE", label: "Online Only" },
-  { id: "OFFLINE", label: "Offline / Center" },
-  { id: "HYBRID", label: "Hybrid / Both" }
+  { id: "OFFLINE", label: "Offline / Tahsil" },
+  { id: "HYBRID", label: "Hybrid / Direct DBT" }
 ];
 
 export default function BrowseSchemes() {
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialCategory = searchParams.get("category") || "ALL";
+  const initialSearch = searchParams.get("search") || "";
 
   const [schemes, setSchemes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedState, setSelectedState] = useState("All-India");
   const [selectedMethod, setSelectedMethod] = useState("ALL");
@@ -86,7 +102,7 @@ export default function BrowseSchemes() {
       }
 
       const res = await getSchemes(params);
-      let list = res?.data?.schemes || [];
+      let list = res?.data?.schemes || res?.schemes || (Array.isArray(res) ? res : []);
 
       // Filter by application method if chosen
       if (selectedMethod && selectedMethod !== "ALL") {
@@ -97,8 +113,8 @@ export default function BrowseSchemes() {
 
       setSchemes(list);
     } catch (err) {
-      setError(err.message || "Failed to load verified schemes.");
-      setSchemes([]);
+      console.error("Failed to fetch schemes:", err);
+      setError("Unable to retrieve government schemes. Please check your network and try again.");
     } finally {
       setLoading(false);
     }
@@ -115,77 +131,86 @@ export default function BrowseSchemes() {
 
   const handleCategoryChange = (catId) => {
     setSelectedCategory(catId);
-    if (catId === "ALL") {
-      searchParams.delete("category");
-    } else {
-      searchParams.set("category", catId);
-    }
-    setSearchParams(searchParams);
+    setSearchParams(catId === "ALL" ? {} : { category: catId });
   };
 
   const clearFilters = () => {
-    setSearchTerm("");
     setSelectedCategory("ALL");
     setSelectedState("All-India");
     setSelectedMethod("ALL");
-    searchParams.delete("category");
-    setSearchParams(searchParams);
+    setSearchTerm("");
+    setSearchParams({});
   };
 
   return (
-    <div className="bg-[#f7f5fa] text-[#0f172a] min-h-screen py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-8">
-        
-        {/* ======================================================== */}
-        {/* 1. BROWSE PAGE HEADER (Section 17)                       */}
-        {/* ======================================================== */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#e9e1f5] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-purple-50 text-[#2b0f4c] border border-purple-200 text-xs font-black">
-              <Compass className="w-3.5 h-3.5 text-[#ea580c]" />
-              <span>EXPLORE SCHEMES</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0f172a] tracking-tight">
-              Explore Government Schemes
-            </h1>
-            <p className="text-xs sm:text-sm text-[#4b5563] max-w-2xl font-medium leading-relaxed">
-              Find schemes based on category, state and application information. All verified against official central and state government notifications.
-            </p>
-          </div>
-
-          {/* Right informational card */}
-          <div className="bg-[#fbf9fe] rounded-2xl p-4 border border-[#e9e1f5] shrink-0 sm:max-w-xs space-y-1">
-            <div className="flex items-center space-x-2 text-xs font-black text-[#2b0f4c]">
-              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>Public Discovery</span>
-            </div>
-            <p className="text-[11px] text-[#4b5563] font-semibold leading-relaxed">
-              No account required to browse schemes, review criteria, or access official application portals.
-            </p>
-          </div>
+    <div className="w-full min-h-screen bg-[#f8faf8] text-slate-900 pb-20">
+      
+      {/* ======================================================== */}
+      {/* 1. LOK SAMARTH DISCOVERY BANNER (Civic Pine + Tiranga)   */}
+      {/* ======================================================== */}
+      <div className="bg-[#112318] text-white py-10 px-4 sm:px-6 lg:px-8 border-b border-emerald-950/40 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <img
+            src="https://images.unsplash.com/photo-1532375810709-75b1da00537c?auto=format&fit=crop&w=1400&q=80"
+            alt="Indian National Flag"
+            className="w-full h-full object-cover object-[85%_center] opacity-20 scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#112318] via-[#112318]/85 via-50% to-transparent" />
         </div>
 
-        {/* ======================================================== */}
-        {/* 2. SEARCH / FILTER UI (Section 18)                       */}
-        {/* ======================================================== */}
-        <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#e9e1f5] shadow-xs space-y-4">
-          <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row items-center gap-3">
-            <div className="relative flex-1 w-full">
-              <Search className="w-4 h-4 text-[#64748b] absolute left-4 top-3.5 pointer-events-none" />
+        <div className="max-w-7xl mx-auto relative z-10 space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1b3524] text-emerald-300 border border-emerald-700/40 text-xs font-semibold shadow-2xs">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <span>350+ Central &amp; State Schemes • 100% Deterministic Engine</span>
+          </div>
+
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
+                Scheme <span className="text-amber-400">Discovery</span> Desk
+              </h1>
+              <p className="text-sm sm:text-base text-slate-300 font-medium max-w-2xl mt-1">
+                Explore authenticated government welfare programs, subsidies, scholarships, and DBT direct transfers.
+              </p>
+            </div>
+
+            {/* Quick Passport CTA */}
+            <Link
+              to={isAuthenticated ? "/dashboard/benefit-passport" : "/login"}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#234731] hover:bg-[#2d583b] text-white border border-emerald-500/40 text-xs sm:text-sm font-bold shadow-md hover:shadow-emerald-900/30 transition self-start md:self-auto shrink-0"
+            >
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <span>{isAuthenticated ? "Check My Benefit Passport" : "Log In to Auto-Match"}</span>
+              <ArrowRight className="w-3.5 h-3.5 ml-0.5 text-emerald-300" />
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* ======================================================== */}
+      {/* 2. SEARCH & FILTER CONTROLS (HeroUI Styled Canvas)       */}
+      {/* ======================================================== */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-20 space-y-6">
+        
+        {/* Main Filter Bar Card */}
+        <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/90 shadow-lg shadow-slate-200/50 space-y-4">
+          
+          {/* OmniSearch Form */}
+          <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row items-stretch gap-2.5">
+            <div className="relative flex-1">
+              <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search schemes by name, department, or keywords..."
-                aria-label="Search schemes"
-                className="w-full pl-11 pr-10 py-3 rounded-2xl border border-[#e9e1f5] text-xs sm:text-sm bg-[#fbf9fe] focus:bg-white text-[#0f172a] placeholder-[#94a3b8] focus:outline-none focus:ring-2 focus:ring-[#591d8f] focus:border-transparent transition-all"
+                placeholder="Search scheme name, ministry, keyword (e.g. PM-KISAN, Ayushman, Scholarship, Tractor)..."
+                className="w-full pl-12 pr-10 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#234731] focus:bg-white transition"
               />
               {searchTerm && (
                 <button
                   type="button"
                   onClick={() => setSearchTerm("")}
-                  className="absolute right-3.5 top-3.5 text-[#94a3b8] hover:text-[#0f172a] cursor-pointer"
-                  aria-label="Clear search input"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -194,41 +219,42 @@ export default function BrowseSchemes() {
 
             <button
               type="submit"
-              className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-[#ea580c] hover:bg-[#c2410c] text-white font-black text-xs sm:text-sm shadow-xs transition cursor-pointer whitespace-nowrap"
+              className="px-6 py-3 bg-[#234731] hover:bg-[#183323] text-white font-black text-sm rounded-2xl shadow-md transition flex items-center justify-center gap-2 shrink-0 cursor-pointer"
             >
-              Search Schemes
+              <Search className="w-4 h-4" />
+              <span>Search Schemes</span>
             </button>
           </form>
 
-          {/* Select dropdowns for States & Application Methods */}
+          {/* Location & Method Dropdowns */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             <div>
-              <label htmlFor="state-filter" className="block text-[11px] font-black text-[#4b5563] uppercase tracking-wider mb-1">
-                State / Location
+              <label htmlFor="state-filter" className="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1">
+                State / Geographic Scope
               </label>
               <select
                 id="state-filter"
                 value={selectedState}
                 onChange={(e) => setSelectedState(e.target.value)}
-                className="w-full py-2.5 px-3.5 rounded-xl border border-[#e9e1f5] text-xs font-bold text-[#0f172a] bg-[#fbf9fe] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#591d8f]"
+                className="w-full py-2.5 px-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#234731] transition"
               >
                 {STATES.map((st) => (
                   <option key={st} value={st}>
-                    {st === "All-India" ? "All-India Schemes" : st}
+                    {st === "All-India" ? "All-India (National Central Sector)" : st}
                   </option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label htmlFor="method-filter" className="block text-[11px] font-black text-[#4b5563] uppercase tracking-wider mb-1">
-                Application Method
+              <label htmlFor="method-filter" className="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1">
+                Application Delivery Door
               </label>
               <select
                 id="method-filter"
                 value={selectedMethod}
                 onChange={(e) => setSelectedMethod(e.target.value)}
-                className="w-full py-2.5 px-3.5 rounded-xl border border-[#e9e1f5] text-xs font-bold text-[#0f172a] bg-[#fbf9fe] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#591d8f]"
+                className="w-full py-2.5 px-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#234731] transition"
               >
                 {APPLICATION_METHODS.map((m) => (
                   <option key={m.id} value={m.id}>
@@ -239,190 +265,209 @@ export default function BrowseSchemes() {
             </div>
           </div>
 
-          {/* Category Filter Pills */}
-          <div className="pt-3 border-t border-[#e9e1f5] flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-black text-[#64748b] uppercase tracking-wider mr-1">
+          {/* Category Horizontal Pill Buttons */}
+          <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2">
+            <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider mr-1">
               Sector:
             </span>
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => handleCategoryChange(cat.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  selectedCategory === cat.id
-                    ? "bg-[#2b0f4c] text-white shadow-xs"
-                    : "bg-[#fbf9fe] text-[#4b5563] border border-[#e9e1f5] hover:border-[#2b0f4c]/40 hover:text-[#0f172a]"
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
+            {CATEGORIES.map((cat) => {
+              const IconComp = cat.icon;
+              const isSelected = selectedCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => handleCategoryChange(cat.id)}
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    isSelected
+                      ? "bg-[#234731] text-white shadow-xs"
+                      : "bg-slate-50 text-slate-600 border border-slate-200/90 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  <IconComp className={`w-3.5 h-3.5 ${isSelected ? "text-amber-300" : "text-slate-500"}`} />
+                  <span>{cat.label}</span>
+                </button>
+              );
+            })}
 
             {(selectedCategory !== "ALL" || selectedState !== "All-India" || selectedMethod !== "ALL" || searchTerm) && (
               <button
                 type="button"
                 onClick={clearFilters}
-                className="text-xs font-black text-[#ea580c] hover:underline ml-auto cursor-pointer"
+                className="text-xs font-black text-rose-600 hover:underline ml-auto cursor-pointer"
               >
-                Clear Filters
+                Reset All Filters
               </button>
             )}
           </div>
         </div>
 
         {/* Results Counter Bar */}
-        <div className="flex items-center justify-between text-xs text-[#64748b] px-1 font-semibold">
+        <div className="flex items-center justify-between text-xs text-slate-500 px-1 font-semibold">
           <p>
-            Showing <strong className="text-[#0f172a]">{schemes.length}</strong> verified government schemes
+            Showing <strong className="text-slate-900">{schemes.length}</strong> verified government schemes
             {selectedCategory !== "ALL" && ` in ${selectedCategory}`}
             {selectedState !== "All-India" && ` for ${selectedState}`}
             {selectedMethod !== "ALL" && ` (${selectedMethod})`}
           </p>
-          <span className="hidden sm:inline text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 text-[11px] font-bold">
-            <ShieldCheck className="w-3 h-3 inline mr-1" />
-            Verified Against Official Circulars
+          <span className="hidden sm:inline-flex items-center gap-1 text-emerald-800 bg-[#ebf3ed] px-2.5 py-0.5 rounded-full border border-[#c8ded0] text-[11px] font-bold">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+            <span>Official Gazette &amp; Circular Verified</span>
           </span>
         </div>
 
         {/* Loading State */}
         {loading && (
-          <div className="bg-white rounded-3xl border border-[#e9e1f5] p-16 text-center space-y-3">
-            <RefreshCw className="w-8 h-8 text-[#ea580c] animate-spin mx-auto" />
-            <p className="text-xs font-black text-[#4b5563]">
-              Loading verified government schemes...
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-16 text-center space-y-3 shadow-xs">
+            <RefreshCw className="w-8 h-8 text-[#234731] animate-spin mx-auto" />
+            <p className="text-xs font-black text-slate-600">
+              Fetching verified government schemes...
             </p>
           </div>
         )}
 
         {/* Error State */}
         {error && !loading && (
-          <div className="bg-red-50 border border-red-200 text-red-900 p-8 rounded-3xl text-center space-y-3">
-            <p className="font-black text-sm">Unable to retrieve schemes</p>
-            <p className="text-xs text-red-700 max-w-md mx-auto">{error}</p>
+          <div className="bg-rose-50 border border-rose-200 text-rose-900 p-8 rounded-3xl text-center space-y-3">
+            <AlertCircle className="w-8 h-8 text-rose-600 mx-auto" />
+            <p className="font-black text-sm">{error}</p>
             <button
               onClick={fetchSchemes}
-              className="mt-2 px-5 py-2 rounded-xl bg-red-700 text-white text-xs font-black hover:bg-red-800 transition cursor-pointer"
+              className="mt-2 px-5 py-2 rounded-xl bg-rose-700 text-white text-xs font-black hover:bg-rose-800 transition cursor-pointer"
             >
-              Retry
+              Retry Search
             </button>
           </div>
         )}
 
-        {/* Empty State (Section 19) */}
+        {/* Empty State */}
         {!loading && !error && schemes.length === 0 && (
-          <div className="bg-white rounded-3xl border border-[#e9e1f5] p-16 text-center space-y-4">
-            <FileText className="w-12 h-12 text-[#94a3b8] mx-auto" />
-            <h2 className="text-base font-black text-[#0f172a]">
-              No schemes found
+          <div className="bg-white rounded-3xl border border-slate-200/90 p-16 text-center space-y-4 shadow-xs">
+            <FileText className="w-12 h-12 text-slate-300 mx-auto" />
+            <h2 className="text-base font-black text-slate-900">
+              No government schemes found
             </h2>
-            <p className="text-xs text-[#64748b] max-w-md mx-auto leading-relaxed">
-              We couldn't find any verified government schemes matching your current criteria. Try adjusting your search query or clearing your filters.
+            <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+              We couldn't find any schemes matching your current criteria. Try adjusting your query or resetting filters.
             </p>
             <button
               type="button"
               onClick={clearFilters}
-              className="px-6 py-2.5 rounded-2xl bg-[#2b0f4c] text-white font-black text-xs hover:bg-[#1e0a3c] transition shadow-xs cursor-pointer"
+              className="px-6 py-2.5 rounded-2xl bg-[#234731] text-white font-black text-xs hover:bg-[#183323] transition shadow-xs cursor-pointer"
             >
-              Clear Filters
+              Reset Filters
             </button>
           </div>
         )}
 
         {/* ======================================================== */}
-        {/* 3. BROWSE RESULTS GRID (Section 19)                      */}
+        {/* 3. BROWSE RESULTS GRID: HEROUI SPOTLIGHTCARDS            */}
         {/* ======================================================== */}
         {!loading && !error && schemes.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {schemes.map((scheme) => (
-              <div
+              <SpotlightCard
                 key={scheme._id}
-                className="bg-white rounded-3xl p-4 sm:p-5 border border-[#e9e1f5] shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group"
+                className="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-2xs hover:shadow-xl hover:border-emerald-300 transition-all duration-300 flex flex-col justify-between space-y-4 group"
+                spotlightColor="rgba(35, 71, 49, 0.08)"
               >
                 <div className="space-y-3">
                   {/* Scheme Visual Image Banner */}
-                  <Link to={`/schemes/${scheme._id}`} className="block">
+                  <Link to={`/schemes/${scheme._id}`} className="block overflow-hidden rounded-2xl">
                     <SchemeImageBanner scheme={scheme} heightClass="h-36 sm:h-40" />
                   </Link>
 
-                  {/* Gazette & Verification Badges */}
+                  {/* Badges Strip */}
                   <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                     {scheme.gazetteNumber ? (
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-purple-50 text-[#2b0f4c] border border-purple-200">
-                        📜 Gazette: {scheme.gazetteNumber}
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 inline-flex items-center gap-1">
+                        <FileText className="w-3 h-3 text-slate-600 shrink-0" />
+                        <span>Gazette: {scheme.gazetteNumber}</span>
                       </span>
                     ) : (
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">
-                        ✓ Govt Verified
+                      <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[#ebf3ed] text-[#234731] border border-[#c8ded0] shadow-2xs inline-flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+                        <span>Govt Verified</span>
                       </span>
                     )}
 
                     {scheme.isFlagged && (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200">
-                        ⚠️ Nodal Audit
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 inline-flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3 text-rose-600 shrink-0" />
+                        <span>Nodal Review</span>
                       </span>
                     )}
+
+                    <span className="text-[10px] font-black uppercase text-[#234731] bg-[#ebf3ed] px-2 py-0.5 rounded-md border border-[#c8ded0] ml-auto">
+                      {scheme.applicationMethod || "ONLINE"}
+                    </span>
                   </div>
 
                   {/* Scheme Name */}
-                  <h2 className="text-base font-black text-[#0f172a] leading-snug line-clamp-2 group-hover:text-[#591d8f] transition-colors">
+                  <h2 className="text-base font-black text-slate-900 leading-snug line-clamp-2 group-hover:text-[#234731] transition-colors">
                     <Link to={`/schemes/${scheme._id}`}>
                       {scheme.name}
                     </Link>
                   </h2>
 
                   {/* Short Description */}
-                  <p className="text-xs text-[#4b5563] leading-relaxed line-clamp-2">
+                  <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">
                     {scheme.shortDescription}
                   </p>
 
                   {/* Benefit Summary Box */}
-                  <div className="p-3 bg-[#fbf9fe] rounded-2xl border border-[#e9e1f5] text-xs space-y-1">
-                    <span className="font-black text-[#2b0f4c] block text-[10px] uppercase tracking-wider">
-                      Benefit
+                  <div className="p-3 bg-gradient-to-r from-amber-50/70 via-orange-50/30 to-white rounded-2xl border border-amber-200/80 text-xs space-y-1 shadow-2xs">
+                    <span className="font-extrabold text-[#ea580c] text-[10px] uppercase tracking-wider flex items-center gap-1">
+                      <Sparkles className="w-3 h-3 text-amber-500 shrink-0" />
+                      <span>Civic Benefit / प्रत्यक्ष लाभ</span>
                     </span>
-                    <p className="text-[#0f172a] font-semibold line-clamp-2 leading-relaxed">
+                    <p className="text-slate-900 font-bold line-clamp-2 leading-relaxed text-xs">
                       {scheme.benefitSummary}
                     </p>
                   </div>
 
                   {/* Meta Strip */}
-                  <div className="flex items-center justify-between text-[11px] font-bold text-[#64748b] pt-1">
-                    <span className="uppercase text-[#2b0f4c] font-black">
-                      {scheme.applicationMethod || "ONLINE"}
-                    </span>
+                  <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 pt-1">
                     <span>
                       {scheme.state || "All-India"}
                     </span>
                     <span>
-                      {scheme.requiredDocuments?.length || 0} Docs
+                      {scheme.requiredDocuments?.length || 0} Docs Needed
                     </span>
                   </div>
                 </div>
 
                 {/* Card Actions */}
-                <div className="pt-3 border-t border-[#e9e1f5] flex items-center justify-between gap-2">
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                   <Link
                     to={`/schemes/${scheme._id}`}
-                    className="inline-flex items-center text-xs font-black text-[#2b0f4c] hover:text-[#ea580c] transition"
+                    className="inline-flex items-center gap-1 text-xs font-black text-[#234731] hover:text-[#183323] transition group-hover:translate-x-0.5"
                   >
-                    View Scheme →
+                    <span>View Scheme Details</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
 
-                  {scheme.officialApplicationUrl && (
+                  {scheme.officialApplicationUrl ? (
                     <a
                       href={scheme.officialApplicationUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center text-[11px] font-bold text-[#64748b] hover:text-[#0f172a] bg-[#fbf9fe] hover:bg-slate-100 px-2.5 py-1 rounded-xl border border-[#e9e1f5] transition"
+                      className="inline-flex items-center text-[11px] font-semibold text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 transition shadow-2xs"
                       title="Opens authorized official government application portal in new tab"
                     >
                       <span>Official Portal</span>
-                      <ExternalLink className="w-3 h-3 ml-1 text-[#64748b]" />
+                      <ExternalLink className="w-3 h-3 ml-1 text-slate-400" />
                     </a>
+                  ) : (
+                    <Link
+                      to={`/schemes/${scheme._id}`}
+                      className="inline-flex items-center text-[11px] font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-lg border border-emerald-200 transition"
+                    >
+                      <span>Check Door 1 &amp; 2</span>
+                    </Link>
                   )}
                 </div>
-              </div>
+              </SpotlightCard>
             ))}
           </div>
         )}

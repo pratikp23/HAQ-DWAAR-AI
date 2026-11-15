@@ -20,9 +20,15 @@ import {
   XCircle,
   Lock,
   AlertTriangle,
+  Compass,
+  Printer,
+  Zap,
+  Coins,
+  Search
 } from "lucide-react";
 import { DigiLockerLogo } from "../common/GovLogos";
 import { quickApplyScheme } from "../../services/applicationApi";
+import { getPrintableFormUrl } from "../../services/schemeCoachApi";
 
 /**
  * HAQ DWAAR AI — Personalized Action Plan ("Scheme se Application Tak")
@@ -161,10 +167,10 @@ export default function PersonalizedActionPlan({
         notes: "Direct 1-Click Quick Apply submitted via Haq Dwaar AI",
       });
       if (res?.data?.success || res?.success) {
-        const appData = res?.data?.data || res?.data;
+        const app = res?.data?.application || res?.application || res?.data?.data?.application || res?.data;
         setQuickApplySuccess({
-          referenceNumber: appData?.referenceNumber || "HAQ/2026/APP/9421",
-          department: appData?.department || category,
+          referenceNumber: app?.referenceNumber || "HAQ/2026/APP/9421",
+          department: app?.department || category,
           message: "Application transmitted directly to Ministry Nodal Desk!",
         });
         if (onSaveApplication) onSaveApplication();
@@ -221,7 +227,7 @@ export default function PersonalizedActionPlan({
           </h3>
 
           <p className="text-xs sm:text-sm font-bold text-[#ea580c] flex items-center gap-1.5">
-            <span>💰</span>
+            <Coins className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>{benefitSummary}</span>
           </p>
         </div>
@@ -289,16 +295,17 @@ export default function PersonalizedActionPlan({
         {/* Fast-Track Helper Bar */}
         {!isPrerequisitesComplete && !isTotallyIneligible && (
           <div className="p-3 bg-purple-50/70 rounded-xl border border-purple-100 flex items-center justify-between text-xs">
-            <span className="text-slate-600 font-medium">
-              💡 Complete each step below or fast-track all 3 prerequisites for testing:
+            <span className="text-slate-600 font-medium flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-purple-600 shrink-0" />
+              <span>Complete each step below or fast-track all 3 prerequisites for testing:</span>
             </span>
             <button
               type="button"
               onClick={handleFastTrackAll}
               className="px-2.5 py-1 rounded-lg text-[11px] font-black bg-white text-[#591d8f] border border-purple-200 hover:bg-purple-100 transition shadow-2xs cursor-pointer flex items-center gap-1 shrink-0"
             >
-              <Sparkles className="w-3 h-3 text-[#ea580c]" />
-              <span>⚡ Fast-Track All Steps</span>
+              <Zap className="w-3 h-3 text-[#ea580c]" />
+              <span>Fast-Track All Steps</span>
             </button>
           </div>
         )}
@@ -370,8 +377,8 @@ export default function PersonalizedActionPlan({
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                    <span>⚡ Confirm & Verify Passport</span>
+                    <Zap className="w-3.5 h-3.5 text-amber-300" />
+                    <span>Confirm &amp; Verify Passport</span>
                   </>
                 )}
               </button>
@@ -445,7 +452,7 @@ export default function PersonalizedActionPlan({
                 ) : (
                   <>
                     <DigiLockerLogo className="w-4 h-4" />
-                    <span>⚡ 1-Click DigiLocker Fetch</span>
+                    <span>1-Click DigiLocker Fetch</span>
                   </>
                 )}
               </button>
@@ -512,8 +519,8 @@ export default function PersonalizedActionPlan({
                   </>
                 ) : (
                   <>
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>🔍 Run Document Health Audit</span>
+                    <Search className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Run Document Health Audit</span>
                   </>
                 )}
               </button>
@@ -573,13 +580,119 @@ export default function PersonalizedActionPlan({
               <button
                 type="button"
                 onClick={() => setShowQuickApplyModal(true)}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-[#591d8f] via-[#7c3aed] to-[#ea580c] text-white shadow-md shadow-purple-950/20 hover:opacity-95 transition-all cursor-pointer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black bg-[#234731] hover:bg-[#183323] text-white shadow-md transition-all cursor-pointer"
               >
-                <Sparkles className="w-4 h-4 text-amber-300" />
-                <span>⚡ 1-Click Quick Apply to {category} Nodal</span>
+                <Zap className="w-4 h-4 text-amber-300" />
+                <span>1-Click Quick Apply to {category} Nodal</span>
               </button>
             </div>
           )}
+        </div>
+
+        {/* ======================================================== */}
+        {/* THE 3 APPLICATION DOORS (Aapke 3 Raste: Choose Mode)      */}
+        {/* ======================================================== */}
+        <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-[#ebf3ed]/80 via-white to-amber-50/50 border-2 border-[#c8ded0] shadow-xs space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-200">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#112318] to-[#234731] text-white flex items-center justify-center font-black text-xs shadow-xs">
+                3D
+              </div>
+              <div>
+                <h4 className="text-sm sm:text-base font-black text-slate-900 flex items-center gap-2">
+                  <span>Aapke Pass 3 Raste Hain (3 Doors to Apply)</span>
+                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-[#ebf3ed] text-[#234731] border border-[#c8ded0]">
+                    Citizen Choice
+                  </span>
+                </h4>
+                <p className="text-xs text-slate-600">
+                  Apni suvidha ke hisaab se apply karne ka tareeqa chunein
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+            {/* DOOR 1: SchemeCoach (Live Step-by-Step Companion) */}
+            <div className="p-4 rounded-xl border border-[#c8ded0] bg-white hover:border-[#234731] hover:shadow-md transition-all flex flex-col justify-between group">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-black bg-[#ebf3ed] text-[#234731] uppercase border border-[#c8ded0]">
+                    Door 1 • Self Apply
+                  </span>
+                  <Compass className="w-4 h-4 text-[#234731] group-hover:rotate-45 transition-transform" />
+                </div>
+                <h5 className="text-xs sm:text-sm font-black text-slate-900">
+                  Main Khud Bharunga (Self Apply)
+                </h5>
+                <p className="text-[11px] text-slate-600 leading-relaxed">
+                  Official government portal kholiye. SchemeCoach har field mein kya bharna hai dikhayega aur <strong>bolkar samjhayega (Voice Guidance)</strong> with 1-tap copy.
+                </p>
+              </div>
+              <Link
+                to={`/dashboard/coach/${scheme._id || scheme.id}`}
+                className="mt-3.5 inline-flex items-center justify-center gap-1.5 w-full py-2 px-3 rounded-xl text-xs font-black bg-[#ebf3ed] hover:bg-[#234731] text-[#234731] hover:text-white border border-[#c8ded0] hover:border-[#234731] transition shadow-2xs"
+              >
+                <span>Start SchemeCoach</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            {/* DOOR 2: 1-Click Quick Apply to Central Admin */}
+            <div className="p-4 rounded-xl border-2 border-amber-400 bg-gradient-to-b from-amber-50/40 via-white to-white hover:border-amber-500 hover:shadow-md transition-all flex flex-col justify-between group relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-amber-400/10 rounded-bl-full pointer-events-none" />
+              <div className="space-y-2 relative">
+                <div className="flex items-center justify-between">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-black bg-amber-100 text-amber-900 uppercase border border-amber-200">
+                    Door 2 • Most Popular
+                  </span>
+                  <Zap className="w-4 h-4 text-amber-600" />
+                </div>
+                <h5 className="text-xs sm:text-sm font-black text-slate-900">
+                  1-Click Quick Apply
+                </h5>
+                <p className="text-[11px] text-slate-600 leading-relaxed">
+                  Benefit Passport aur DigiLocker verified documents ka dossier direct <strong>Ministry Verification Queue</strong> ko bhejein aur live tracking ID payein.
+                </p>
+              </div>
+              <button
+                type="button"
+                disabled={isTotallyIneligible}
+                onClick={() => setShowQuickApplyModal(true)}
+                className="mt-3.5 inline-flex items-center justify-center gap-1.5 w-full py-2 px-3 rounded-xl text-xs font-black bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-xs hover:opacity-95 transition disabled:opacity-50 cursor-pointer"
+              >
+                <Zap className="w-3.5 h-3.5 text-slate-950" />
+                <span>{isTotallyIneligible ? "Ineligible to Apply" : "Quick Apply to Desk"}</span>
+              </button>
+            </div>
+
+            {/* DOOR 3: Download Pre-Filled Physical PDF Form */}
+            <div className="p-4 rounded-xl border border-slate-200 bg-white hover:border-[#234731] hover:shadow-md transition-all flex flex-col justify-between group">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-black bg-slate-100 text-slate-700 uppercase">
+                    Door 3 • Offline / Tehsil
+                  </span>
+                  <Printer className="w-4 h-4 text-slate-600" />
+                </div>
+                <h5 className="text-xs sm:text-sm font-black text-slate-900">
+                  Bhara Hua Form (Print PDF)
+                </h5>
+                <p className="text-[11px] text-slate-600 leading-relaxed">
+                  Aapke data se pre-filled A4 bilingual form with QR verification code download karein. Print nikaal kar <strong>CSC center ya Tehsil</strong> mein jama karein.
+                </p>
+              </div>
+              <a
+                href={getPrintableFormUrl(scheme._id || scheme.id)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3.5 inline-flex items-center justify-center gap-1.5 w-full py-2 px-3 rounded-xl text-xs font-black bg-slate-50 hover:bg-[#234731] text-slate-800 hover:text-white border border-slate-200 hover:border-[#234731] transition shadow-2xs"
+              >
+                <span>Download Printable Form</span>
+                <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-white" />
+              </a>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -596,30 +709,38 @@ export default function PersonalizedActionPlan({
           className={`w-full md:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold border transition-colors cursor-pointer ${
             isTracking
               ? "bg-emerald-50 text-emerald-800 border-emerald-300 cursor-default"
-              : "bg-white hover:bg-purple-50 text-[#2b0f4c] border-purple-200 shadow-2xs"
+              : "bg-white hover:bg-[#ebf3ed] text-[#234731] border-[#c8ded0] shadow-2xs"
           }`}
         >
           {isTracking ? (
             <>
               <BookmarkCheck className="w-4 h-4 text-emerald-600" />
-              <span>✓ Tracked in Portal</span>
+              <span>Tracked in Portal</span>
             </>
           ) : trackingLoading ? (
             <>
-              <RefreshCw className="w-4 h-4 animate-spin text-purple-600" />
+              <RefreshCw className="w-4 h-4 animate-spin text-emerald-600" />
               <span>Saving...</span>
             </>
           ) : (
             <>
-              <BookmarkPlus className="w-4 h-4 text-[#591d8f]" />
+              <BookmarkPlus className="w-4 h-4 text-[#234731]" />
               <span>Save to My List</span>
             </>
           )}
         </button>
 
-        {/* Right Buttons: 1-Click Quick Apply + External Portal */}
+        {/* Right Buttons: SchemeCoach + 1-Click Quick Apply + External Portal */}
         <div className="w-full md:w-auto flex flex-col sm:flex-row items-center gap-2.5">
-          {/* ⚡ 1-Click Quick Apply Button */}
+          <Link
+            to={`/dashboard/coach/${scheme._id || scheme.id}`}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold bg-purple-50 hover:bg-purple-100 text-[#591d8f] border border-purple-200 transition"
+          >
+            <Compass className="w-4 h-4 text-[#591d8f]" />
+            <span>SchemeCoach Live Guide</span>
+          </Link>
+
+          {/* 1-Click Quick Apply Button */}
           {isTotallyIneligible ? (
             <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
               <span className="px-3.5 py-2.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1.5 w-full sm:w-auto justify-center">
@@ -639,8 +760,8 @@ export default function PersonalizedActionPlan({
               onClick={() => setShowQuickApplyModal(true)}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black bg-gradient-to-r from-[#591d8f] via-[#7c3aed] to-[#ea580c] text-white shadow-md shadow-purple-950/20 hover:opacity-95 transition-all cursor-pointer"
             >
-              <Sparkles className="w-4 h-4 text-amber-300" />
-              <span>⚡ Quick Apply to Nodal Queue</span>
+              <Zap className="w-4 h-4 text-amber-300" />
+              <span>Quick Apply to Nodal Queue</span>
             </button>
           )}
 

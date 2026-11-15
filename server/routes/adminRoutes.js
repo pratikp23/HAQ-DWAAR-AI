@@ -12,6 +12,10 @@ import {
   resolveSchemeReport,
 } from "../controllers/schemeReportController.js";
 import {
+  getDepartmentQueue,
+  reviewDepartmentApplication,
+} from "../controllers/applicationTrackerController.js";
+import {
   getActiveOfficers,
   transferOfficerPortfolio,
 } from "../controllers/chiefOfficerController.js";
@@ -85,6 +89,23 @@ router.patch(
   requireAuth,
   requireRole("admin", "super_admin", "chief_officer", "category_admin"),
   resolveSchemeReport
+);
+
+/**
+ * Citizen Quick Apply Application Packets Desk
+ */
+router.get(
+  "/applications",
+  requireAuth,
+  requireRole("admin", "super_admin", "chief_officer", "category_admin"),
+  getDepartmentQueue
+);
+
+router.put(
+  "/applications/:id/review",
+  requireAuth,
+  requireRole("admin", "super_admin", "chief_officer", "category_admin"),
+  reviewDepartmentApplication
 );
 
 /**

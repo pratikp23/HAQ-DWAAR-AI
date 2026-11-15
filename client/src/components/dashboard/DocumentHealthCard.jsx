@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { SpotlightCard } from "../common/ReactBits";
 import { 
   FolderCheck, 
   CheckCircle2, 
@@ -85,19 +86,23 @@ export default function DocumentHealthCard({
   ];
 
   return (
-    <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-xs hover:shadow-sm transition-all flex flex-col justify-between h-full space-y-3">
+    <SpotlightCard
+      spotlightColor="rgba(5, 150, 105, 0.08)"
+      className="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col justify-between h-full space-y-3"
+    >
       
       {/* 1. Header: Title, API Status & Connection */}
       <div className="space-y-2.5">
         <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-100">
           <div>
             <div className="flex items-center gap-2">
+              <div className="w-1.5 h-6 bg-[#234731] rounded-full shrink-0" />
               <DigiLockerLogo className="w-6 h-6 shadow-2xs" />
-              <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-normal">
+              <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
                 DigiLocker Vault Health
               </h2>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 font-normal mt-0.5">
+            <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5 ml-3.5">
               दस्तावेज़ स्वास्थ्य • 3 of 4 Required Documents Verified
             </p>
           </div>
@@ -191,6 +196,6 @@ export default function DocumentHealthCard({
         </Link>
       </div>
 
-    </div>
+    </SpotlightCard>
   );
 }

@@ -16,13 +16,15 @@ import {
   Menu,
   X,
   UserCheck,
-  Home
+  Home,
+  Sparkles
 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useLanguage } from "../../context/LanguageContext";
 import { getUnreadCount } from "../../services/notificationApi";
 import { useHaqAI } from "../../context/HaqAIContext";
 import BrandLogo from "./BrandLogo";
+import UnstopProfileDropdown from "./UnstopProfileDropdown";
 
 /**
  * HAQ DWAAR AI — Citizen Navbar
@@ -55,8 +57,9 @@ export default function CitizenNavbar() {
     let isMounted = true;
     getUnreadCount()
       .then((res) => {
-        if (isMounted && res.data?.data?.unreadCount !== undefined) {
-          setUnreadCount(res.data.data.unreadCount);
+        const count = res?.data?.unreadCount ?? res?.unreadCount ?? res?.data?.data?.unreadCount;
+        if (isMounted && count !== undefined) {
+          setUnreadCount(count);
         }
       })
       .catch(() => {});
@@ -119,13 +122,6 @@ export default function CitizenNavbar() {
 
   const citizenNavLinks = [
     {
-      label: "Home",
-      shortLabel: "Home",
-      to: "/",
-      icon: Home,
-      active: location.pathname === "/",
-    },
-    {
       label: "Dashboard",
       shortLabel: "Dashboard",
       to: "/dashboard",
@@ -139,15 +135,14 @@ export default function CitizenNavbar() {
       icon: Search,
       active:
         location.pathname.startsWith("/dashboard/schemes") ||
-        location.pathname.startsWith("/browse-schemes"),
+        (location.pathname.startsWith("/schemes/") && !location.pathname.startsWith("/dashboard/recommendations")),
     },
     {
-      label: "MITTRA Voice",
-      shortLabel: "MITTRA",
-      to: "/dashboard/life-situation",
-      icon: Mic,
-      isVoice: true,
-      active: location.pathname.startsWith("/dashboard/life-situation"),
+      label: "Matched For You",
+      shortLabel: "Matches",
+      to: "/dashboard/recommendations",
+      icon: Sparkles,
+      active: location.pathname.startsWith("/dashboard/recommendations"),
     },
     {
       label: "Benefit Passport",
@@ -157,8 +152,8 @@ export default function CitizenNavbar() {
       active: location.pathname.startsWith("/dashboard/benefit-passport"),
     },
     {
-      label: "Documents",
-      shortLabel: "Documents",
+      label: "Document Vault",
+      shortLabel: "Vault",
       to: "/dashboard/documents",
       icon: FolderCheck,
       active: location.pathname.startsWith("/dashboard/documents"),
@@ -169,6 +164,14 @@ export default function CitizenNavbar() {
       to: "/dashboard/applications",
       icon: Briefcase,
       active: location.pathname.startsWith("/dashboard/applications"),
+    },
+    {
+      label: "MITTRA Voice",
+      shortLabel: "MITTRA",
+      to: "/dashboard/life-situation",
+      icon: Mic,
+      isVoice: true,
+      active: location.pathname.startsWith("/dashboard/life-situation"),
     },
   ];
 
@@ -288,96 +291,8 @@ export default function CitizenNavbar() {
               )}
             </div>
 
-            {/* Desktop User Profile Avatar & Dropdown */}
-            <div className="relative shrink-0" ref={profileRef}>
-              <button
-                type="button"
-                onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                className="h-9 inline-flex items-center gap-2 px-2 sm:px-2.5 rounded-xl text-xs font-semibold text-slate-800 hover:bg-purple-50/60 bg-white border border-slate-200/90 transition-colors focus-visible:ring-2 focus-visible:ring-[#591d8f] cursor-pointer shadow-2xs"
-                aria-expanded={profileDropdownOpen}
-                aria-label="Citizen profile menu"
-              >
-                {/* User Avatar Circle */}
-                <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#2b0f4c] to-[#591d8f] text-white flex items-center justify-center font-bold text-xs shadow-xs ring-1 ring-purple-300 shrink-0">
-                  {user?.name ? user.name.charAt(0).toUpperCase() : <User className="w-3 h-3" />}
-                </div>
-                <span className="hidden sm:inline font-semibold text-xs text-slate-900 truncate max-w-[100px] xl:max-w-[130px]">
-                  {user?.name || "Citizen"}
-                </span>
-                <ChevronDown className="w-3 h-3 text-slate-500 shrink-0" />
-              </button>
-
-              {/* Dropdown Menu Modal */}
-              {profileDropdownOpen && (
-                <div 
-                  className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 z-50 animate-in fade-in zoom-in-95 duration-100 overflow-hidden"
-                  role="menu"
-                >
-                  {/* User Details Header - Horizontally aligned avatar and text */}
-                  <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/60 flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#2b0f4c] to-[#591d8f] text-white flex items-center justify-center font-bold text-sm shadow-xs ring-1 ring-purple-300 shrink-0">
-                      {user?.name ? user.name.charAt(0).toUpperCase() : <User className="w-4 h-4" />}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-bold text-slate-900 truncate">
-                        {user?.name || "Citizen"}
-                      </p>
-                      <p className="text-xs text-slate-500 truncate font-normal">
-                        {user?.email || "citizen@haqdwaar.gov.in"}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Links Section */}
-                  <div className="py-2 bg-white">
-                    {["admin", "super_admin", "chief_officer", "category_admin"].includes(user?.role) && (
-                      <Link
-                        to="/admin"
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 text-xs sm:text-sm font-bold text-orange-700 bg-orange-50/80 hover:bg-orange-100 transition-colors group border-b border-orange-100"
-                        role="menuitem"
-                      >
-                        <ShieldCheck className="w-4 h-4 text-orange-600 group-hover:scale-105 transition-transform shrink-0" />
-                        <span>Admin / Officer Console</span>
-                      </Link>
-                    )}
-
-                    <Link
-                      to="/dashboard/benefit-passport"
-                      onClick={() => setProfileDropdownOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 hover:bg-purple-50 hover:text-[#2b0f4c] transition-colors group"
-                      role="menuitem"
-                    >
-                      <UserCheck className="w-4 h-4 text-[#591d8f] group-hover:scale-105 transition-transform shrink-0" />
-                      <span>Benefit Passport</span>
-                    </Link>
-
-                    <Link
-                      to="/dashboard/documents"
-                      onClick={() => setProfileDropdownOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 hover:bg-purple-50 hover:text-[#2b0f4c] transition-colors group"
-                      role="menuitem"
-                    >
-                      <FolderCheck className="w-4 h-4 text-[#2b0f4c] group-hover:scale-105 transition-transform shrink-0" />
-                      <span>Document Vault</span>
-                    </Link>
-                  </div>
-
-                  {/* Logout Button Section */}
-                  <div className="border-t border-slate-100 p-2 bg-white">
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className="w-full text-left flex items-center gap-3 px-4 py-2 text-xs sm:text-sm font-semibold text-rose-700 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
-                      role="menuitem"
-                    >
-                      <LogOut className="w-4 h-4 text-rose-600 shrink-0" />
-                      <span>Log Out</span>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+            {/* Desktop User Profile Avatar & Dropdown (Exact Unstop Match) */}
+            <UnstopProfileDropdown align="right" />
 
             {/* Mobile Hamburger Drawer Toggle (<= 1023px) - Horizontally aligned h-9 */}
             <div className="flex lg:hidden items-center shrink-0">

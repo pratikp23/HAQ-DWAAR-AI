@@ -1,5 +1,5 @@
 import React from "react";
-import { ExternalLink, ShieldAlert, Check, X } from "lucide-react";
+import { ExternalLink, ShieldAlert, Check, X, AlertCircle } from "lucide-react";
 
 /**
  * HAQ AI — Consequential Action Confirmation Modal
@@ -61,7 +61,10 @@ export default function HaqAIConfirmation({
 
         {/* Mandatory Disclaimers */}
         <div className="mb-5 p-3 bg-rose-50/80 rounded-xl border border-rose-200/80 text-xs text-rose-900 space-y-1">
-          <p className="font-semibold">⚠️ महत्वपूर्ण नागरिक सूचना:</p>
+          <p className="font-semibold flex items-center gap-1.5">
+            <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+            <span>महत्वपूर्ण नागरिक सूचना:</span>
+          </p>
           <ul className="list-disc list-inside space-y-0.5 text-[11px] opacity-90">
             <li>HAQ DWAAR AI केवल मार्गदर्शन व तैयारी में सहायता करता है।</li>
             <li>सरकारी पोर्टल पर अंतिम आवेदन और दस्तावेज़ सबमिशन आपको स्वयं करना होगा।</li>

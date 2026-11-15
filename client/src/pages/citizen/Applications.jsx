@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../../components/layout/Navbar";
-import Footer from "../../components/layout/Footer";
 import { useLanguage } from "../../context/LanguageContext";
 import { getApplications } from "../../services/applicationApi";
+import Chip from "../../components/common/Chip";
+import { SpotlightCard } from "../../components/common/ReactBits";
 import {
   Briefcase,
   Clock,
@@ -15,6 +15,7 @@ import {
   FileCheck2,
   Calendar,
   Sparkles,
+  Compass,
 } from "lucide-react";
 
 export default function Applications() {
@@ -47,21 +48,21 @@ export default function Applications() {
   const getStatusBadge = (status) => {
     switch (status) {
       case "INTERESTED":
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">Interested</span>;
+        return <Chip size="sm" variant="flat" color="primary">Interested</Chip>;
       case "PREPARING":
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">Preparing Docs</span>;
+        return <Chip size="sm" variant="flat" color="warning">Preparing Docs</Chip>;
       case "READY_TO_APPLY":
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">Ready to Apply</span>;
+        return <Chip size="sm" variant="flat" color="secondary">Ready to Apply</Chip>;
       case "APPLIED":
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200">Citizen-marked Applied</span>;
+        return <Chip size="sm" variant="flat" color="success">Citizen-marked Applied</Chip>;
       case "FOLLOW_UP":
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-50 text-orange-700 border border-orange-200">Follow Up</span>;
+        return <Chip size="sm" variant="flat" color="warning">Follow Up</Chip>;
       case "COMPLETED":
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Citizen-marked Completed</span>;
+        return <Chip size="sm" variant="solid" color="success">Completed</Chip>;
       case "CANCELLED":
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-300">Cancelled</span>;
+        return <Chip size="sm" variant="flat" color="default">Cancelled</Chip>;
       default:
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700">{status}</span>;
+        return <Chip size="sm" variant="flat" color="default">{status}</Chip>;
     }
   };
 
@@ -120,32 +121,29 @@ export default function Applications() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f5fa] flex flex-col text-[#0f172a]">
-      <Navbar />
-
-      <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-8 space-y-6">
-        {/* GovTech Hero Banner */}
-        <div className="bg-gradient-to-r from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] rounded-2xl p-6 sm:p-8 text-white shadow-lg border border-[#591d8f]/30">
+    <div className="w-full px-3 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6 sm:space-y-8 max-w-7xl mx-auto">
+      {/* GovTech Hero Banner */}
+        <div className="bg-gradient-to-r from-[#112318] via-[#1a3826] to-[#234731] rounded-2xl p-6 sm:p-8 text-white shadow-lg border border-[#234731]/60">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div className="space-y-3">
-              <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-[#ea580c]/20 border border-[#ea580c]/50 text-xs font-bold text-[#ffedd5]">
-                <Sparkles className="w-3.5 h-3.5 text-[#fb923c]" />
+              <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-bold text-[#ebf3ed]">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                 <span>{t("applicationsTitle", "Applications & DBT Tracker")}</span>
                 <span>•</span>
                 <span>Live Government Timeline</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center">
-                <Briefcase className="w-7 h-7 mr-2.5 text-[#fb923c]" />
+                <Briefcase className="w-7 h-7 mr-2.5 text-amber-400" />
                 {t("applicationsTitle", "My Application Tracker")}
               </h1>
-              <p className="text-[#e2e8f0] text-sm font-medium leading-relaxed max-w-2xl">
+              <p className="text-[#c8ded0] text-sm font-medium leading-relaxed max-w-2xl">
                 {t("applicationsSub", "Organize your benefit applications, monitor upcoming government deadlines, track next preparation steps, and navigate to authorized official application portals.")}
               </p>
             </div>
 
             <Link
               to="/browse-schemes"
-              className="inline-flex items-center px-5 py-2.5 rounded-xl text-xs font-bold bg-[#ea580c] hover:bg-[#c2410c] text-white shadow-md transition-all cursor-pointer shrink-0"
+              className="inline-flex items-center px-5 py-2.5 rounded-xl text-xs font-bold bg-[#ea580c] hover:bg-[#c2410c] text-white shadow-md active:scale-95 transition-all cursor-pointer shrink-0"
             >
               <PlusCircle className="w-4 h-4 mr-1.5" />
               Track New Scheme
@@ -153,12 +151,12 @@ export default function Applications() {
           </div>
 
           {/* Civic Boundary Disclaimer Notice */}
-          <div className="mt-5 p-3.5 rounded-xl bg-[#140628]/80 border border-[#591d8f]/50 text-[#cbd5e1] text-xs flex items-start space-x-2.5 font-medium">
-            <AlertCircle className="w-4 h-4 text-[#fb923c] flex-shrink-0 mt-0.5" />
+          <div className="mt-5 p-3.5 rounded-xl bg-[#112318]/90 border border-emerald-900/50 text-[#cbd5e1] text-xs flex items-start space-x-2.5 font-medium">
+            <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
             <div>
               <span className="font-bold text-white">Citizen-Side Application Progress Tool: </span>
               <span>
-                This tracker helps you stay organized. Marking an application as "Applied" records your personal submission notes. HAQ DWAAR AI does not submit or manage official government application records.
+                This tracker helps you stay organized. Marking an application as "Applied" records your personal submission notes. Lok Samarth does not submit or manage official government application records.
               </span>
             </div>
           </div>
@@ -172,7 +170,7 @@ export default function Applications() {
               onClick={() => setStatusFilter(tab)}
               className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all shadow-sm ${
                 statusFilter === tab
-                  ? "bg-[#240b49] text-white font-black shadow-md ring-2 ring-[#591d8f]/30"
+                  ? "bg-[#112318] text-white font-black shadow-md ring-2 ring-[#234731]/40"
                   : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100"
               }`}
             >
@@ -208,7 +206,7 @@ export default function Applications() {
             <div className="mt-5 flex items-center justify-center space-x-3">
               <Link
                 to="/browse-schemes"
-                className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold bg-blue-700 hover:bg-blue-800 text-white shadow-xs transition"
+                className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold bg-[#112318] hover:bg-[#1a3826] text-white shadow-sm transition"
               >
                 Browse Schemes
               </Link>
@@ -216,7 +214,7 @@ export default function Applications() {
                 to="/dashboard/recommendations"
                 className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-800 transition"
               >
-                <Sparkles className="w-3.5 h-3.5 mr-1.5 text-blue-700" />
+                <Sparkles className="w-3.5 h-3.5 mr-1.5 text-emerald-700" />
                 View Recommendations
               </Link>
             </div>
@@ -239,8 +237,8 @@ export default function Applications() {
                       </span>
                       {getStatusBadge(app.status)}
                       {app.submissionType === "QUICK_APPLY" && (
-                        <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-purple-50 text-purple-700 border border-purple-200 flex items-center">
-                          <Sparkles className="w-3 h-3 mr-1 text-purple-600" />
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center">
+                          <Sparkles className="w-3 h-3 mr-1 text-emerald-600" />
                           1-Click Quick Apply
                         </span>
                       )}
@@ -265,7 +263,7 @@ export default function Applications() {
                     </div>
                     <Link
                       to={`/dashboard/applications/${app._id}`}
-                      className="text-base font-extrabold text-slate-900 hover:text-blue-700 transition block"
+                      className="text-base font-extrabold text-slate-900 hover:text-emerald-700 transition block"
                     >
                       {app.schemeId?.name || "Unknown Scheme"}
                     </Link>
@@ -307,7 +305,7 @@ export default function Applications() {
                       <span className="font-bold text-slate-500 block text-[10px] uppercase">
                         {app.submissionType === "QUICK_APPLY" ? "Official Gov Tracking Ref:" : "Ref / Ack No:"}
                       </span>
-                      <span className="font-mono font-black text-purple-900 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 inline-block mt-0.5">
+                      <span className="font-mono font-black text-emerald-950 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 inline-block mt-0.5">
                         {app.referenceNumber}
                       </span>
                     </div>
@@ -322,18 +320,27 @@ export default function Applications() {
 
                   <div className="flex items-center space-x-2">
                     {app.schemeId?._id && (
-                      <Link
-                        to={`/dashboard/readiness/${app.schemeId._id}`}
-                        className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 transition"
-                      >
-                        <FileCheck2 className="w-3.5 h-3.5 mr-1" />
-                        Check Readiness
-                      </Link>
+                      <>
+                        <Link
+                          to={`/dashboard/coach/${app.schemeId._id}`}
+                          className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 transition"
+                        >
+                          <Compass className="w-3.5 h-3.5 mr-1" />
+                          SchemeCoach
+                        </Link>
+                        <Link
+                          to={`/dashboard/readiness/${app.schemeId._id}`}
+                          className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 transition"
+                        >
+                          <FileCheck2 className="w-3.5 h-3.5 mr-1" />
+                          Check Readiness
+                        </Link>
+                      </>
                     )}
 
                     <Link
                       to={`/dashboard/applications/${app._id}`}
-                      className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold bg-[#240b49] hover:bg-[#1e0a3c] text-white shadow-sm transition-all"
+                      className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold bg-[#112318] hover:bg-[#1a3826] text-white shadow-xs active:scale-95 transition-all"
                     >
                       View Tracker Details
                       <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
@@ -344,9 +351,6 @@ export default function Applications() {
             ))}
           </div>
         )}
-      </main>
-
-      <Footer />
     </div>
   );
 }

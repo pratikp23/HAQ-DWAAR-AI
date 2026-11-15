@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Sparkles, ArrowRight, Filter, AlertCircle, RefreshCw } from "lucide-react";
+import { Sparkles, ArrowRight, ShieldCheck } from "lucide-react";
+import { PillTabs } from "../common/ReactBits";
 import RecommendationCard from "./RecommendationCard";
 
 /**
- * HAQ DWAAR AI — Recommendation Section ("For You")
+ * HAQ DWAAR AI — Recommendation Section ("Verified Opportunities")
  * 
  * Accurately mirrors the 3-column reference design layout:
- * - Filter pills (All Verified, High Match, Education, Kisan & Agriculture, Employment)
- * - 3-column responsive card grid (lg:grid-cols-3)
- * - Renders verified government opportunities with thematic visual banners
+ * - High-visibility header with 100% Gazette Verified assurance
+ * - ReactBits PillTabs filter bar (All Schemes, Education, Agriculture, Women & MSME)
+ * - 3-column responsive card grid (lg:grid-cols-3) with HeroUI card architecture
+ * - Renders verified government opportunities with authentic photographic banners
  */
 export default function RecommendationSection({
   recommendations = [],
@@ -23,13 +25,6 @@ export default function RecommendationSection({
 }) {
   const [activeFilter, setActiveFilter] = useState("ALL");
 
-  const filterTabs = [
-    { id: "ALL", label: "All (12)" },
-    { id: "STUDENT", label: "Education (4)" },
-    { id: "KISAN", label: "Agriculture (3)" },
-    { id: "EMPLOYMENT", label: "Women & MSME (3)" },
-  ];
-
   // Authentic fallback schemes mirroring the reference design if backend list is fresh/empty
   const defaultVerifiedSchemes = [
     {
@@ -41,11 +36,11 @@ export default function RecommendationSection({
       benefitSummary: "₹25,000 / year • Tuition & Living Allowance",
       classification: "MATCHED",
       matchScore: 95,
-      imageUrl: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=700&q=80",
+      imageUrl: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80",
       topReasons: [
-        "100% Tuition fee waiver + monthly stipend",
-        "Family Income < ₹2.5 Lakh/year",
-        "State Domicile: Maharashtra (Verified)"
+        "100% Tuition fee waiver + monthly stipend for college degree",
+        "Family Annual Income < ₹2.5 Lakh/year validated via DigiLocker",
+        "State Domicile: Maharashtra (Aadhaar e-KYC Verified)"
       ],
       missingFields: [],
       officialApplicationUrl: "https://mahadbt.maharashtra.gov.in"
@@ -59,11 +54,11 @@ export default function RecommendationSection({
       benefitSummary: "₹6,000 / year • Direct Bank Transfer (DBT)",
       classification: "MATCHED",
       matchScore: 100,
-      imageUrl: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=700&q=80",
+      imageUrl: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80",
       topReasons: [
-        "Small & Marginal Farmer category",
-        "Land records mapped via DigiLocker",
-        "Aadhaar-seeded bank account"
+        "Small & Marginal Farmer category identified under Land Registry",
+        "Land records mapped and verified via DigiLocker RoR service",
+        "Aadhaar-seeded NPCI direct benefit bank account active"
       ],
       missingFields: ["Land Ownership Record"],
       officialApplicationUrl: "https://pmkisan.gov.in"
@@ -77,11 +72,11 @@ export default function RecommendationSection({
       benefitSummary: "Up to ₹50,000 • Collateral-Free Micro Loan",
       classification: "POTENTIAL_MATCH",
       matchScore: 88,
-      imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=700&q=80",
+      imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80",
       topReasons: [
-        "Non-corporate small business enterprise",
-        "Age 18+ Qualification Met",
-        "Proof of business activity / trade license"
+        "Non-corporate small business enterprise / Artisan trade profile",
+        "Age 18+ Qualification Met from verified Aadhaar e-KYC",
+        "Proof of business activity / Trade license requirement checked"
       ],
       missingFields: ["Income Proof & Trade Docs"],
       officialApplicationUrl: "https://www.mudra.org.in"
@@ -89,6 +84,22 @@ export default function RecommendationSection({
   ];
 
   const sourceList = recommendations.length > 0 ? recommendations : defaultVerifiedSchemes;
+
+  const counts = useMemo(() => {
+    return {
+      ALL: sourceList.length,
+      STUDENT: sourceList.filter((s) => s.category === "STUDENT").length,
+      KISAN: sourceList.filter((s) => s.category === "KISAN").length,
+      EMPLOYMENT: sourceList.filter((s) => s.category === "EMPLOYMENT" || s.category === "BUSINESS").length,
+    };
+  }, [sourceList]);
+
+  const filterTabs = [
+    { id: "ALL", label: "All Schemes", count: counts.ALL },
+    { id: "STUDENT", label: "Education", count: counts.STUDENT },
+    { id: "KISAN", label: "Agriculture", count: counts.KISAN },
+    { id: "EMPLOYMENT", label: "Women & MSME", count: counts.EMPLOYMENT },
+  ];
 
   // Filter schemes
   const filteredList = sourceList.filter((item) => {
@@ -99,46 +110,42 @@ export default function RecommendationSection({
   });
 
   return (
-    <section aria-label="Personalized Verified Benefits" className="space-y-4">
+    <section aria-label="Personalized Verified Benefits" className="space-y-5">
       
       {/* Section Header & Filters */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-orange-500 fill-orange-500 shrink-0" />
-            <h2 className="text-base sm:text-lg lg:text-xl font-bold text-[#2b0f4c] tracking-normal">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <div className="w-1.5 h-6 bg-[#234731] rounded-full shrink-0" />
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-black text-slate-900 tracking-tight">
               Verified Opportunities
-              <span className="text-xs sm:text-sm font-normal text-slate-500 ml-1.5">
-                (सत्यापित योजनाएं)
-              </span>
             </h2>
+            <span className="text-xs sm:text-sm font-semibold text-slate-500">
+              (सत्यापित योजनाएं)
+            </span>
+            <span className="text-[11px] font-extrabold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 shadow-2xs">
+              100% Gazette Verified
+            </span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-500 font-normal mt-0.5">
-            Personalized verified schemes matching your profile and life situation
+          <p className="text-xs sm:text-sm text-slate-600 font-medium mt-1 ml-4">
+            Personalized welfare schemes matched with your Benefit Passport and DigiLocker records
           </p>
         </div>
 
-        {/* Filter Pills */}
-        <div className="flex flex-wrap items-center gap-1.5">
-          {filterTabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveFilter(tab.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                activeFilter === tab.id
-                  ? "bg-[#2b0f4c] text-white shadow-xs"
-                  : "bg-white text-slate-600 hover:text-slate-900 hover:bg-[#fbf9fe] border border-slate-200/90"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        {/* ReactBits PillTabs Filter Bar */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          <PillTabs
+            tabs={filterTabs}
+            activeTab={activeFilter}
+            onTabChange={setActiveFilter}
+            size="sm"
+            className="bg-slate-100/90 border border-slate-200/90 shadow-2xs"
+          />
           <Link
             id="step-scheme-explore-btn"
             data-haq-target="explore-schemes-btn"
             to="/dashboard/recommendations"
-            className="inline-flex items-center gap-0.5 px-2.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-[#7c3aed] hover:text-[#591d8f] transition"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200 transition shadow-2xs cursor-pointer"
           >
             <span>सभी देखें</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -148,18 +155,24 @@ export default function RecommendationSection({
 
       {/* 3-Column Card Grid */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((n) => (
-            <div key={n} className="bg-white rounded-3xl p-6 border border-[#e9e1f5] animate-pulse space-y-4">
-              <div className="h-4 bg-slate-200 rounded w-1/3" />
-              <div className="h-24 bg-slate-100 rounded-2xl w-full" />
-              <div className="h-6 bg-slate-200 rounded w-3/4" />
-              <div className="h-10 bg-slate-100 rounded w-full" />
+            <div key={n} className="bg-white rounded-3xl overflow-hidden border border-slate-200/90 shadow-xs animate-pulse space-y-4">
+              <div className="h-44 bg-slate-200 w-full" />
+              <div className="p-6 space-y-4">
+                <div className="h-5 bg-slate-200 rounded-lg w-3/4" />
+                <div className="h-12 bg-slate-100 rounded-2xl w-full" />
+                <div className="space-y-2">
+                  <div className="h-3.5 bg-slate-100 rounded w-full" />
+                  <div className="h-3.5 bg-slate-100 rounded w-5/6" />
+                </div>
+                <div className="h-10 bg-slate-200 rounded-xl w-full pt-4" />
+              </div>
             </div>
           ))}
         </div>
       ) : (
-        <div data-haq-target="recommendations-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div data-haq-target="recommendations-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
           {filteredList.map((scheme, idx) => {
             const sid = scheme.schemeId || scheme._id;
             return (
@@ -181,7 +194,7 @@ export default function RecommendationSection({
       <div className="flex justify-end pt-1">
         <Link
           to="/dashboard/recommendations"
-          className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#2b0f4c] hover:text-[#591d8f] underline-offset-4 hover:underline"
+          className="inline-flex items-center gap-1.5 text-xs font-black text-[#2b0f4c] hover:text-[#591d8f] underline-offset-4 hover:underline"
         >
           <span>View All Recommendations ({sourceList.length})</span>
           <ArrowRight className="w-3.5 h-3.5 text-orange-500" />

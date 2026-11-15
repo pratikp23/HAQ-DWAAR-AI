@@ -65,7 +65,7 @@ export default function BrandLogo({
         {/* Project Name - Written ONLY ONE TIME */}
         <div className="flex items-center space-x-1.5 leading-tight">
           <span className={`font-black tracking-tight ${titleSizes[size] || titleSizes.md}`}>
-            HAQ DWAAR <span className="text-[#ea580c]">AI</span>
+            LOK SAMARTH
           </span>
         </div>
         {showSubtitle && (
@@ -74,7 +74,7 @@ export default function BrandLogo({
               subtitleColor || "text-[#4b5563] group-hover:text-[#5f259f]"
             }`}
           >
-            {t("brandSubtitle", "Scheme se Application Tak")}
+            {t("brandSubtitle", "Citizen Gateway")}
           </span>
         )}
       </div>

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { getSchemeReadiness } from "../../services/readinessApi";
-import { getApplications, createApplication } from "../../services/applicationApi";
+import { getApplications, createApplication, quickApplyScheme } from "../../services/applicationApi";
+import { getPrintableFormUrl } from "../../services/schemeCoachApi";
 import { useAuth } from "../../hooks/useAuth";
-import Navbar from "../../components/layout/Navbar";
-import Footer from "../../components/layout/Footer";
 import {
   ShieldCheck,
   Building,
@@ -25,7 +24,11 @@ import {
   Shield,
   Layers,
   Sparkles,
-  ChevronRight
+  ChevronRight,
+  Compass,
+  Printer,
+  Zap,
+  X
 } from "lucide-react";
 
 export default function Readiness() {
@@ -46,7 +49,7 @@ export default function Readiness() {
     setError(null);
     try {
       const res = await getSchemeReadiness(schemeId);
-      setData(res?.data);
+      setData(res?.data || res);
     } catch (err) {
       console.error("Failed to load readiness data:", err);
       setError(
@@ -103,51 +106,68 @@ export default function Readiness() {
     }
   };
 
+  // 1-Click Quick Apply Handler
+  const [showQuickApplyModal, setShowQuickApplyModal] = useState(false);
+  const [quickApplyLoading, setQuickApplyLoading] = useState(false);
+  const [quickApplySuccess, setQuickApplySuccess] = useState(null);
+
+  const handleConfirmQuickApply = async () => {
+    setQuickApplyLoading(true);
+    try {
+      const res = await quickApplyScheme(schemeId, {
+        notes: "Submitted from Application Readiness Gateway",
+      });
+      if (res?.data?.success || res?.success) {
+        const app = res?.data?.application || res?.application;
+        setQuickApplySuccess(app);
+        setTrackingApp(app);
+        setShowQuickApplyModal(false);
+      }
+    } catch (err) {
+      console.error("Quick apply error:", err);
+      alert(err.message || "Failed to submit Quick Apply packet.");
+    } finally {
+      setQuickApplyLoading(false);
+    }
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
-        <Navbar />
-        <div className="flex-1 flex flex-col items-center justify-center p-6 space-y-4">
-          <RefreshCw className="w-10 h-10 text-blue-600 animate-spin" />
-          <p className="text-slate-600 font-medium text-sm">
-            Evaluating document health, profile completeness, and action readiness...
-          </p>
-        </div>
-        <Footer />
+      <div className="w-full min-h-[50vh] flex flex-col items-center justify-center p-6 space-y-4">
+        <RefreshCw className="w-10 h-10 text-[#591d8f] animate-spin" />
+        <p className="text-slate-600 font-medium text-sm">
+          Evaluating document health, profile completeness, and action readiness...
+        </p>
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
-        <Navbar />
-        <div className="flex-1 max-w-2xl mx-auto px-4 py-16 text-center space-y-6">
-          <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto">
-            <AlertCircle className="w-8 h-8" />
-          </div>
-          <h2 className="text-2xl font-bold text-slate-900">Readiness Evaluation Unavailable</h2>
-          <p className="text-slate-600 text-sm leading-relaxed">
-            {error || "The requested scheme could not be evaluated or is currently under review."}
-          </p>
-          <div className="flex justify-center gap-3">
-            <Link
-              to="/dashboard/schemes"
-              className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-white hover:bg-slate-800 transition"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Schemes
-            </Link>
-            <button
-              onClick={fetchReadiness}
-              className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 transition"
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Try Again
-            </button>
-          </div>
+      <div className="max-w-2xl mx-auto px-4 py-16 text-center space-y-6">
+        <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto">
+          <AlertCircle className="w-8 h-8" />
         </div>
-        <Footer />
+        <h2 className="text-2xl font-bold text-slate-900">Readiness Evaluation Unavailable</h2>
+        <p className="text-slate-600 text-sm leading-relaxed">
+          {error || "The requested scheme could not be evaluated or is currently under review."}
+        </p>
+        <div className="flex justify-center gap-3">
+          <Link
+            to="/dashboard/schemes"
+            className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-white hover:bg-slate-800 transition"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Schemes
+          </Link>
+          <button
+            onClick={fetchReadiness}
+            className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-semibold bg-[#112318] text-white hover:bg-[#234731] transition"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Try Again
+          </button>
+        </div>
       </div>
     );
   }
@@ -196,13 +216,9 @@ export default function Readiness() {
   const theme = getScoreTheme(readinessScore, label);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
-      <Navbar />
-
-      <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-8 space-y-8">
-        
-        {/* Navigation Breadcrumb */}
-        <div className="flex items-center justify-between">
+    <div className="w-full px-3 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6 sm:space-y-8 max-w-7xl mx-auto">
+      {/* Navigation Breadcrumb */}
+      <div className="flex items-center justify-between">
           <Link
             to={`/dashboard/schemes/${scheme.id}`}
             className="inline-flex items-center text-xs font-semibold text-slate-600 hover:text-slate-900 transition"
@@ -796,60 +812,228 @@ export default function Readiness() {
         </div>
 
         {/* ======================================================== */}
-        {/* OFFICIAL APPLICATION GATEWAY                             */}
+        {/* THE 3 APPLICATION DOORS (Aapke 3 Raste: Choose Mode)      */}
         {/* ======================================================== */}
-        <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white rounded-2xl p-6 sm:p-7 border border-slate-800 shadow-sm space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-blue-300 block">
-                Official Government Gateway
-              </span>
-              <h3 className="text-lg font-bold text-white">
-                Ready to Submit Your Official Application?
-              </h3>
-              <p className="text-xs text-slate-300 leading-relaxed max-w-2xl">
-                HAQ DWAAR AI is an application preparation assistant. Formal scheme applications must be submitted directly through the authorized government portal.
-              </p>
+        <div className="bg-gradient-to-br from-[#ebf3ed] via-white to-amber-50/40 rounded-3xl p-6 sm:p-7 border-2 border-emerald-200/80 shadow-xs space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-emerald-100">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#112318] to-[#ea580c] text-white flex items-center justify-center font-black text-sm shadow-xs">
+                3D
+              </div>
+              <div>
+                <h3 className="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
+                  <span>Aapke Pass 3 Raste Hain (3 Doors to Apply)</span>
+                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                    Lok Samarth Gateway
+                  </span>
+                </h3>
+                <p className="text-xs text-slate-600">
+                  Select the application method that fits your comfort and documentation readiness
+                </p>
+              </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 flex-shrink-0">
-              {trackingApp ? (
-                <Link
-                  to={`/dashboard/applications/${trackingApp._id}`}
-                  className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow transition whitespace-nowrap"
-                >
-                  <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
-                  Tracker: {trackingApp.status}
-                </Link>
-              ) : (
-                <button
-                  onClick={handleStartTracking}
-                  disabled={trackingLoading}
-                  className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition whitespace-nowrap disabled:opacity-50"
-                >
-                  <Clock className="w-3.5 h-3.5 mr-1.5 text-blue-300" />
-                  {trackingLoading ? "Tracking..." : "Track Application"}
-                </button>
-              )}
+            {trackingApp && (
+              <Link
+                to={`/dashboard/applications/${trackingApp._id}`}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 shadow-2xs"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Tracked: {trackingApp.status}</span>
+              </Link>
+            )}
+          </div>
 
-              {scheme.officialApplicationUrl ? (
-                <a
-                  href={scheme.officialApplicationUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow transition whitespace-nowrap"
-                >
-                  Open Official Application Portal
-                  <ExternalLink className="w-3.5 h-3.5 ml-2" />
-                </a>
-              ) : (
-                <span className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-semibold bg-white/10 text-slate-300 border border-white/20">
-                  Official link not available
+          {/* Quick Apply Success Banner */}
+          {quickApplySuccess && (
+            <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-900 space-y-2 animate-in fade-in">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-xs uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  Quick Apply Packet Transmitted!
                 </span>
-              )}
+                <span className="text-xs font-mono font-black bg-white px-2.5 py-0.5 rounded-md border border-emerald-200">
+                  {quickApplySuccess.referenceNumber || quickApplySuccess.trackingId}
+                </span>
+              </div>
+              <p className="text-xs text-emerald-800">
+                Aapka verified application dossier Central Nodal Verification Desk ko bhej diya gaya hai.
+              </p>
+              <div className="pt-1">
+                <Link
+                  to={`/dashboard/applications/${quickApplySuccess._id}`}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black bg-emerald-700 hover:bg-emerald-800 text-white transition shadow-2xs"
+                >
+                  <span>View Live Application Tracker</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* 3 Pathway Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* DOOR 1: SchemeCoach */}
+            <div className="p-4 rounded-2xl border border-emerald-200 bg-white hover:border-emerald-600 hover:shadow-md transition-all flex flex-col justify-between group">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-100 text-emerald-800 uppercase">
+                    Door 1 • Self Apply
+                  </span>
+                  <Compass className="w-4 h-4 text-emerald-700 group-hover:rotate-45 transition-transform" />
+                </div>
+                <h4 className="text-sm font-black text-slate-900">
+                  Main Khud Bharunga (Self Apply)
+                </h4>
+                <p className="text-[11px] text-slate-600 leading-relaxed">
+                  Official government portal kholiye. SchemeCoach har field mein kya bharna hai dikhayega aur <strong>voice mein bolkar samjhayega</strong> with 1-tap copy.
+                </p>
+              </div>
+              <Link
+                to={`/dashboard/coach/${schemeId}`}
+                className="mt-4 inline-flex items-center justify-center gap-1.5 w-full py-2.5 px-3 rounded-xl text-xs font-black bg-emerald-50 hover:bg-[#112318] text-emerald-800 hover:text-white border border-emerald-200 hover:border-[#112318] transition shadow-2xs"
+              >
+                <span>Launch SchemeCoach</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            {/* DOOR 2: 1-Click Quick Apply */}
+            <div className="p-4 rounded-2xl border-2 border-[#ea580c]/40 bg-gradient-to-b from-orange-50/40 via-white to-white hover:border-[#ea580c] hover:shadow-md transition-all flex flex-col justify-between group relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-[#ea580c]/5 rounded-bl-full pointer-events-none" />
+              <div className="space-y-2 relative">
+                <div className="flex items-center justify-between">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-black bg-orange-100 text-[#ea580c] uppercase">
+                    Door 2 • Most Popular
+                  </span>
+                  <Zap className="w-4 h-4 text-[#ea580c]" />
+                </div>
+                <h4 className="text-sm font-black text-slate-900">
+                  1-Click Quick Apply
+                </h4>
+                <p className="text-[11px] text-slate-600 leading-relaxed">
+                  Benefit Passport aur DigiLocker verified documents ka dossier direct <strong>Ministry Verification Queue</strong> ko bhejein aur live tracking ID payein.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowQuickApplyModal(true)}
+                className="mt-4 inline-flex items-center justify-center gap-1.5 w-full py-2.5 px-3 rounded-xl text-xs font-black bg-gradient-to-r from-[#112318] via-[#1a3826] to-[#ea580c] text-white shadow-xs hover:opacity-95 transition cursor-pointer active:scale-95"
+              >
+                <Zap className="w-3.5 h-3.5 text-amber-300" />
+                <span>Quick Apply to Desk</span>
+              </button>
+            </div>
+
+            {/* DOOR 3: Download Pre-Filled Form */}
+            <div className="p-4 rounded-2xl border border-slate-200 bg-white hover:border-slate-400 hover:shadow-md transition-all flex flex-col justify-between group">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="px-2 py-0.5 rounded text-[10px] font-black bg-slate-100 text-slate-700 uppercase">
+                    Door 3 • Offline / Tehsil
+                  </span>
+                  <Printer className="w-4 h-4 text-slate-600" />
+                </div>
+                <h4 className="text-sm font-black text-slate-900">
+                  Bhara Hua Form (Print PDF)
+                </h4>
+                <p className="text-[11px] text-slate-600 leading-relaxed">
+                  Aapke data se pre-filled A4 bilingual form with QR verification code download karein. Print nikaal kar <strong>CSC center ya Tehsil</strong> mein jama karein.
+                </p>
+              </div>
+              <a
+                href={getPrintableFormUrl(schemeId)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex items-center justify-center gap-1.5 w-full py-2.5 px-3 rounded-xl text-xs font-black bg-slate-50 hover:bg-[#112318] text-slate-800 hover:text-white border border-slate-200 hover:border-[#112318] transition shadow-2xs"
+              >
+                <span>Download Printable Form</span>
+                <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-white" />
+              </a>
             </div>
           </div>
         </div>
+
+        {/* Quick Apply Confirmation Modal */}
+        {showQuickApplyModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
+            <div className="bg-white rounded-3xl max-w-lg w-full border border-emerald-200 shadow-2xl overflow-hidden flex flex-col text-slate-900">
+              <div className="bg-gradient-to-r from-[#112318] via-[#1a3826] to-[#234731] p-5 text-white flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#ea580c] flex items-center justify-center text-white">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm sm:text-base leading-tight">
+                      Statutory Quick Apply Dossier
+                    </h3>
+                    <p className="text-[11px] text-[#c8ded0]">
+                      Transmitting verified Benefit Passport to Ministry Nodal Desk
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowQuickApplyModal(false)}
+                  className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-4 text-xs text-slate-600">
+                <p>
+                  Lok Samarth will bundle your verified <strong>Benefit Passport</strong>, demographic profile, and cryptographic DigiLocker certificates into a signed statutory dossier for:
+                </p>
+                <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100 font-bold text-slate-900">
+                  {scheme?.name}
+                </div>
+                <ul className="space-y-1.5 text-[11px]">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Instant statutory tracking ID generated (e.g. LOK/2026/...)</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Direct transmission to Central Admin Verification Desk</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Zero manual re-typing required</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setShowQuickApplyModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-200 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={quickApplyLoading}
+                  onClick={handleConfirmQuickApply}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-[#112318] via-[#1a3826] to-[#ea580c] text-white shadow-md hover:opacity-95 transition disabled:opacity-50 cursor-pointer active:scale-95"
+                >
+                  {quickApplyLoading ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin text-white" />
+                      <span>Transmitting Packet...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                      <span>Confirm & Transmit Packet</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ======================================================== */}
         {/* CIVIC DISCLAIMER                                         */}
@@ -863,10 +1047,6 @@ export default function Readiness() {
             {readiness.disclaimer}
           </p>
         </div>
-
-      </main>
-
-      <Footer />
     </div>
   );
 }

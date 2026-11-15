@@ -4,7 +4,7 @@ import { useHaqAI, MITTRA_STATES } from "../../context/HaqAIContext";
 
 /**
  * HAQ AI — Collapsed Floating Assistant Button
- * Pinned to bottom-right: [ ✨ HAQ AI 🎙️ ] using pure CSS/Tailwind.
+ * Pinned to bottom-right: [ HAQ AI Voice / Assistant ] using pure CSS/Tailwind.
  */
 export default function HaqAIFloatingButton() {
   const { isOpen, toggleAssistant, assistantState } = useHaqAI();

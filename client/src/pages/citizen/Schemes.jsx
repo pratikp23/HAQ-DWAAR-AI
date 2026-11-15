@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import Navbar from "../../components/layout/Navbar";
 import { useLanguage } from "../../context/LanguageContext";
 import { getSchemes } from "../../services/schemeApi";
 import SchemeImageBanner from "../../components/common/SchemeImageBanner";
+import Chip from "../../components/common/Chip";
 import { 
   ArrowLeft, 
   Search, 
@@ -19,7 +19,8 @@ import {
   FileText,
   AlertCircle,
   Sparkles,
-  HeartPulse
+  HeartPulse,
+  Compass,
 } from "lucide-react";
 
 const CATEGORIES = [
@@ -97,14 +98,8 @@ export default function Schemes() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f5fa] text-[#0f172a] pb-16">
-      {/* Universal GovTech Top Navigation */}
-      <Navbar />
-
-      {/* Main Content Area */}
-      <main className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 pt-8 pb-12 space-y-6">
-        
-        {/* GovTech Hero Banner */}
+    <div className="w-full px-3 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6 sm:space-y-8 max-w-7xl mx-auto">
+      {/* GovTech Hero Banner */}
         <div className="bg-gradient-to-r from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] rounded-2xl p-6 sm:p-8 text-white shadow-lg border border-[#591d8f]/30">
           <div className="space-y-3 max-w-3xl">
             <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-[#ea580c]/20 border border-[#ea580c]/50 text-xs font-bold text-[#ffedd5]">
@@ -223,15 +218,24 @@ export default function Schemes() {
                     </div>
 
                     <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                      <span className="text-slate-500 font-medium truncate max-w-[180px]">
+                      <span className="text-slate-500 font-medium truncate max-w-[130px]">
                         {scheme.sourceName || scheme.state || "All-India"}
                       </span>
-                      <Link
-                        to={`/dashboard/schemes/${scheme._id}`}
-                        className="inline-flex items-center text-xs font-black text-[#240b49] hover:text-[#ea580c] transition-colors"
-                      >
-                        {t("details", "View Details")} →
-                      </Link>
+                      <div className="flex items-center gap-2.5">
+                        <Link
+                          to={`/dashboard/coach/${scheme._id}`}
+                          className="inline-flex items-center text-[11px] font-bold text-[#591d8f] hover:text-[#240b49] transition"
+                        >
+                          <Compass className="w-3.5 h-3.5 mr-1" />
+                          <span>Coach</span>
+                        </Link>
+                        <Link
+                          to={`/dashboard/schemes/${scheme._id}`}
+                          className="inline-flex items-center text-xs font-black text-[#240b49] hover:text-[#ea580c] transition-colors"
+                        >
+                          {t("details", "Details")} →
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -239,8 +243,6 @@ export default function Schemes() {
             )}
           </>
         )}
-
-      </main>
     </div>
   );
 }

@@ -83,8 +83,8 @@ export default function NotificationReview() {
     setError(null);
     try {
       const res = await getNotificationById(id);
-      const notif = res?.data?.notification;
-      setData(res?.data);
+      const notif = res?.data?.notification || res?.notification || res?.data || {};
+      setData(res?.data || res);
 
       // Populate form state
       setFormData({
@@ -288,86 +288,40 @@ export default function NotificationReview() {
 
   return (
     <div className="min-h-screen bg-[#f7f5fa] text-[#0f172a] pb-20">
-      {/* Sleek Action Toolbar inside AdminLayout, or fallback Header */}
-      {inLayout ? (
-        <div className="bg-white border-b border-[#e9e1f5] px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-xs">
-          <div className="flex items-center space-x-2 text-xs font-semibold text-[#4b5563]">
-            <Link
-              to="/admin/notifications"
-              className="inline-flex items-center hover:text-[#0f172a] transition-colors"
-            >
-              <ArrowLeft className="w-3.5 h-3.5 mr-1" />
-              Notifications
-            </Link>
-            <span className="text-slate-300">/</span>
-            <span className="text-[#2b0f4c] font-bold">Review &amp; Verify</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <a
-              href={getNotificationDownloadUrl(notification._id)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold bg-[#fbf9fe] hover:bg-[#f7f5fa] text-[#0f172a] border border-[#e9e1f5] transition-colors"
-            >
-              <Download className="w-3.5 h-3.5 mr-1 text-[#591d8f]" />
-              Original PDF
-            </a>
-            <button
-              onClick={handleReanalyze}
-              disabled={analyzing}
-              className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-50 hover:bg-purple-100 text-[#2b0f4c] border border-purple-200 transition-colors disabled:opacity-50"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 mr-1 ${analyzing ? "animate-spin" : ""}`} />
-              Re-analyze
-            </button>
-          </div>
+      {/* Sleek Action Toolbar */}
+      <div className="bg-white border-b border-[#e9e1f5] px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-xs">
+        <div className="flex items-center space-x-2 text-xs font-semibold text-[#4b5563]">
+          <Link
+            to="/admin/notifications"
+            className="inline-flex items-center hover:text-[#0f172a] transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 mr-1" />
+            Notifications
+          </Link>
+          <span className="text-slate-300">/</span>
+          <span className="text-[#2b0f4c] font-bold">Review &amp; Verify</span>
         </div>
-      ) : (
-        <header className="bg-slate-900 text-white sticky top-0 z-30 shadow-md">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <Link
-                to="/admin/notifications"
-                className="inline-flex items-center text-xs font-semibold text-slate-300 hover:text-white"
-              >
-                <ArrowLeft className="w-4 h-4 mr-1.5" />
-                Notifications
-              </Link>
-              <span className="text-slate-600">|</span>
-              <span className="text-xs font-bold text-indigo-400">Review &amp; Verify</span>
-            </div>
 
-            <div className="flex items-center gap-2">
-              <a
-                href={getNotificationDownloadUrl(notification._id)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/10 hover:bg-white/20 text-white transition"
-              >
-                <Download className="w-3.5 h-3.5 mr-1" />
-                Original PDF
-              </a>
-              <button
-                onClick={handleReanalyze}
-                disabled={analyzing}
-                className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/10 hover:bg-white/20 text-white transition disabled:opacity-50"
-              >
-                <RefreshCw className={`w-3.5 h-3.5 mr-1 ${analyzing ? "animate-spin" : ""}`} />
-                Re-analyze
-              </button>
-              <button
-                onClick={handleLogout}
-                className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold text-rose-300 hover:text-white hover:bg-rose-600/30 border border-rose-400/30 transition"
-                title="Sign Out"
-              >
-                <LogOut className="w-3.5 h-3.5 mr-1" />
-                Sign Out
-              </button>
-            </div>
-          </div>
-        </header>
-      )}
+        <div className="flex items-center gap-2">
+          <a
+            href={getNotificationDownloadUrl(notification._id)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold bg-[#fbf9fe] hover:bg-[#f7f5fa] text-[#0f172a] border border-[#e9e1f5] transition-colors"
+          >
+            <Download className="w-3.5 h-3.5 mr-1 text-[#591d8f]" />
+            Original PDF
+          </a>
+          <button
+            onClick={handleReanalyze}
+            disabled={analyzing}
+            className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-50 hover:bg-purple-100 text-[#2b0f4c] border border-purple-200 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 mr-1 ${analyzing ? "animate-spin" : ""}`} />
+            Re-analyze
+          </button>
+        </div>
+      </div>
 
       {/* Main Content Area */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 space-y-6">

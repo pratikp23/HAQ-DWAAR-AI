@@ -15,7 +15,12 @@ import {
   Briefcase,
   UserCheck,
   FolderCheck,
-  Bell
+  Bell,
+  Tractor,
+  GraduationCap,
+  Building,
+  Home,
+  Shield
 } from "lucide-react";
 import BrandLogo from "./BrandLogo";
 
@@ -138,33 +143,39 @@ export default function CitizenFooter() {
             </h4>
             <ul className="space-y-2 text-purple-200/80 text-[11px]">
               <li>
-                <Link to="/dashboard/schemes?category=KISAN" className="hover:text-white transition">
-                  🌾 Agriculture &amp; Kisan
+                <Link to="/dashboard/schemes?category=KISAN" className="hover:text-white transition flex items-center gap-1.5">
+                  <Tractor className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Agriculture &amp; Kisan</span>
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard/schemes?category=STUDENT" className="hover:text-white transition">
-                  🎓 Students &amp; Scholarships
+                <Link to="/dashboard/schemes?category=STUDENT" className="hover:text-white transition flex items-center gap-1.5">
+                  <GraduationCap className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                  <span>Students &amp; Scholarships</span>
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard/schemes?category=EMPLOYMENT" className="hover:text-white transition">
-                  💼 Employment &amp; Skill
+                <Link to="/dashboard/schemes?category=EMPLOYMENT" className="hover:text-white transition flex items-center gap-1.5">
+                  <Briefcase className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span>Employment &amp; Skill</span>
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard/schemes?category=BUSINESS" className="hover:text-white transition">
-                  🏭 MSME &amp; Enterprises
+                <Link to="/dashboard/schemes?category=BUSINESS" className="hover:text-white transition flex items-center gap-1.5">
+                  <Building className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                  <span>MSME &amp; Enterprises</span>
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard/schemes?category=HOUSING" className="hover:text-white transition">
-                  🏠 Housing &amp; Urban
+                <Link to="/dashboard/schemes?category=HOUSING" className="hover:text-white transition flex items-center gap-1.5">
+                  <Home className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+                  <span>Housing &amp; Urban</span>
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard/schemes?category=GENERAL" className="hover:text-white transition">
-                  🛡️ Social Security
+                <Link to="/dashboard/schemes?category=GENERAL" className="hover:text-white transition flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                  <span>Social Security &amp; Pension</span>
                 </Link>
               </li>
             </ul>

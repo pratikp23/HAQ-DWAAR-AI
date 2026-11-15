@@ -93,8 +93,8 @@ export function HaqAIProvider({ children }) {
     if (!user) return;
     try {
       const res = await getMittraContext();
-      if (res.data?.success) {
-        const snap = res.data.data;
+      const snap = res?.data?.profileSummary ? res.data : (res?.profileSummary ? res : res?.data);
+      if (snap) {
         setProfileSnapshot(snap.profileSummary);
         setDocumentSnapshot(snap.docSummary);
         setMatchingSnapshot(snap.topSchemes);
@@ -114,7 +114,7 @@ export function HaqAIProvider({ children }) {
     hasGreetedRef.current = true;
 
     const welcomeText =
-      "नमस्ते 🙏 HAQ DWAAR में आपका स्वागत है। मैं MITTRA हूँ। मैं सरकारी योजनाओं और जरूरी दस्तावेज़ों को समझने और तैयार करने में आपकी मदद कर सकती हूँ। आपको वेबसाइट चलाने की जरूरत नहीं है। आप बस मुझसे बोलकर बताइए कि आपको किस चीज़ की मदद चाहिए। बताइए, मैं आपकी क्या मदद कर सकती हूँ?";
+      "नमस्ते! HAQ DWAAR में आपका स्वागत है। मैं MITTRA हूँ। मैं सरकारी योजनाओं और जरूरी दस्तावेज़ों को समझने और तैयार करने में आपकी मदद कर सकती हूँ। आपको वेबसाइट चलाने की जरूरत नहीं है। आप बस मुझसे बोलकर बताइए कि आपको किस चीज़ की मदद चाहिए। बताइए, मैं आपकी क्या मदद कर सकती हूँ?";
 
     setConversationHistory([
       {
@@ -341,8 +341,8 @@ export function HaqAIProvider({ children }) {
           conversationHistory: conversationHistory.slice(-4),
         });
 
-        if (res.data?.success && res.data?.command) {
-          const command = res.data.command;
+        const command = res?.command || res?.data?.command;
+        if ((res?.success || res?.data?.success) && command) {
 
           // Add assistant message to history
           setConversationHistory((prev) => [

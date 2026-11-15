@@ -6,6 +6,7 @@ import { useLanguage } from "../../context/LanguageContext";
 import BrandLogo from "./BrandLogo";
 import Button from "../common/Button";
 import LanguageSelector from "../common/LanguageSelector";
+import UnstopProfileDropdown from "./UnstopProfileDropdown";
 
 /**
  * HAQ DWAAR AI — Modern Civic Information Portal Navbar (Sections 11 & 12)
@@ -102,7 +103,7 @@ export default function PublicNavbar() {
   const currentLang = languages.find((l) => l.code === language) || languages[0];
 
   return (
-    <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-xs border-b border-[#e9e1f5] shadow-[0_1px_3px_0_rgba(36,11,73,0.03)]">
+    <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-xs border-b border-slate-200 shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
@@ -117,8 +118,8 @@ export default function PublicNavbar() {
               onClick={(e) => handleNavClick(e, "top")}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
                 isHomePage && !location.hash
-                  ? "bg-purple-50 text-[#2b0f4c] font-black"
-                  : "text-[#4b5563] hover:text-[#0f172a] hover:bg-[#fbf9fe]"
+                  ? "bg-emerald-50 text-[#112318] font-black"
+                  : "text-[#4b5563] hover:text-[#0f172a] hover:bg-slate-100"
               }`}
             >
               {t("navHome", "Home")}
@@ -129,8 +130,8 @@ export default function PublicNavbar() {
               to="/browse-schemes"
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${
                 location.pathname === "/browse-schemes"
-                  ? "bg-purple-50 text-[#2b0f4c] font-black"
-                  : "text-[#4b5563] hover:text-[#0f172a] hover:bg-[#fbf9fe]"
+                  ? "bg-emerald-50 text-[#112318] font-black"
+                  : "text-[#4b5563] hover:text-[#0f172a] hover:bg-slate-100"
               }`}
             >
               {t("navBrowseSchemes", "Browse Schemes")}
@@ -143,8 +144,8 @@ export default function PublicNavbar() {
                 onClick={() => setBenefitsDropdownOpen(!benefitsDropdownOpen)}
                 className={`inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
                   benefitsDropdownOpen
-                    ? "bg-purple-50 text-[#2b0f4c] font-black"
-                    : "text-[#4b5563] hover:text-[#0f172a] hover:bg-[#fbf9fe]"
+                    ? "bg-emerald-50 text-[#112318] font-black"
+                    : "text-[#4b5563] hover:text-[#0f172a] hover:bg-slate-100"
                 }`}
                 aria-expanded={benefitsDropdownOpen}
               >
@@ -153,14 +154,14 @@ export default function PublicNavbar() {
               </button>
 
               {benefitsDropdownOpen && (
-                <div className="absolute left-0 mt-1.5 w-56 bg-white rounded-2xl shadow-xl border border-[#e9e1f5] py-2 z-50 animate-in fade-in zoom-in-95 duration-100 space-y-1">
-                  <div className="px-3.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-[#64748b] border-b border-[#e9e1f5]">
+                <div className="absolute left-0 mt-1.5 w-56 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 z-50 animate-in fade-in zoom-in-95 duration-100 space-y-1">
+                  <div className="px-3.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-[#64748b] border-b border-slate-100">
                     Personalized Services
                   </div>
                   <Link
                     to="/browse-schemes"
                     onClick={() => setBenefitsDropdownOpen(false)}
-                    className="flex items-center space-x-2.5 px-3.5 py-2 text-xs font-bold text-[#0f172a] hover:bg-purple-50 transition-colors"
+                    className="flex items-center space-x-2.5 px-3.5 py-2 text-xs font-bold text-[#0f172a] hover:bg-emerald-50 transition-colors"
                   >
                     <Compass className="w-4 h-4 text-[#ea580c] shrink-0" />
                     <div>
@@ -172,9 +173,9 @@ export default function PublicNavbar() {
                   <Link
                     to={isAuthenticated ? "/dashboard/life-situation" : "/register"}
                     onClick={() => setBenefitsDropdownOpen(false)}
-                    className="flex items-center space-x-2.5 px-3.5 py-2 text-xs font-bold text-[#0f172a] hover:bg-purple-50 transition-colors"
+                    className="flex items-center space-x-2.5 px-3.5 py-2 text-xs font-bold text-[#0f172a] hover:bg-emerald-50 transition-colors"
                   >
-                    <BrainCircuit className="w-4 h-4 text-[#591d8f] shrink-0" />
+                    <BrainCircuit className="w-4 h-4 text-emerald-700 shrink-0" />
                     <div>
                       <div>Life Situation</div>
                       <div className="text-[10px] font-normal text-[#64748b]">Describe your need in plain words</div>
@@ -184,7 +185,7 @@ export default function PublicNavbar() {
                   <Link
                     to={isAuthenticated ? "/dashboard/benefit-passport" : "/register"}
                     onClick={() => setBenefitsDropdownOpen(false)}
-                    className="flex items-center space-x-2.5 px-3.5 py-2 text-xs font-bold text-[#0f172a] hover:bg-purple-50 transition-colors"
+                    className="flex items-center space-x-2.5 px-3.5 py-2 text-xs font-bold text-[#0f172a] hover:bg-emerald-50 transition-colors"
                   >
                     <UserCheck className="w-4 h-4 text-emerald-600 shrink-0" />
                     <div>
@@ -195,29 +196,71 @@ export default function PublicNavbar() {
                 </div>
               )}
             </div>
-            {/* Officer Clearance Portal */}
+            {/* Dashboard Navigation Link */}
             <Link
-              to="/officer/apply"
+              to={isAuthenticated ? (["admin", "super_admin", "chief_officer", "category_admin"].includes(user?.role) ? "/admin" : "/dashboard") : "/login"}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${
-                location.pathname === "/officer/apply"
-                  ? "bg-purple-50 text-[#2b0f4c] font-black"
-                  : "text-[#4b5563] hover:text-[#0f172a] hover:bg-[#fbf9fe]"
+                location.pathname.startsWith("/dashboard") || location.pathname.startsWith("/admin")
+                  ? "bg-emerald-50 text-[#112318] font-black"
+                  : "text-[#4b5563] hover:text-[#0f172a] hover:bg-slate-100"
               }`}
             >
-              🏛️ Officer Portal
+              Dashboard
             </Link>
+
+            {/* How It Works */}
+            <button
+              type="button"
+              onClick={(e) => handleNavClick(e, "how-it-works")}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                location.hash === "#how-it-works"
+                  ? "bg-emerald-50 text-[#112318] font-black"
+                  : "text-[#4b5563] hover:text-[#0f172a] hover:bg-slate-100"
+              }`}
+            >
+              {t("navHowItWorks", "How It Works")}
+            </button>
+
+            {/* About */}
+            <button
+              type="button"
+              onClick={(e) => handleNavClick(e, "about")}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                location.hash === "#about"
+                  ? "bg-emerald-50 text-[#112318] font-black"
+                  : "text-[#4b5563] hover:text-[#0f172a] hover:bg-slate-100"
+              }`}
+            >
+              {t("navAbout", "About")}
+            </button>
+
+            {/* FAQ */}
+            <button
+              type="button"
+              onClick={(e) => handleNavClick(e, "faq")}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                location.hash === "#faq"
+                  ? "bg-emerald-50 text-[#112318] font-black"
+                  : "text-[#4b5563] hover:text-[#0f172a] hover:bg-slate-100"
+              }`}
+            >
+              FAQ
+            </button>
           </div>
 
           {/* Desktop Right Controls (Sign In & Get Started) */}
           <div className="hidden lg:flex items-center space-x-2.5">
             {isAuthenticated ? (
-              <Button
-                variant="plum"
-                size="sm"
-                to={["admin", "super_admin", "chief_officer", "category_admin"].includes(user?.role) ? "/admin" : "/dashboard"}
-              >
-                {["admin", "super_admin", "chief_officer", "category_admin"].includes(user?.role) ? "🏛️ Admin Console" : "My Dashboard"}
-              </Button>
+              <div className="flex items-center gap-2.5">
+                <Button
+                  variant="plum"
+                  size="sm"
+                  to={["admin", "super_admin", "chief_officer", "category_admin"].includes(user?.role) ? "/admin" : "/dashboard"}
+                >
+                  {["admin", "super_admin", "chief_officer", "category_admin"].includes(user?.role) ? "Admin Console" : "Dashboard"}
+                </Button>
+                <UnstopProfileDropdown align="right" />
+              </div>
             ) : (
               <>
                 <Button
@@ -247,7 +290,7 @@ export default function PublicNavbar() {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               type="button"
-              className="p-2 rounded-xl text-[#0f172a] hover:bg-purple-50 border border-[#e9e1f5] transition-colors focus-visible:ring-2 focus-visible:ring-[#591d8f] cursor-pointer"
+              className="p-2 rounded-xl text-[#0f172a] hover:bg-emerald-50 border border-slate-200 transition-colors focus-visible:ring-2 focus-visible:ring-emerald-700 cursor-pointer"
               aria-label={mobileMenuOpen ? "Close menu" : "Open navigation menu"}
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-navigation-drawer"
@@ -272,15 +315,15 @@ export default function PublicNavbar() {
             if (e.target === drawerRef.current) setMobileMenuOpen(false);
           }}
         >
-          <div className="bg-white border-b border-[#e9e1f5] shadow-2xl px-5 pt-4 pb-6 space-y-4 max-h-[calc(100vh-4rem)] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-[#e9e1f5]">
+          <div className="bg-white border-b border-slate-200 shadow-2xl px-5 pt-4 pb-6 space-y-4 max-h-[calc(100vh-4rem)] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <span className="text-xs font-extrabold uppercase tracking-wider text-[#4b5563]">
                 Navigation Menu
               </span>
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(false)}
-                className="p-1.5 rounded-lg text-[#4b5563] hover:text-[#0f172a] hover:bg-purple-50 border border-[#e9e1f5] cursor-pointer"
+                className="p-1.5 rounded-lg text-[#4b5563] hover:text-[#0f172a] hover:bg-emerald-50 border border-slate-200 cursor-pointer"
                 aria-label="Close menu"
               >
                 <X className="w-4 h-4" />
@@ -291,23 +334,44 @@ export default function PublicNavbar() {
               <button
                 type="button"
                 onClick={(e) => handleNavClick(e, "top")}
-                className="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-bold text-[#4b5563] hover:bg-[#fbf9fe] hover:text-[#0f172a] cursor-pointer"
+                className="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-bold text-[#4b5563] hover:bg-emerald-50 hover:text-[#112318] cursor-pointer"
               >
                 Home
               </button>
               <Link
                 to="/browse-schemes"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3.5 py-2.5 rounded-xl text-sm font-bold text-[#4b5563] hover:bg-[#fbf9fe] hover:text-[#0f172a]"
+                className="block px-3.5 py-2.5 rounded-xl text-sm font-bold text-[#4b5563] hover:bg-emerald-50 hover:text-[#112318]"
               >
                 Browse Schemes
               </Link>
-              <Link
-                to={isAuthenticated ? "/dashboard/benefit-passport" : "/register"}
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3.5 py-2.5 rounded-xl text-sm font-bold text-[#4b5563] hover:bg-[#fbf9fe] hover:text-[#0f172a]"
+              <button
+                type="button"
+                onClick={(e) => handleNavClick(e, "how-it-works")}
+                className="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-bold text-[#4b5563] hover:bg-emerald-50 hover:text-[#112318] cursor-pointer"
               >
-                Benefit Passport
+                How It Works
+              </button>
+              <button
+                type="button"
+                onClick={(e) => handleNavClick(e, "about")}
+                className="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-bold text-[#4b5563] hover:bg-emerald-50 hover:text-[#112318] cursor-pointer"
+              >
+                About
+              </button>
+              <button
+                type="button"
+                onClick={(e) => handleNavClick(e, "faq")}
+                className="w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-bold text-[#4b5563] hover:bg-emerald-50 hover:text-[#112318] cursor-pointer"
+              >
+                FAQ
+              </button>
+              <Link
+                to="/officer/apply"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3.5 py-2.5 rounded-xl text-sm font-bold text-[#4b5563] hover:bg-emerald-50 hover:text-[#112318]"
+              >
+                Officer Portal
               </Link>
             </div>
 
@@ -326,7 +390,7 @@ export default function PublicNavbar() {
                   to={["admin", "super_admin", "chief_officer", "category_admin"].includes(user?.role) ? "/admin" : "/dashboard"}
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {["admin", "super_admin", "chief_officer", "category_admin"].includes(user?.role) ? "🏛️ Admin Console" : "My Dashboard"}
+                  {["admin", "super_admin", "chief_officer", "category_admin"].includes(user?.role) ? "Admin Console" : "My Dashboard"}
                 </Button>
               ) : (
                 <>
