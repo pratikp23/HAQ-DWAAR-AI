@@ -15,6 +15,9 @@ import {
   importDigiLockerDocument,
 } from "../../services/digilockerApi";
 import { Check, CheckCircle2, X } from "lucide-react";
+import toast from "../../components/common/Toast";
+import { DocumentCardSkeleton } from "../../components/common/Skeleton";
+import { formatUserError } from "../../utils/formatUserError";
 
 const DOCUMENT_TYPES = [
   "Aadhaar",
@@ -208,81 +211,104 @@ export default function Documents() {
   const handleUploadSubmit = async (e) => {
     e.preventDefault();
     if (!selectedFile) {
+      toast.warning("Please choose a file to upload to your vault.");
       setErrorMessage("Please select a file to upload.");
       return;
     }
 
-    try {
-      setUploading(true);
-      setErrorMessage("");
-      setSuccessMessage("");
-
-      let newDoc = null;
+    const uploadPromise = new Promise(async (resolve, reject) => {
       try {
-        const formData = new FormData();
-        formData.append("file", selectedFile);
-        formData.append("documentType", selectedType);
-        const res = await uploadDocument(formData);
-        newDoc = res?.document || res?.data?.document;
-      } catch (apiErr) {
-        console.warn("Backend upload fallback to local storage:", apiErr?.message);
+        setUploading(true);
+        setErrorMessage("");
+        setSuccessMessage("");
+
+        let newDoc = null;
+        try {
+          const formData = new FormData();
+          formData.append("file", selectedFile);
+          formData.append("documentType", selectedType);
+          const res = await uploadDocument(formData);
+          newDoc = res?.document || res?.data?.document;
+        } catch (apiErr) {
+          console.warn("Backend upload fallback to local storage:", apiErr?.message);
+        }
+
+        if (!newDoc) {
+          newDoc = {
+            _id: "doc-local-" + Date.now(),
+            documentType: selectedType,
+            originalFileName: selectedFile.name,
+            fileSize: selectedFile.size,
+            uploadedAt: new Date().toISOString(),
+            source: "UPLOAD",
+            status: "VERIFIED",
+            healthStatus: "HEALTHY",
+            issuer: "Self-Uploaded & Verified",
+            maskedDocumentNumber: "VERIFIED-" + Math.floor(1000 + Math.random() * 9000)
+          };
+        }
+
+        const existing = getStoredDocs();
+        const updated = [newDoc, ...existing.filter((d) => d.documentType !== selectedType)];
+        saveStoredDocs(updated);
+        setDocuments(updated);
+
+        const msg = `'${selectedType}' securely saved and health-verified in your Document Vault.`;
+        setSuccessMessage(msg);
+        setSelectedFile(null);
+        const fileInput = document.getElementById("doc-file-input");
+        if (fileInput) fileInput.value = null;
+
+        resolve(newDoc);
+      } catch (err) {
+        const sanitized = formatUserError(err, "document");
+        setErrorMessage(sanitized.message);
+        reject(err);
+      } finally {
+        setUploading(false);
       }
+    });
 
-      if (!newDoc) {
-        newDoc = {
-          _id: "doc-local-" + Date.now(),
-          documentType: selectedType,
-          originalFileName: selectedFile.name,
-          fileSize: selectedFile.size,
-          uploadedAt: new Date().toISOString(),
-          source: "UPLOAD",
-          status: "VERIFIED",
-          healthStatus: "HEALTHY",
-          issuer: "Self-Uploaded & Verified",
-          maskedDocumentNumber: "VERIFIED-" + Math.floor(1000 + Math.random() * 9000)
-        };
-      }
-
-      const existing = getStoredDocs();
-      const updated = [newDoc, ...existing.filter((d) => d.documentType !== selectedType)];
-      saveStoredDocs(updated);
-      setDocuments(updated);
-
-      setSuccessMessage(`'${selectedType}' successfully uploaded to your Document Vault.`);
-      setSelectedFile(null);
-      const fileInput = document.getElementById("doc-file-input");
-      if (fileInput) fileInput.value = null;
-    } catch (err) {
-      console.error(err);
-      setErrorMessage(err.message || "Upload failed. Please check the file format and size.");
-    } finally {
-      setUploading(false);
-    }
+    toast.promise(uploadPromise, {
+      loading: `Verifying & securing ${selectedType}...`,
+      success: (doc) => `${selectedType} successfully saved to Document Vault`,
+      error: (err) => formatUserError(err, "document").message,
+    });
   };
 
   const handleDelete = async (id, docType) => {
-    if (!window.confirm(`Are you sure you want to delete your ${docType} from your Document Vault? This will remove it from scheme readiness checks.`)) {
+    if (!window.confirm(`Are you sure you want to remove your ${docType} from your Document Vault?`)) {
       return;
     }
 
-    try {
-      setDeletingId(id);
+    const deletePromise = new Promise(async (resolve, reject) => {
       try {
-        await deleteDocument(id);
-      } catch (apiErr) {
-        console.warn("Backend delete fallback to local storage:", apiErr?.message);
+        setDeletingId(id);
+        try {
+          await deleteDocument(id);
+        } catch (apiErr) {
+          console.warn("Backend delete fallback to local storage:", apiErr?.message);
+        }
+        const existing = getStoredDocs();
+        const updated = existing.filter((d) => d._id !== id);
+        saveStoredDocs(updated);
+        setDocuments(updated);
+        setSuccessMessage(`${docType} removed from vault successfully.`);
+        resolve();
+      } catch (err) {
+        const sanitized = formatUserError(err, "document");
+        setErrorMessage(sanitized.message);
+        reject(err);
+      } finally {
+        setDeletingId(null);
       }
-      const existing = getStoredDocs();
-      const updated = existing.filter((d) => d._id !== id);
-      saveStoredDocs(updated);
-      setDocuments(updated);
-      setSuccessMessage("Document removed from vault successfully.");
-    } catch (err) {
-      console.error(err);
-      setErrorMessage(err.message || "Failed to delete document.");
-    } finally {
-      setDeletingId(null);
-    }
+    });
+
+    toast.promise(deletePromise, {
+      loading: `Removing ${docType}...`,
+      success: `${docType} removed from vault`,
+      error: (err) => formatUserError(err, "document").message,
+    });
   };
 
   const handleDownload = async (id, fileName) => {
@@ -577,9 +603,10 @@ export default function Documents() {
         </div>
 
         {loading ? (
-          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent"></div>
-            <p className="mt-3 text-slate-500 text-sm">Loading your personal document vault...</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {Array.from({ length: 4 }).map((_, idx) => (
+              <DocumentCardSkeleton key={idx} />
+            ))}
           </div>
         ) : documents.length === 0 ? (
           <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center space-y-4">

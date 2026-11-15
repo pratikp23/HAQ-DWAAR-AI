@@ -4,6 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { LanguageProvider } from "./context/LanguageContext";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import ProtectedRoute from "./components/common/ProtectedRoute";
+import { ToastContainer } from "./components/common/Toast";
 
 // Layout Shells
 import PublicLayout from "./layouts/PublicLayout";
@@ -121,6 +122,8 @@ function App() {
                 <Route path="/admin/settings" element={<AdminProfile />} />
               </Route>
             </Routes>
+            {/* HeroUI Global Toast Portal */}
+            <ToastContainer />
           </BrowserRouter>
         </LanguageProvider>
       </AuthProvider>

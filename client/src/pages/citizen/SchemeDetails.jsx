@@ -34,6 +34,8 @@ import {
 } from "lucide-react";
 import PersonalizedActionPlan from "../../components/dashboard/PersonalizedActionPlan";
 import ReportSchemeModal from "../../components/schemes/ReportSchemeModal";
+import ErrorState from "../../components/common/ErrorState";
+import { Skeleton } from "../../components/common/Skeleton";
 
 export default function SchemeDetails() {
   const { id } = useParams();
@@ -197,9 +199,17 @@ export default function SchemeDetails() {
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 space-y-3 text-[#4b5563]">
-        <RefreshCw className="w-8 h-8 text-[#ea580c] animate-spin" />
-        <p className="text-xs font-black">Loading verified scheme specifications...</p>
+      <div className="bg-[#f8faf8] min-h-screen py-8 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-6">
+        <Skeleton animationType="shimmer" className="h-6 w-36 bg-[#e2ede5] rounded-md" />
+        <div className="bg-white rounded-3xl border border-[#c6decb] p-6 sm:p-8 space-y-5">
+          <div className="flex items-center justify-between">
+            <Skeleton animationType="shimmer" className="h-6 w-28 bg-[#e2ede5] rounded-full" />
+            <Skeleton animationType="shimmer" className="h-6 w-24 bg-[#e2ede5] rounded-full" />
+          </div>
+          <Skeleton animationType="shimmer" className="h-8 w-3/4 bg-[#e2ede5] rounded-lg" />
+          <Skeleton animationType="shimmer" className="h-4 w-1/2 bg-[#e2ede5] rounded-md" />
+          <Skeleton animationType="shimmer" className="h-28 w-full bg-[#eef5f0] rounded-2xl" />
+        </div>
       </div>
     );
   }
@@ -207,19 +217,12 @@ export default function SchemeDetails() {
   if (error || !scheme) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
-        <div className="bg-white p-8 rounded-3xl border border-red-200 shadow-sm space-y-4">
-          <AlertCircle className="w-10 h-10 text-red-600 mx-auto" />
-          <h2 className="text-lg font-black text-slate-900">Scheme Specifications Unavailable</h2>
-          <p className="text-xs text-slate-600 leading-relaxed">
-            {error || "The requested government scheme could not be found or has not yet been verified."}
-          </p>
-          <Link
-            to="/browse-schemes"
-            className="inline-flex items-center text-xs font-black text-[#234731] hover:text-[#112318] underline"
-          >
-            ← Back to Scheme Directory
-          </Link>
-        </div>
+        <ErrorState
+          title="Scheme Not Located"
+          message="The requested welfare scheme could not be found or may have been updated in the gazette."
+          error={error}
+          showHome={true}
+        />
       </div>
     );
   }

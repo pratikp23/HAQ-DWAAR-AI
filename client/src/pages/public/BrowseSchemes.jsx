@@ -32,6 +32,8 @@ import { STATUTORY_SCHEMES } from "../../data/statutorySchemes";
 import { useAuth } from "../../hooks/useAuth";
 import SchemeImageBanner from "../../components/common/SchemeImageBanner";
 import { SpotlightCard } from "../../components/common/ReactBits";
+import { SchemeCardSkeleton } from "../../components/common/Skeleton";
+import ErrorState from "../../components/common/ErrorState";
 
 const CATEGORIES = [
   { id: "ALL", label: "All Schemes", icon: Compass },
@@ -349,28 +351,22 @@ export default function BrowseSchemes() {
           </span>
         </div>
 
-        {/* Loading State */}
+        {/* Loading State: HeroUI SchemeCardSkeleton Grid */}
         {loading && (
-          <div className="bg-white rounded-3xl border border-slate-200/90 p-16 text-center space-y-3 shadow-xs">
-            <RefreshCw className="w-8 h-8 text-[#234731] animate-spin mx-auto" />
-            <p className="text-xs font-black text-slate-600">
-              Fetching verified government schemes...
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {Array.from({ length: 6 }).map((_, idx) => (
+              <SchemeCardSkeleton key={idx} />
+            ))}
           </div>
         )}
 
-        {/* Error State */}
+        {/* Error State: User-Centric HeroUI Card */}
         {error && !loading && (
-          <div className="bg-rose-50 border border-rose-200 text-rose-900 p-8 rounded-3xl text-center space-y-3">
-            <AlertCircle className="w-8 h-8 text-rose-600 mx-auto" />
-            <p className="font-black text-sm">{error}</p>
-            <button
-              onClick={fetchSchemes}
-              className="mt-2 px-5 py-2 rounded-xl bg-rose-700 text-white text-xs font-black hover:bg-rose-800 transition cursor-pointer"
-            >
-              Retry Search
-            </button>
-          </div>
+          <ErrorState
+            error={error}
+            onRetry={fetchSchemes}
+            className="w-full max-w-lg my-8"
+          />
         )}
 
         {/* Empty State */}

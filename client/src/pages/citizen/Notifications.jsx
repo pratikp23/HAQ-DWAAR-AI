@@ -23,6 +23,8 @@ import {
   Sparkles,
   MessageSquare,
 } from "lucide-react";
+import ErrorState from "../../components/common/ErrorState";
+import { TableSkeleton } from "../../components/common/Skeleton";
 
 export default function Notifications() {
   const { t } = useLanguage();
@@ -205,16 +207,17 @@ export default function Notifications() {
 
         {/* Loading / Error States */}
         {loading && (
-          <div className="mt-12 text-center py-12 bg-white rounded-2xl border border-slate-200">
-            <div className="w-8 h-8 border-3 border-blue-700 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-            <p className="text-xs text-slate-500 font-medium">Checking your notifications...</p>
+          <div className="mt-8 space-y-3">
+            <TableSkeleton rows={4} />
           </div>
         )}
 
-        {error && (
-          <div className="mt-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-900 text-xs">
-            {error}
-          </div>
+        {error && !loading && (
+          <ErrorState
+            error={error}
+            onRetry={fetchNotifications}
+            className="w-full max-w-lg my-8"
+          />
         )}
 
         {/* Empty State */}

@@ -5,6 +5,9 @@ import { getProfile, updateProfile } from "../../services/profileApi";
 import ProfileCompleteness from "../../components/passport/ProfileCompleteness";
 import { PillTabs } from "../../components/common/ReactBits";
 import Chip from "../../components/common/Chip";
+import toast from "../../components/common/Toast";
+import { TableSkeleton } from "../../components/common/Skeleton";
+import { formatUserError } from "../../utils/formatUserError";
 import { 
   ArrowLeft, 
   Save, 
@@ -324,10 +327,15 @@ export default function BenefitPassport() {
       }
 
       setMessage("Benefit Passport saved successfully!");
+      toast.success("Benefit Passport updated successfully", {
+        description: "Your eligibility attributes have been synchronized with scheme matching radar.",
+      });
       setSaveSuccessModalOpen(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
-      setError(err.message || "Failed to save Benefit Passport.");
+      const sanitized = formatUserError(err);
+      setError(sanitized.message);
+      toast.error(sanitized.title, { description: sanitized.message });
     } finally {
       setSaving(false);
     }
@@ -335,9 +343,12 @@ export default function BenefitPassport() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 space-y-3">
-        <RefreshCw className="w-8 h-8 text-blue-700 animate-spin" />
-        <p className="text-sm font-medium text-slate-700">Loading Benefit Passport...</p>
+      <div className="w-full px-3 sm:px-6 lg:px-8 xl:px-10 py-8 space-y-6 max-w-7xl mx-auto">
+        <div className="p-8 rounded-2xl bg-[#eef5f0] border border-[#c6decb] space-y-3">
+          <div className="h-6 w-48 bg-[#d8ebd9] rounded-lg animate-pulse" />
+          <div className="h-4 w-72 bg-[#d8ebd9] rounded-md animate-pulse" />
+        </div>
+        <TableSkeleton rows={5} />
       </div>
     );
   }

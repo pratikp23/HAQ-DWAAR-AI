@@ -25,6 +25,8 @@ import CscCenterCard from "../../components/dashboard/CscCenterCard";
 import { useHaqAI } from "../../context/HaqAIContext";
 import { SpotlightCard, NumberTicker } from "../../components/common/ReactBits";
 import ScrollStack, { ScrollStackItem } from "../../components/common/ScrollStack";
+import toast from "../../components/common/Toast";
+import { formatUserError } from "../../utils/formatUserError";
 
 import { 
   CheckCircle2, 
@@ -153,6 +155,9 @@ export default function DashboardPlaceholder() {
     try {
       await createApplication({ schemeId, notes: "Tracked from Citizen Dashboard" });
       setActionSuccess(`"${schemeName}" added to Application Tracker.`);
+      toast.success(`"${schemeName}" added to Tracker`, {
+        description: "You can track its status and ministerial review anytime.",
+      });
       // Refresh apps
       const appsRes = await getApplications();
       if (appsRes?.data?.data?.applications) {
@@ -160,7 +165,8 @@ export default function DashboardPlaceholder() {
       }
       setTimeout(() => setActionSuccess(""), 5000);
     } catch (err) {
-      console.warn("Track scheme error:", err);
+      const sanitized = formatUserError(err);
+      toast.error(sanitized.title, { description: sanitized.message });
     }
   };
 
@@ -169,33 +175,42 @@ export default function DashboardPlaceholder() {
     const sid = scheme.schemeId || scheme._id;
     if (!sid) return;
 
-    try {
-      const res = await quickApplyScheme({
-        schemeId: sid,
-        evaluation: {
-          matchScore: scheme.matchScore || 95,
-          classification: scheme.classification || "MATCHED",
-          topReasons: scheme.topReasons || [],
-        },
-      });
+    const quickPromise = new Promise(async (resolve, reject) => {
+      try {
+        const res = await quickApplyScheme({
+          schemeId: sid,
+          evaluation: {
+            matchScore: scheme.matchScore || 95,
+            classification: scheme.classification || "MATCHED",
+            topReasons: scheme.topReasons || [],
+          },
+        });
 
-      const refNum = res?.data?.data?.referenceNumber || res?.data?.referenceNumber || "HAQ/2026/APPLIED";
-      setActionSuccess(`Direct Quick Apply submitted for "${scheme.name}"! Reference Number: ${refNum}. Transmitted to Department Nodal Queue.`);
+        const refNum = res?.data?.data?.referenceNumber || res?.data?.referenceNumber || "HAQ/2026/APPLIED";
+        setActionSuccess(`Direct Quick Apply submitted for "${scheme.name}"! Reference Number: ${refNum}. Transmitted to Department Nodal Queue.`);
 
-      // Refresh applications immediately so the card switches to "Applied" and Application Tracker updates
-      const appsRes = await getApplications();
-      const updatedApps = appsRes?.data?.data?.applications || appsRes?.data?.applications || appsRes?.data || [];
-      if (Array.isArray(updatedApps)) {
-        setTrackedApps(updatedApps);
+        // Refresh applications immediately so the card switches to "Applied" and Application Tracker updates
+        const appsRes = await getApplications();
+        const updatedApps = appsRes?.data?.data?.applications || appsRes?.data?.applications || appsRes?.data || [];
+        if (Array.isArray(updatedApps)) {
+          setTrackedApps(updatedApps);
+        }
+
+        setTimeout(() => setActionSuccess(""), 7000);
+        resolve(refNum);
+      } catch (err) {
+        const sanitized = formatUserError(err, "application");
+        setError(sanitized.message);
+        setTimeout(() => setError(""), 5000);
+        reject(err);
       }
+    });
 
-      setTimeout(() => setActionSuccess(""), 7000);
-    } catch (err) {
-      console.error("Dashboard Quick Apply failed:", err);
-      const msg = err.response?.data?.message || err.message || "Failed to submit Quick Apply.";
-      setError(msg);
-      setTimeout(() => setError(""), 5000);
-    }
+    toast.promise(quickPromise, {
+      loading: `Submitting Quick Apply for ${scheme.name}...`,
+      success: (refNum) => `Direct Quick Apply submitted! Ref: ${refNum}`,
+      error: (err) => formatUserError(err, "application").message,
+    });
   };
 
   // Open HAQ AI Assistant with initial query

@@ -9,6 +9,8 @@ import {
 } from "../../services/lifeSituationApi";
 import VoiceInput from "../../components/voice/VoiceInput";
 import TrustBadge from "../../components/firewall/TrustBadge";
+import toast from "../../components/common/Toast";
+import { formatUserError } from "../../utils/formatUserError";
 import {
   Sparkles,
   Shield,
@@ -78,11 +80,14 @@ export default function LifeSituation() {
       if (res?.data?.analysis) {
         setAnalysisResult(res.data.analysis);
         setAnalysisSource(res.data.source || "gemini");
+        toast.success("Situation analyzed successfully", {
+          description: "Extracted profile signals ready for verified scheme matching.",
+        });
       }
     } catch (err) {
-      setError(
-        err.message || "Failed to analyze your statement. Please try again."
-      );
+      const sanitized = formatUserError(err);
+      setError(sanitized.message);
+      toast.error(sanitized.title, { description: sanitized.message });
     } finally {
       setAnalyzing(false);
     }
@@ -105,9 +110,14 @@ export default function LifeSituation() {
       const res = await previewMatches(analysisResult.extractedProfileSignals);
       if (res?.data?.recommendations) {
         setPreviewRecs(res.data.recommendations);
+        toast.info("Matched opportunities calculated", {
+          description: `Identified ${res.data.recommendations.length} potential welfare schemes.`,
+        });
       }
     } catch (err) {
-      setError(err.message || "Failed to preview matching benefits.");
+      const sanitized = formatUserError(err);
+      setError(sanitized.message);
+      toast.error(sanitized.title, { description: sanitized.message });
     } finally {
       setPreviewing(false);
     }
@@ -115,22 +125,35 @@ export default function LifeSituation() {
 
   const handleApplyPassport = async () => {
     if (!analysisResult?.extractedProfileSignals) return;
-    setApplyingPassport(true);
-    try {
-      const res = await applySignalsToPassport(
-        analysisResult.extractedProfileSignals
-      );
-      if (res?.success) {
-        setPassportSuccess(
-          "Benefit Passport successfully updated with confirmed signals!"
+    
+    const applyPromise = new Promise(async (resolve, reject) => {
+      setApplyingPassport(true);
+      try {
+        const res = await applySignalsToPassport(
+          analysisResult.extractedProfileSignals
         );
-        setShowConfirmModal(false);
+        if (res?.success) {
+          const successMsg = "Benefit Passport successfully updated with confirmed signals!";
+          setPassportSuccess(successMsg);
+          setShowConfirmModal(false);
+          resolve(res);
+        } else {
+          resolve(res);
+        }
+      } catch (err) {
+        const sanitized = formatUserError(err);
+        setError(sanitized.message);
+        reject(err);
+      } finally {
+        setApplyingPassport(false);
       }
-    } catch (err) {
-      setError(err.message || "Failed to update Benefit Passport.");
-    } finally {
-      setApplyingPassport(false);
-    }
+    });
+
+    toast.promise(applyPromise, {
+      loading: "Updating Benefit Passport...",
+      success: "Benefit Passport updated with verified signals",
+      error: (err) => formatUserError(err).message,
+    });
   };
 
   const signals = analysisResult?.extractedProfileSignals;

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { formatUserError } from "../utils/formatUserError";
 
 // Create base Axios instance configured for Vite proxy or direct backend URL
 const api = axios.create({
@@ -22,16 +23,19 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor: unwraps data and extracts readable errors
+// Response interceptor: unwraps data and sanitizes errors into user-centric messages
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
+    const sanitized = formatUserError(error);
     const customError = {
       success: false,
-      message: error.response?.data?.message || error.message || "Network communication error",
-      code: error.response?.data?.code || "NETWORK_ERROR",
+      title: sanitized.title,
+      message: sanitized.message,
+      actionLabel: sanitized.actionLabel,
+      actionRoute: sanitized.actionRoute,
       status: error.response?.status || 500,
-      data: error.response?.data,
+      code: error.code || "USER_ACTION_REQUIRED",
     };
     return Promise.reject(customError);
   }

@@ -30,6 +30,8 @@ import {
   Zap,
   X
 } from "lucide-react";
+import ErrorState from "../../components/common/ErrorState";
+import { Skeleton, TableSkeleton } from "../../components/common/Skeleton";
 
 export default function Readiness() {
   const { schemeId } = useParams();
@@ -133,41 +135,26 @@ export default function Readiness() {
 
   if (loading) {
     return (
-      <div className="w-full min-h-[50vh] flex flex-col items-center justify-center p-6 space-y-4">
-        <RefreshCw className="w-10 h-10 text-[#591d8f] animate-spin" />
-        <p className="text-slate-600 font-medium text-sm">
-          Evaluating document health, profile completeness, and action readiness...
-        </p>
+      <div className="w-full px-3 sm:px-6 lg:px-8 xl:px-10 py-8 space-y-6 max-w-7xl mx-auto">
+        <div className="p-8 rounded-2xl bg-[#eef5f0] border border-[#c6decb] space-y-3">
+          <Skeleton animationType="shimmer" className="h-6 w-48 bg-[#d8ebd9] rounded-lg" />
+          <Skeleton animationType="shimmer" className="h-4 w-72 bg-[#d8ebd9] rounded-md" />
+        </div>
+        <TableSkeleton rows={4} />
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-16 text-center space-y-6">
-        <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto">
-          <AlertCircle className="w-8 h-8" />
-        </div>
-        <h2 className="text-2xl font-bold text-slate-900">Readiness Evaluation Unavailable</h2>
-        <p className="text-slate-600 text-sm leading-relaxed">
-          {error || "The requested scheme could not be evaluated or is currently under review."}
-        </p>
-        <div className="flex justify-center gap-3">
-          <Link
-            to="/dashboard/schemes"
-            className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-white hover:bg-slate-800 transition"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Schemes
-          </Link>
-          <button
-            onClick={fetchReadiness}
-            className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-semibold bg-[#112318] text-white hover:bg-[#234731] transition"
-          >
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Try Again
-          </button>
-        </div>
+      <div className="max-w-xl mx-auto px-4 py-16 text-center">
+        <ErrorState
+          title="Readiness Evaluation Unavailable"
+          message="The scheme eligibility rules or document requirements could not be retrieved right now."
+          error={error}
+          onRetry={fetchReadiness}
+          showHome={true}
+        />
       </div>
     );
   }

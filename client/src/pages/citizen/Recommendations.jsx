@@ -4,6 +4,8 @@ import { getRecommendations } from "../../services/matchingApi";
 import { useLanguage } from "../../context/LanguageContext";
 import Chip from "../../components/common/Chip";
 import { SpotlightCard } from "../../components/common/ReactBits";
+import { SchemeCardSkeleton } from "../../components/common/Skeleton";
+import ErrorState from "../../components/common/ErrorState";
 import {
   Sparkles,
   CheckCircle,
@@ -138,29 +140,22 @@ export default function Recommendations() {
           </button>
         </div>
 
-        {/* Loading State */}
+        {/* Loading State: HeroUI SchemeCardSkeletons */}
         {loading && (
-          <div className="py-20 flex flex-col items-center justify-center space-y-3 bg-white rounded-xl border border-slate-200">
-            <RefreshCw className="w-8 h-8 text-blue-700 animate-spin" />
-            <p className="text-sm font-medium text-slate-600">
-              Evaluating your Benefit Passport against verified scheme criteria...
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {Array.from({ length: 6 }).map((_, idx) => (
+              <SchemeCardSkeleton key={idx} />
+            ))}
           </div>
         )}
 
-        {/* Error State */}
+        {/* Error State: User-Centric HeroUI Card */}
         {!loading && error && (
-          <div className="p-6 bg-red-50 border border-red-200 rounded-xl text-center space-y-3">
-            <AlertTriangle className="w-8 h-8 text-red-600 mx-auto" />
-            <h3 className="font-bold text-red-900 text-sm">Failed to evaluate recommendations</h3>
-            <p className="text-xs text-red-700">{error}</p>
-            <button
-              onClick={fetchRecs}
-              className="px-4 py-1.5 rounded-lg bg-red-600 text-white text-xs font-semibold hover:bg-red-700"
-            >
-              Try Again
-            </button>
-          </div>
+          <ErrorState
+            error={error}
+            onRetry={fetchRecs}
+            className="w-full max-w-lg my-8"
+          />
         )}
 
         {/* Empty State */}

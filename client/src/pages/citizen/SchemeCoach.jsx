@@ -34,6 +34,10 @@ import {
   Compass,
   MapPin
 } from "lucide-react";
+import toast from "../../components/common/Toast";
+import ErrorState from "../../components/common/ErrorState";
+import { Skeleton, TableSkeleton } from "../../components/common/Skeleton";
+import { formatUserError } from "../../utils/formatUserError";
 
 export default function SchemeCoach() {
   const { schemeId } = useParams();
@@ -122,9 +126,13 @@ export default function SchemeCoach() {
       });
       if (res?.success || res?.data?.success || res?.data) {
         setRefSavedSuccess(true);
+        toast.success("Acknowledgement saved", {
+          description: "Your official reference number is securely mapped in your tracker.",
+        });
       }
     } catch (err) {
-      alert(err?.response?.data?.message || err?.message || "Failed to save reference number.");
+      const sanitized = formatUserError(err);
+      toast.error(sanitized.title, { description: sanitized.message });
     } finally {
       setSavingRef(false);
     }
@@ -140,31 +148,25 @@ export default function SchemeCoach() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-4">
-        <RefreshCw className="w-10 h-10 text-emerald-700 animate-spin mx-auto" />
-        <h2 className="text-base font-bold text-slate-800">
-          SchemeCoach गाइड तैयार हो रही है...
-        </h2>
-        <p className="text-xs text-slate-500">
-          आपके Benefit Passport और सरकारी नियमों का विश्लेषण किया जा रहा है।
-        </p>
+      <div className="max-w-4xl mx-auto px-4 py-12 space-y-6">
+        <div className="p-8 rounded-2xl bg-[#eef5f0] border border-[#c6decb] space-y-3">
+          <Skeleton animationType="shimmer" className="h-6 w-56 bg-[#d8ebd9] rounded-lg" />
+          <Skeleton animationType="shimmer" className="h-4 w-80 bg-[#d8ebd9] rounded-md" />
+        </div>
+        <TableSkeleton rows={3} />
       </div>
     );
   }
 
   if (error || !roadmap) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-16 text-center space-y-4">
-        <AlertCircle className="w-12 h-12 text-rose-600 mx-auto" />
-        <h2 className="text-lg font-bold text-slate-900">गाइड लोड नहीं हो सकी</h2>
-        <p className="text-xs text-slate-600">{error || "Scheme data could not be retrieved."}</p>
-        <Link
-          to="/dashboard/recommendations"
-          className="inline-flex items-center px-4 py-2 bg-[#112318] hover:bg-[#234731] text-white rounded-xl text-xs font-bold transition"
-        >
-          <ArrowLeft className="w-4 h-4 mr-1.5" />
-          वापस सिफारिशों पर जाएँ
-        </Link>
+      <div className="max-w-xl mx-auto px-4 py-16 text-center">
+        <ErrorState
+          title="Scheme Coach Unavailable"
+          message="We could not generate the step-by-step guidance for this scheme right now."
+          error={error}
+          showHome={true}
+        />
       </div>
     );
   }

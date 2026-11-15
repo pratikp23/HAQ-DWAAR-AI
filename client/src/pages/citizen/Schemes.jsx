@@ -3,7 +3,8 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useLanguage } from "../../context/LanguageContext";
 import { getSchemes } from "../../services/schemeApi";
 import SchemeImageBanner from "../../components/common/SchemeImageBanner";
-import Chip from "../../components/common/Chip";
+import { SchemeCardSkeleton } from "../../components/common/Skeleton";
+import ErrorState from "../../components/common/ErrorState";
 import { 
   ArrowLeft, 
   Search, 
@@ -65,9 +66,9 @@ export default function Schemes() {
       }
 
       const res = await getSchemes(params);
-      setSchemes(res?.data?.schemes || []);
+      setSchemes(res?.data?.schemes || res?.schemes || (Array.isArray(res) ? res : []));
     } catch (err) {
-      setError(err.message || "Failed to load government schemes catalog.");
+      setError(err);
     } finally {
       setLoading(false);
     }
@@ -82,167 +83,156 @@ export default function Schemes() {
     fetchCatalogSchemes();
   };
 
-  const getCategoryBadge = (cat) => {
-    switch (cat) {
-      case "STUDENT":
-        return "bg-blue-50 text-blue-700 border-blue-200";
-      case "KISAN":
-        return "bg-emerald-50 text-emerald-700 border-emerald-200";
-      case "EMPLOYMENT":
-        return "bg-amber-50 text-amber-700 border-amber-200";
-      case "BUSINESS":
-        return "bg-purple-50 text-purple-700 border-purple-200";
-      default:
-        return "bg-slate-100 text-slate-700 border-slate-200";
-    }
-  };
-
   return (
     <div className="w-full px-3 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6 sm:space-y-8 max-w-7xl mx-auto">
       {/* GovTech Hero Banner */}
-        <div className="bg-gradient-to-r from-[#1e0a3c] via-[#240b49] to-[#2a0e4f] rounded-2xl p-6 sm:p-8 text-white shadow-lg border border-[#591d8f]/30">
-          <div className="space-y-3 max-w-3xl">
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-[#ea580c]/20 border border-[#ea580c]/50 text-xs font-bold text-[#ffedd5]">
-              <Sparkles className="w-3.5 h-3.5 text-[#fb923c]" />
-              <span>Official Government Welfare Catalog</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              {t("navBrowseSchemes", "Explore Government Schemes")}
-            </h1>
-            <p className="text-[#e2e8f0] text-sm font-medium leading-relaxed">
-              Discover verified state and central schemes with clear eligibility rules and official application portals.
-            </p>
+      <div className="bg-gradient-to-r from-[#112318] via-[#1a3824] to-[#0d1d14] rounded-2xl p-6 sm:p-8 text-white shadow-lg border border-[#234731]">
+        <div className="space-y-3 max-w-3xl">
+          <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-[#ea580c]/20 border border-[#ea580c]/50 text-xs font-bold text-[#ffedd5]">
+            <Sparkles className="w-3.5 h-3.5 text-[#fb923c]" />
+            <span>Official Government Welfare Catalog</span>
           </div>
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            {t("navBrowseSchemes", "Explore Government Schemes")}
+          </h1>
+          <p className="text-[#c8ded0] text-sm font-medium leading-relaxed">
+            Discover verified state and central schemes with clear eligibility rules and official application portals.
+          </p>
         </div>
+      </div>
 
-        {/* Filter & Search Bar */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-          <form onSubmit={handleSearchSubmit} className="flex gap-2.5">
-            <div className="relative flex-1">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search schemes by name, keyword, or benefits..."
-                className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#240b49]"
-              />
+      {/* Filter & Search Bar */}
+      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <form onSubmit={handleSearchSubmit} className="flex gap-2.5">
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search schemes by name, keyword, or benefits..."
+              className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#112318]"
+            />
+          </div>
+          <button
+            type="submit"
+            className="px-5 py-2.5 bg-[#ea580c] hover:bg-[#c2410c] text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
+          >
+            Search
+          </button>
+        </form>
+
+        {/* Category Tabs */}
+        <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
+          {CATEGORIES.map((cat) => {
+            const Icon = cat.icon;
+            const isActive = activeCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => {
+                  setActiveCategory(cat.id);
+                  setSearchParams(cat.id === "ALL" ? {} : { category: cat.id });
+                }}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                  isActive
+                    ? "bg-[#112318] text-white shadow-xs"
+                    : "bg-[#eef5f0] text-[#24422e] hover:bg-[#dfeee3]"
+                }`}
+              >
+                {Icon && <Icon className="w-3.5 h-3.5" />}
+                <span>{cat.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Loading State: HeroUI SchemeCardSkeletons */}
+      {loading && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {Array.from({ length: 6 }).map((_, idx) => (
+            <SchemeCardSkeleton key={idx} />
+          ))}
+        </div>
+      )}
+
+      {/* User-Centric Error State */}
+      {error && !loading && (
+        <ErrorState
+          error={error}
+          onRetry={fetchCatalogSchemes}
+          className="w-full max-w-lg my-6"
+        />
+      )}
+
+      {/* Schemes Grid */}
+      {!loading && !error && (
+        <>
+          {schemes.length === 0 ? (
+            <div className="p-12 text-center bg-white rounded-2xl border border-slate-200 shadow-sm space-y-2">
+              <FileText className="w-8 h-8 text-slate-400 mx-auto" />
+              <h3 className="font-bold text-slate-800 text-base">No schemes found</h3>
+              <p className="text-xs text-slate-500">
+                Try adjusting your search terms or select another category filter.
+              </p>
             </div>
-            <button
-              type="submit"
-              className="px-5 py-2.5 bg-[#ea580c] hover:bg-[#c2410c] text-white text-xs font-bold rounded-xl shadow-md transition-all cursor-pointer"
-            >
-              Search
-            </button>
-          </form>
-
-          {/* Category Tabs */}
-          <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
-            {CATEGORIES.map((cat) => {
-              const Icon = cat.icon;
-              const isActive = activeCategory === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  onClick={() => {
-                    setActiveCategory(cat.id);
-                    setSearchParams(cat.id === "ALL" ? {} : { category: cat.id });
-                  }}
-                  className={`inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold border transition-all shadow-sm ${
-                    isActive
-                      ? "bg-[#240b49] text-white border-[#240b49] shadow-md ring-2 ring-[#591d8f]/30 font-black"
-                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                  }`}
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {schemes.map((scheme) => (
+                <div
+                  key={scheme._id}
+                  className="bg-white rounded-3xl border border-slate-200/90 p-4 sm:p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-3.5 group"
                 >
-                  {Icon && <Icon className="w-3.5 h-3.5 mr-1.5" />}
-                  {cat.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+                  <div className="space-y-3">
+                    {/* Photographic Scheme Banner */}
+                    <Link to={`/dashboard/schemes/${scheme._id}`} className="block">
+                      <SchemeImageBanner scheme={scheme} heightClass="h-36 sm:h-40" />
+                    </Link>
 
-        {/* Loading & Error States */}
-        {loading && (
-          <div className="p-12 text-center text-slate-500 space-y-3 bg-white rounded-xl border border-slate-200 shadow-sm">
-            <RefreshCw className="w-6 h-6 animate-spin mx-auto text-blue-600" />
-            <p className="text-sm font-medium">Loading verified government opportunities...</p>
-          </div>
-        )}
-
-        {error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-900 text-xs sm:text-sm flex items-center space-x-2.5 shadow-sm">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {/* Schemes Grid */}
-        {!loading && !error && (
-          <>
-            {schemes.length === 0 ? (
-              <div className="p-12 text-center bg-white rounded-xl border border-slate-200 shadow-sm space-y-2">
-                <FileText className="w-8 h-8 text-slate-400 mx-auto" />
-                <h3 className="font-bold text-slate-800 text-base">No schemes found</h3>
-                <p className="text-xs text-slate-500">
-                  Try adjusting your search terms or select another category filter.
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {schemes.map((scheme) => (
-                  <div
-                    key={scheme._id}
-                    className="bg-white rounded-3xl border border-slate-200/90 p-4 sm:p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-3.5 group"
-                  >
-                    <div className="space-y-3">
-                      {/* Photographic Scheme Banner */}
-                      <Link to={`/dashboard/schemes/${scheme._id}`} className="block">
-                        <SchemeImageBanner scheme={scheme} heightClass="h-36 sm:h-40" />
+                    <h2 className="text-base font-black text-slate-900 leading-snug line-clamp-2 group-hover:text-[#112318] transition-colors">
+                      <Link to={`/dashboard/schemes/${scheme._id}`}>
+                        {scheme.name}
                       </Link>
+                    </h2>
 
-                      <h2 className="text-base font-black text-slate-900 leading-snug line-clamp-2 group-hover:text-[#591d8f] transition-colors">
-                        <Link to={`/dashboard/schemes/${scheme._id}`}>
-                          {scheme.name}
-                        </Link>
-                      </h2>
+                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                      {scheme.shortDescription}
+                    </p>
 
-                      <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                        {scheme.shortDescription}
-                      </p>
-
-                      <div className="p-3 bg-blue-50/60 rounded-2xl border border-blue-100 text-xs space-y-1">
-                        <span className="font-bold text-blue-900 block text-[10px] uppercase tracking-wider">Key Benefit:</span>
-                        <p className="text-blue-800 font-semibold leading-relaxed line-clamp-2">{scheme.benefitSummary}</p>
-                      </div>
-                    </div>
-
-                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                      <span className="text-slate-500 font-medium truncate max-w-[130px]">
-                        {scheme.sourceName || scheme.state || "All-India"}
-                      </span>
-                      <div className="flex items-center gap-2.5">
-                        <Link
-                          to={`/dashboard/coach/${scheme._id}`}
-                          className="inline-flex items-center text-[11px] font-bold text-[#591d8f] hover:text-[#240b49] transition"
-                        >
-                          <Compass className="w-3.5 h-3.5 mr-1" />
-                          <span>Coach</span>
-                        </Link>
-                        <Link
-                          to={`/dashboard/schemes/${scheme._id}`}
-                          className="inline-flex items-center text-xs font-black text-[#240b49] hover:text-[#ea580c] transition-colors"
-                        >
-                          {t("details", "Details")} →
-                        </Link>
-                      </div>
+                    <div className="p-3 bg-[#eef5f0] rounded-2xl border border-[#c6decb] text-xs space-y-1">
+                      <span className="font-bold text-[#112318] block text-[10px] uppercase tracking-wider">Key Benefit:</span>
+                      <p className="text-[#2b4c34] font-semibold leading-relaxed line-clamp-2">{scheme.benefitSummary}</p>
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </>
-        )}
+
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span className="text-slate-500 font-medium truncate max-w-[130px]">
+                      {scheme.sourceName || scheme.state || "All-India"}
+                    </span>
+                    <div className="flex items-center gap-2.5">
+                      <Link
+                        to={`/dashboard/coach/${scheme._id}`}
+                        className="inline-flex items-center text-[11px] font-bold text-[#234731] hover:text-[#112318] transition"
+                      >
+                        <Compass className="w-3.5 h-3.5 mr-1" />
+                        <span>Coach</span>
+                      </Link>
+                      <Link
+                        to={`/dashboard/schemes/${scheme._id}`}
+                        className="inline-flex items-center text-xs font-black text-[#112318] hover:text-[#ea580c] transition-colors"
+                      >
+                        {t("details", "Details")} →
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
