@@ -88,6 +88,7 @@ function App() {
               >
                 <Route path="/dashboard" element={<DashboardPlaceholder />} />
                 <Route path="/dashboard/benefit-passport" element={<BenefitPassport />} />
+                <Route path="/dashboard/passport" element={<Navigate to="/dashboard/benefit-passport" replace />} />
                 <Route path="/dashboard/life-situation" element={<LifeSituation />} />
                 <Route path="/dashboard/recommendations" element={<Recommendations />} />
                 <Route path="/dashboard/documents" element={<Documents />} />
@@ -99,6 +100,7 @@ function App() {
                 <Route path="/dashboard/coach/:schemeId" element={<SchemeCoach />} />
                 <Route path="/dashboard/notifications" element={<Notifications />} />
                 <Route path="/dashboard/profile" element={<CitizenProfile />} />
+                <Route path="/dashboard/support" element={<Navigate to="/faq" replace />} />
               </Route>
 
               {/* ======================================================== */}

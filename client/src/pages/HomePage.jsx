@@ -736,7 +736,7 @@ export default function HomePage() {
       {/* ======================================================== */}
       {/* 4. DIRECT CASH TRANSFERS (DBT) (Unstop "Competitions")   */}
       {/* ======================================================== */}
-      <section className="space-y-4">
+      <section id="features" className="space-y-4">
         <div className="flex items-center justify-between pb-1">
           <div className="flex items-center gap-2">
             <div className="w-1.5 h-6 bg-[#234731] rounded-full" />
@@ -970,7 +970,7 @@ export default function HomePage() {
       {/* ======================================================== */}
       {/* 7. UNSTOP-STYLE PROMO BANNERS                            */}
       {/* ======================================================== */}
-      <section className="space-y-4">
+      <section id="how-it-works" className="space-y-4">
         {/* Wide Gradient Banner (Forest Green / Spruce Civic Theme) */}
         <div className="bg-gradient-to-r from-[#14261b] via-[#1d3a28] to-[#2b543b] rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-[#396d4e]/40">
           <div className="max-w-2xl space-y-3 relative z-10">
@@ -1058,7 +1058,7 @@ export default function HomePage() {
       {/* ======================================================== */}
       {/* 8. GIANT CIVIC STATS (Unstop "32 Million+ Profiles")      */}
       {/* ======================================================== */}
-      <section className="text-center py-8 space-y-6 bg-white rounded-3xl border border-slate-200/90 shadow-2xs p-6 sm:p-10">
+      <section id="about" className="text-center py-8 space-y-6 bg-white rounded-3xl border border-slate-200/90 shadow-2xs p-6 sm:p-10">
         <div className="space-y-2">
           <span className="text-xs font-black uppercase tracking-wider text-slate-400">
             Citizen Reach &amp; Inclusion

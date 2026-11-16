@@ -74,7 +74,7 @@ export default function UnstopPublicSidebar({ isOpenMobile, onCloseMobile }) {
       hasFlyout: true,
       subItems: [
         { label: "Scheme Discovery (350+)", icon: Search, to: "/browse-schemes" },
-        { label: "Benefit Passport Test", icon: Sparkles, to: "/dashboard/passport" },
+        { label: "Benefit Passport Test", icon: Sparkles, to: "/dashboard/benefit-passport" },
         { label: "Voice MITTRA (22 Langs)", icon: Mic, to: "/browse-schemes" },
         { label: "DigiLocker Document Vault", icon: Shield, to: "/dashboard/documents" },
         { label: "For Govt Officers Desk", icon: Building2, to: "/officer/apply" },
@@ -206,7 +206,7 @@ export default function UnstopPublicSidebar({ isOpenMobile, onCloseMobile }) {
         { label: "Door 3: Pre-Filled PDF Form", icon: FileText, to: "/browse-schemes" },
         { label: "Live Multi-Agency Tracker", icon: Clock, to: "/dashboard/applications" },
         { label: "DigiLocker Document Vault", icon: Shield, to: "/dashboard/documents" },
-        { label: "Citizen Helpdesk & Redressal", icon: CheckCircle2, to: "/dashboard/support" },
+        { label: "Citizen Helpdesk & Redressal", icon: CheckCircle2, to: "/faq" },
       ],
     },
   ];
@@ -508,7 +508,7 @@ export default function UnstopPublicSidebar({ isOpenMobile, onCloseMobile }) {
           <div className="p-3 border-t border-slate-100 space-y-2 bg-slate-50/50 rounded-br-3xl sm:rounded-br-[32px]">
             {/* Card 1: Benefit Passport (Matches Unstop "Post a Job" Card) */}
             <Link
-              to={isAuthenticated ? "/dashboard/passport" : "/register"}
+              to={isAuthenticated ? "/dashboard/benefit-passport" : "/register"}
               onClick={onCloseMobile}
               className="block p-3 rounded-2xl bg-white border border-slate-200/90 hover:border-emerald-300 shadow-2xs hover:shadow-xs transition group"
             >
