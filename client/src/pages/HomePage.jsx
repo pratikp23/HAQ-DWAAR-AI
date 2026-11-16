@@ -71,8 +71,12 @@ export default function HomePage() {
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
   const [roleTrackFilter, setRoleTrackFilter] = useState("FARMER");
   const [activeBannerSlide, setActiveBannerSlide] = useState(0);
-  const [featuredSlide, setFeaturedSlide] = useState(0);
+  const [cardIndex, setCardIndex] = useState(0);
+  const [isCardTransitioning, setIsCardTransitioning] = useState(true);
   const [isCarouselHovered, setIsCarouselHovered] = useState(false);
+  const [cardStep, setCardStep] = useState(285);
+  const cardRef = React.useRef(null);
+  const pauseTimerRef = React.useRef(null);
 
   // Banner Slides: Indian National Flag Tiranga + User Civic Illustrations
   const bannerSlides = [
@@ -126,11 +130,11 @@ export default function HomePage() {
     },
   ];
 
-  // 2-second rotation slideshow
+  // 3-second rotation slideshow
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveBannerSlide((prev) => (prev + 1) % bannerSlides.length);
-    }, 2000);
+    }, 3000);
     return () => clearInterval(timer);
   }, [bannerSlides.length]);
 
@@ -156,31 +160,97 @@ export default function HomePage() {
     fetchTopSchemes();
   }, []);
 
-  // Group real schemes into batches of 4 cards (Zero Demo Data)
-  const schemeBatches = React.useMemo(() => {
+  // 1-card by 1-card slow smooth sliding featured schemes (Unstop style)
+  const baseSchemes = React.useMemo(() => {
     const list = schemes && schemes.length > 0 ? schemes : STATUTORY_SCHEMES;
-    const batches = [];
-    for (let i = 0; i < list.length; i += 4) {
-      batches.push(list.slice(i, i + 4));
-    }
-    return batches.length > 0 ? batches : [[]];
+    return list.slice(0, 12);
   }, [schemes]);
 
-  // Auto-advance carousel every 2 seconds (pauses on hover)
-  useEffect(() => {
-    if (isCarouselHovered || schemeBatches.length <= 1) return;
-    const timer = setInterval(() => {
-      setFeaturedSlide((prev) => (prev + 1) % schemeBatches.length);
-    }, 2000);
-    return () => clearInterval(timer);
-  }, [isCarouselHovered, schemeBatches.length]);
+  // Infinite seamless looping array
+  const infiniteSchemes = React.useMemo(() => {
+    if (baseSchemes.length === 0) return [];
+    return [...baseSchemes, ...baseSchemes, ...baseSchemes];
+  }, [baseSchemes]);
 
-  const prevFeaturedBatch = () => {
-    setFeaturedSlide((prev) => (prev - 1 + schemeBatches.length) % schemeBatches.length);
+  // Dynamically calculate 1-card step width (card width + 20px gap) on mount and resize
+  useEffect(() => {
+    const updateStep = () => {
+      if (cardRef.current) {
+        setCardStep(cardRef.current.offsetWidth + 20);
+      }
+    };
+    updateStep();
+    window.addEventListener("resize", updateStep);
+    return () => window.removeEventListener("resize", updateStep);
+  }, [infiniteSchemes.length]);
+
+  // Helper to trigger the 0.72s pause after each card stops, then slowly glide to next card
+  const triggerNextAfterStop = React.useCallback(() => {
+    if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+    if (isCarouselHovered || baseSchemes.length <= 1) return;
+
+    pauseTimerRef.current = setTimeout(() => {
+      setIsCardTransitioning(true);
+      setCardIndex((prev) => prev + 1);
+    }, 720); // 0.72 second stop after each card arrives
+  }, [isCarouselHovered, baseSchemes.length]);
+
+  // Auto-scroll trigger on mount and when mouse unhovers
+  useEffect(() => {
+    if (isCarouselHovered || baseSchemes.length <= 1) {
+      if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+      return;
+    }
+
+    triggerNextAfterStop();
+
+    return () => {
+      if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+    };
+  }, [isCarouselHovered, baseSchemes.length, triggerNextAfterStop]);
+
+  // When 1 card finishes its slow smooth glide:
+  const handleCardTransitionEnd = () => {
+    if (cardIndex >= baseSchemes.length) {
+      // Seamlessly wrap back to index 0 without visual jump
+      setIsCardTransitioning(false);
+      setCardIndex(0);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsCardTransitioning(true);
+          triggerNextAfterStop();
+        });
+      });
+      return;
+    }
+
+    // Card has come to a complete stop at its position: stop for 0.72s before moving to next card
+    triggerNextAfterStop();
   };
 
-  const nextFeaturedBatch = () => {
-    setFeaturedSlide((prev) => (prev + 1) % schemeBatches.length);
+  const prevCard = () => {
+    if (baseSchemes.length <= 1) return;
+    if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+    if (cardIndex <= 0) {
+      setIsCardTransitioning(false);
+      setCardIndex(baseSchemes.length);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsCardTransitioning(true);
+          setCardIndex(baseSchemes.length - 1);
+        });
+      });
+    } else {
+      setIsCardTransitioning(true);
+      setCardIndex((prev) => prev - 1);
+    }
+  };
+
+  const nextCard = () => {
+    if (baseSchemes.length <= 1) return;
+    if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+    setIsCardTransitioning(true);
+    setCardIndex((prev) => prev + 1);
   };
 
   // Smooth scroll for hash links (e.g. /#faq)
@@ -488,7 +558,7 @@ export default function HomePage() {
       </section>
 
       {/* ======================================================== */}
-      {/* 2. AUTO-MOVING FEATURED CAROUSEL (4 CARDS EVERY 2S)      */}
+      {/* 2. UNSTOP-STYLE FEATURED CAROUSEL (SLOW 1-CARD GLIDE, 0.72S PAUSE) */}
       {/* ======================================================== */}
       <section className="space-y-4">
         {/* Section Header: "| Featured" Title & Carousel Controls */}
@@ -517,36 +587,36 @@ export default function HomePage() {
             {/* Circular Carousel Controls */}
             <button
               type="button"
-              onClick={prevFeaturedBatch}
+              onClick={prevCard}
               className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-slate-200/90 shadow-2xs hover:shadow-md flex items-center justify-center text-slate-700 hover:text-slate-900 hover:scale-105 active:scale-95 transition cursor-pointer"
-              aria-label="Previous schemes"
+              aria-label="Previous scheme"
             >
               <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button
               type="button"
-              onClick={nextFeaturedBatch}
+              onClick={nextCard}
               className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-slate-200/90 shadow-2xs hover:shadow-md flex items-center justify-center text-slate-700 hover:text-slate-900 hover:scale-105 active:scale-95 transition cursor-pointer"
-              aria-label="Next schemes"
+              aria-label="Next scheme"
             >
               <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
 
-        {/* 4 Cards Carousel (Auto-advances every 2s, Pure Images inside HeroUI Card) */}
+        {/* 1-Card Slow Smooth Glide Carousel with 0.72s pause */}
         <div
           onMouseEnter={() => setIsCarouselHovered(true)}
           onMouseLeave={() => setIsCarouselHovered(false)}
-          className="relative group/carousel"
+          className="relative group/carousel overflow-hidden w-full rounded-2xl sm:rounded-3xl"
         >
           {/* Floating Left Arrow */}
-          {schemeBatches.length > 1 && (
+          {baseSchemes.length > 1 && (
             <button
               type="button"
-              onClick={prevFeaturedBatch}
-              className="hidden md:flex absolute -left-3.5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm border border-slate-200 shadow-lg hover:shadow-xl items-center justify-center text-slate-700 hover:text-slate-900 hover:scale-110 active:scale-95 transition-all cursor-pointer opacity-0 group-hover/carousel:opacity-100"
-              aria-label="Previous batch"
+              onClick={prevCard}
+              className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm border border-slate-200 shadow-lg hover:shadow-xl items-center justify-center text-slate-700 hover:text-slate-900 hover:scale-110 active:scale-95 transition-all cursor-pointer opacity-0 group-hover/carousel:opacity-100"
+              aria-label="Previous card"
             >
               <ChevronLeft className="w-5 h-5 text-slate-800" />
             </button>
@@ -559,19 +629,29 @@ export default function HomePage() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 transition-all duration-500 animate-in fade-in">
-              {schemeBatches[featuredSlide]?.map((scheme) => {
+            <div
+              className="flex gap-5 will-change-transform"
+              style={{
+                transform: `translateX(-${cardIndex * cardStep}px)`,
+                transition: isCardTransitioning
+                  ? "transform 1100ms cubic-bezier(0.25, 1, 0.5, 1)"
+                  : "none",
+              }}
+              onTransitionEnd={handleCardTransitionEnd}
+            >
+              {infiniteSchemes.map((scheme, idx) => {
                 const visual = getSchemeVisualMeta(scheme);
                 return (
                   <Card
-                    key={scheme._id || scheme.id}
+                    key={`${scheme._id || scheme.id}-${idx}`}
+                    ref={idx === 0 ? cardRef : null}
                     radius="2xl"
                     padding="none"
                     isHoverable
                     isPressable
-                    className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-200/90 hover:border-[#234731] shadow-2xs hover:shadow-xl transition-all duration-300 bg-slate-100 aspect-[3/4] w-full cursor-pointer"
+                    className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-200/90 hover:border-[#234731] shadow-2xs hover:shadow-xl transition-all duration-300 bg-slate-100 aspect-[3/4] shrink-0 w-[calc(50%-10px)] sm:w-[calc(33.333%-14px)] lg:w-[calc(25%-15px)] cursor-pointer select-none"
                   >
-                    {/* Pure Image Only — Zero text/clutter inside the div */}
+                    {/* Pure Scheme Image Only — Zero text or clutter inside the card div */}
                     <Link
                       to={`/schemes/${scheme._id}`}
                       className="block w-full h-full relative overflow-hidden"
@@ -591,31 +671,35 @@ export default function HomePage() {
           )}
 
           {/* Floating Right Arrow */}
-          {schemeBatches.length > 1 && (
+          {baseSchemes.length > 1 && (
             <button
               type="button"
-              onClick={nextFeaturedBatch}
-              className="hidden md:flex absolute -right-3.5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm border border-slate-200 shadow-lg hover:shadow-xl items-center justify-center text-slate-700 hover:text-slate-900 hover:scale-110 active:scale-95 transition-all cursor-pointer opacity-0 group-hover/carousel:opacity-100"
-              aria-label="Next batch"
+              onClick={nextCard}
+              className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm border border-slate-200 shadow-lg hover:shadow-xl items-center justify-center text-slate-700 hover:text-slate-900 hover:scale-110 active:scale-95 transition-all cursor-pointer opacity-0 group-hover/carousel:opacity-100"
+              aria-label="Next card"
             >
               <ChevronRight className="w-5 h-5 text-slate-800" />
             </button>
           )}
 
           {/* Slide Indicator Dots */}
-          {schemeBatches.length > 1 && (
+          {baseSchemes.length > 1 && (
             <div className="flex items-center justify-center gap-1.5 pt-3">
-              {schemeBatches.map((_, idx) => (
+              {baseSchemes.map((_, idx) => (
                 <button
                   key={idx}
                   type="button"
-                  onClick={() => setFeaturedSlide(idx)}
+                  onClick={() => {
+                    if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+                    setIsCardTransitioning(true);
+                    setCardIndex(idx);
+                  }}
                   className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                    featuredSlide === idx
+                    (cardIndex % baseSchemes.length) === idx
                       ? "w-6 bg-[#234731]"
                       : "w-2 bg-slate-300 hover:bg-slate-400"
                   }`}
-                  aria-label={`Go to batch ${idx + 1}`}
+                  aria-label={`Go to scheme ${idx + 1}`}
                 />
               ))}
             </div>
@@ -624,9 +708,9 @@ export default function HomePage() {
       </section>
 
       {/* ======================================================== */}
-      {/* 3. TRUSTED BY NATIONAL RAILS (Unstop "Trusted By")        */}
+      {/* 3. TRUSTED NATIONAL PUBLIC RAILS & PORTALS               */}
       {/* ======================================================== */}
-      <section className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-2xs space-y-4">
+      <section className="py-2 sm:py-3 space-y-3">
         <div className="text-center space-y-1">
           <span className="text-xs font-black uppercase tracking-wider text-slate-500">
             Trusted National Public Rails &amp; Portals

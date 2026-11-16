@@ -102,6 +102,25 @@
     animation-play-state: paused;
   }
 
+  /* Magic UI / Unstop Partner Logo Marquee */
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-100% - var(--gap, 1rem)));
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee var(--duration, 45s) linear infinite;
+    will-change: transform;
+  }
+
+  .group:hover .animate-marquee {
+    animation-play-state: paused;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .animate-marquee-linear {
       animation: none !important;
