@@ -41,10 +41,16 @@ import {
   CheckCircle,
   ArrowUpRight,
   ArrowRight,
-  BookOpen
+  BookOpen,
+  Camera,
+  Trash2,
+  Upload,
+  Image as ImageIcon
 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { SpotlightCard, NumberTicker } from "../../components/common/ReactBits";
+import { CITIZEN_AVATARS, DEFAULT_CITIZEN_AVATAR, getInitials } from "../../utils/citizenAvatars";
+import { updateUserProfile } from "../../services/authApi";
 
 /**
  * Lok Samarth — Citizen Civic Profile & Welfare Readiness Console
@@ -95,17 +101,90 @@ export default function CitizenProfile() {
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [showAddSignalModal, setShowAddSignalModal] = useState(false);
   const [showRankingInfoModal, setShowRankingInfoModal] = useState(false);
   const [newSignalText, setNewSignalText] = useState("");
   const [showAllSignals, setShowAllSignals] = useState(false);
 
-  // Sync user from AuthContext if user exists and has a custom name
+  // Avatar Management State
+  const [tempAvatar, setTempAvatar] = useState(user?.avatar !== undefined ? user.avatar : profileData.avatar);
+  const [avatarToast, setAvatarToast] = useState(null);
+
+  // Sync user from AuthContext if user exists
   useEffect(() => {
-    if (user?.name && user.name !== "Citizen") {
-      setProfileData((prev) => ({ ...prev, name: user.name }));
+    if (user) {
+      setProfileData((prev) => ({
+        ...prev,
+        name: user.name && user.name !== "Citizen" ? user.name : prev.name,
+        avatar: user.avatar !== undefined ? user.avatar : prev.avatar,
+      }));
+      if (user.avatar !== undefined) {
+        setTempAvatar(user.avatar);
+      }
     }
   }, [user]);
+
+  // Handle Photo File Upload
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Image file size should be less than 2MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setTempAvatar(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Save / Apply Selected Avatar
+  const handleSaveAvatar = async (avatarToSave) => {
+    const finalAvatar = avatarToSave !== undefined ? avatarToSave : tempAvatar;
+    setProfileData((prev) => ({ ...prev, avatar: finalAvatar }));
+    setShowAvatarModal(false);
+
+    try {
+      if (updateUser) {
+        updateUser({ avatar: finalAvatar });
+      }
+      await updateUserProfile({ avatar: finalAvatar });
+      setAvatarToast(finalAvatar ? "Profile picture updated successfully!" : "Profile picture deleted. Using official initials.");
+    } catch {
+      if (updateUser) {
+        updateUser({ avatar: finalAvatar });
+      }
+      setAvatarToast(finalAvatar ? "Profile picture updated (saved locally)!" : "Profile picture deleted.");
+    }
+
+    setTimeout(() => setAvatarToast(null), 3500);
+  };
+
+  // Delete / Remove Profile Picture
+  const handleDeleteAvatar = async () => {
+    setTempAvatar(null);
+    setProfileData((prev) => ({ ...prev, avatar: null }));
+    setShowAvatarModal(false);
+
+    try {
+      if (updateUser) {
+        updateUser({ avatar: null });
+      }
+      await updateUserProfile({ avatar: null });
+      setAvatarToast("Profile picture removed. Reverted to official initials.");
+    } catch {
+      if (updateUser) {
+        updateUser({ avatar: null });
+      }
+      setAvatarToast("Profile picture removed (saved locally).");
+    }
+
+    setTimeout(() => setAvatarToast(null), 3500);
+  };
 
   // Handle Copy Profile Link
   const publicUrl = `loksamarth.in/u/${profileData.username}`;
@@ -257,26 +336,72 @@ export default function CitizenProfile() {
               )}
 
               {/* Large Circular Avatar with Tiranga Saffron-White-Green Ring */}
-              <div className="flex justify-center mb-4">
-                <div className="relative">
+              <div className="flex flex-col items-center mb-4">
+                <div className="relative group">
                   <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full p-1.5 bg-gradient-to-tr from-[#ea580c] via-emerald-400 to-[#112318] shadow-md">
-                    <div className="w-full h-full rounded-full overflow-hidden bg-white">
-                      <img
-                        src={profileData.avatar}
-                        alt={profileData.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80";
-                        }}
-                      />
+                    <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center">
+                      {profileData.avatar ? (
+                        <img
+                          src={profileData.avatar}
+                          alt={profileData.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.style.display = "none";
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-tr from-[#112318] to-emerald-800 text-white flex items-center justify-center font-black text-2xl sm:text-3xl">
+                          {getInitials(profileData.name)}
+                        </div>
+                      )}
                     </div>
                   </div>
+
                   {/* Small Verified Government Badge */}
-                  <div className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md border border-emerald-200">
+                  <div className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-md border border-emerald-200" title="DigiLocker & Aadhaar Verified Citizen">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 fill-emerald-100" />
                   </div>
+
+                  {/* Camera / Edit Overlay Button */}
+                  {!isPreviewMode && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAvatarModal(true)}
+                      className="absolute bottom-1 left-1 bg-[#112318] hover:bg-emerald-800 text-white p-2 rounded-full shadow-lg border-2 border-white transition transform hover:scale-110 cursor-pointer"
+                      title="Change, Update, or Delete Profile Picture"
+                      aria-label="Change Profile Picture"
+                    >
+                      <Camera className="w-3.5 h-3.5 text-emerald-300" />
+                    </button>
+                  )}
                 </div>
+
+                {/* Quick Avatar Controls Under Avatar */}
+                {!isPreviewMode && (
+                  <div className="flex items-center gap-1.5 mt-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowAvatarModal(true)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-slate-700 hover:text-emerald-950 bg-slate-100 hover:bg-emerald-50 border border-slate-200 transition cursor-pointer"
+                    >
+                      <Camera className="w-3.5 h-3.5 text-emerald-700" />
+                      <span>{profileData.avatar ? "Update Photo" : "Add Photo"}</span>
+                    </button>
+
+                    {profileData.avatar && (
+                      <button
+                        type="button"
+                        onClick={handleDeleteAvatar}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100/80 border border-rose-200 transition cursor-pointer"
+                        title="Delete profile picture and use initials"
+                      >
+                        <Trash2 className="w-3 h-3 text-rose-600" />
+                        <span>Delete</span>
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Citizen Name & Primary Welfare Category */}
@@ -980,6 +1105,36 @@ export default function CitizenProfile() {
               </button>
             </div>
 
+            {/* Quick Avatar Management Row */}
+            <div className="flex items-center justify-between p-3 bg-emerald-50/60 rounded-2xl border border-emerald-200/80 mt-3">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-emerald-500 shadow-2xs bg-white flex items-center justify-center">
+                  {profileData.avatar ? (
+                    <img src={profileData.avatar} alt={profileData.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-tr from-[#112318] to-emerald-800 text-white flex items-center justify-center font-bold text-sm">
+                      {getInitials(profileData.name)}
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <div className="text-xs font-black text-slate-900">Profile Picture &amp; Avatar</div>
+                  <div className="text-[11px] text-slate-500 font-medium">Custom photo or official civic avatar</div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowEditProfileModal(false);
+                  setShowAvatarModal(true);
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-[#112318] hover:bg-emerald-800 transition cursor-pointer shadow-2xs"
+              >
+                <Camera className="w-3.5 h-3.5 text-emerald-300" />
+                <span>Change</span>
+              </button>
+            </div>
+
             <form onSubmit={handleSaveProfile} className="space-y-4 mt-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
@@ -1166,6 +1321,227 @@ export default function CitizenProfile() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* 4. UPDATE / CHANGE / DELETE PROFILE PICTURE & AVATAR MODAL    */}
+      {/* ============================================================ */}
+      {showAvatarModal && (
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 my-8 max-h-[92vh] flex flex-col">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-200 shadow-2xs">
+                  <Camera className="w-4 h-4 text-emerald-700" />
+                </div>
+                <div>
+                  <h3 className="font-black text-slate-900 text-base">
+                    Profile Picture &amp; Sovereign Avatar
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium">
+                    Upload custom photo, pick an official civic avatar, or delete your picture.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAvatarModal(false)}
+                className="text-slate-400 hover:text-slate-600 font-bold p-1 rounded-lg hover:bg-slate-100 cursor-pointer transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Scrollable Modal Content */}
+            <div className="overflow-y-auto py-4 space-y-5 flex-1 pr-1">
+              
+              {/* Active Selection Preview Card */}
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+                <div className="relative shrink-0">
+                  <div className="w-20 h-20 rounded-full p-1 bg-gradient-to-tr from-[#ea580c] via-emerald-400 to-[#112318] shadow-md">
+                    <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center">
+                      {tempAvatar ? (
+                        <img
+                          src={tempAvatar}
+                          alt="Avatar Preview"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.style.display = "none";
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-tr from-[#112318] to-emerald-800 text-white flex items-center justify-center font-black text-xl">
+                          {getInitials(profileData.name)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="absolute -bottom-0.5 -right-0.5 bg-emerald-600 text-white rounded-full p-1 shadow-xs border border-white">
+                    <Check className="w-3 h-3" />
+                  </div>
+                </div>
+
+                <div className="flex-1 min-w-0 space-y-1">
+                  <div className="text-xs font-black text-slate-900">
+                    {tempAvatar ? "Selected Profile Picture" : "Official Initials (No Photo)"}
+                  </div>
+                  <p className="text-xs text-slate-500 font-medium">
+                    {tempAvatar
+                      ? "This avatar will display across your Benefit Passport, Application Desks, and Top Navigation."
+                      : "Your initials will be displayed in an authentic sovereign gradient badge."}
+                  </p>
+                  {tempAvatar && (
+                    <button
+                      type="button"
+                      onClick={() => setTempAvatar(null)}
+                      className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-600 hover:text-rose-800 hover:underline pt-0.5 cursor-pointer"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      <span>Remove Picture &amp; Revert to Initials</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* SECTION 1: Upload Custom Photo */}
+              <div className="space-y-2">
+                <span className="text-xs font-black text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
+                  <Upload className="w-3.5 h-3.5 text-emerald-700" />
+                  <span>1. Upload Custom Photograph</span>
+                </span>
+                <label className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-slate-300 hover:border-emerald-600 bg-white hover:bg-emerald-50/40 rounded-2xl transition cursor-pointer group">
+                  <div className="w-10 h-10 rounded-full bg-emerald-100/70 text-emerald-800 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                    <Camera className="w-5 h-5 text-emerald-700" />
+                  </div>
+                  <span className="text-xs font-bold text-slate-800 group-hover:text-emerald-900">
+                    Click to browse or drag photo here
+                  </span>
+                  <span className="text-[11px] text-slate-500 font-medium mt-0.5">
+                    Supports JPG, PNG, WEBP &bull; Maximum file size: 2 MB
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+
+              {/* SECTION 2: Choose Sovereign Civic Avatar */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>2. Or Choose Sovereign Civic Avatar</span>
+                  </span>
+                  <span className="text-[11px] text-slate-500 font-medium">
+                    8 Official Themes
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  {CITIZEN_AVATARS.map((av) => {
+                    const isSelected = tempAvatar === av.url;
+                    return (
+                      <button
+                        key={av.id}
+                        type="button"
+                        onClick={() => setTempAvatar(av.url)}
+                        className={`p-2.5 rounded-2xl border text-center transition flex flex-col items-center gap-1.5 cursor-pointer relative ${
+                          isSelected
+                            ? "bg-emerald-50/80 border-emerald-500 ring-2 ring-emerald-400/30 shadow-xs"
+                            : "bg-white border-slate-200 hover:border-emerald-300 hover:bg-slate-50"
+                        }`}
+                        title={av.label}
+                      >
+                        <div className="w-12 h-12 rounded-full overflow-hidden shadow-2xs border border-slate-200">
+                          <img
+                            src={av.url}
+                            alt={av.label}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="min-w-0 w-full">
+                          <div className="text-[11px] font-bold text-slate-800 truncate">
+                            {av.label.split("&")[0].trim()}
+                          </div>
+                          <div className="text-[9px] text-slate-500 truncate">
+                            {av.category.split("&")[0].trim()}
+                          </div>
+                        </div>
+                        {isSelected && (
+                          <div className="absolute top-1 right-1 bg-emerald-600 text-white rounded-full p-0.5 shadow-2xs">
+                            <Check className="w-2.5 h-2.5" />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* SECTION 3: Delete / Remove Action */}
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                <div>
+                  <div className="text-xs font-bold text-slate-800">
+                    Want to remove your picture completely?
+                  </div>
+                  <div className="text-[11px] text-slate-500">
+                    Deletes photo and displays your initial badge ({getInitials(profileData.name)}).
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleDeleteAvatar}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition cursor-pointer shrink-0"
+                >
+                  <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                  <span>Delete Photo</span>
+                </button>
+              </div>
+
+            </div>
+
+            {/* Modal Footer Actions */}
+            <div className="pt-3.5 border-t border-slate-100 flex items-center justify-end gap-2.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  setTempAvatar(user?.avatar !== undefined ? user.avatar : profileData.avatar);
+                  setShowAvatarModal(false);
+                }}
+                className="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSaveAvatar(tempAvatar)}
+                className="px-5 py-2 text-xs font-black text-white bg-[#112318] hover:bg-[#1a3826] rounded-xl transition shadow-xs cursor-pointer flex items-center gap-1.5"
+              >
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Save &amp; Apply Avatar</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================ */}
+      {/* 5. FLOATING FEEDBACK TOAST NOTIFICATION                      */}
+      {/* ============================================================ */}
+      {avatarToast && (
+        <div className="fixed bottom-6 right-6 z-50 bg-[#112318] text-white px-4 py-3 rounded-2xl shadow-2xl border border-emerald-500/30 flex items-center gap-2.5 text-xs font-bold animate-in slide-in-from-bottom-5">
+          <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+            <Check className="w-3.5 h-3.5 text-white" />
+          </div>
+          <span>{avatarToast}</span>
         </div>
       )}
 

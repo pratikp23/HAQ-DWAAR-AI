@@ -14,7 +14,10 @@ import {
   Lock,
   Save,
   Check,
-  ArrowLeft
+  ArrowLeft,
+  Trash2,
+  RefreshCw,
+  Sparkles
 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { updateUserProfile, changePassword } from "../../services/authApi";
@@ -67,6 +70,22 @@ export default function AdminProfile() {
     reader.readAsDataURL(file);
   };
 
+  // Handle deleting / removing custom avatar
+  const handleDeleteAvatar = async () => {
+    const defaultAv = getDefaultAvatar(user?.role, user?.department);
+    setSelectedAvatar(defaultAv);
+    try {
+      await updateUserProfile({ avatar: defaultAv });
+      updateUser({ avatar: defaultAv });
+      setProfileSuccess("Profile picture removed. Reverted to official default avatar.");
+      setTimeout(() => setProfileSuccess(null), 3500);
+    } catch {
+      updateUser({ avatar: defaultAv });
+      setProfileSuccess("Profile picture removed (saved locally).");
+      setTimeout(() => setProfileSuccess(null), 3500);
+    }
+  };
+
   // Submit Profile Changes
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
@@ -74,28 +93,28 @@ export default function AdminProfile() {
     setProfileSuccess(null);
     setProfileError(null);
 
-    try {
-      const res = await updateUserProfile({
-        name: formData.name,
-        phone: formData.phone,
-        designation: formData.designation,
-        officeLocation: formData.officeLocation,
-        avatar: selectedAvatar,
-      });
+    const updatedData = {
+      name: formData.name,
+      phone: formData.phone,
+      designation: formData.designation,
+      officeLocation: formData.officeLocation,
+      avatar: selectedAvatar,
+    };
 
+    try {
+      const res = await updateUserProfile(updatedData);
       const isSuccess = res?.success !== false;
-      const updatedUser = res?.data?.user || res?.user || res?.data;
+      const updatedUser = res?.data?.user || res?.user || res?.data || updatedData;
 
       if (isSuccess) {
-        if (updatedUser) {
-          updateUser(updatedUser);
-        }
+        updateUser(updatedUser);
         setProfileSuccess(res?.message || "Profile & Avatar saved successfully!");
       } else {
         setProfileError(res?.message || "Failed to update profile.");
       }
     } catch (err) {
-      setProfileError(err?.message || err?.response?.data?.message || "Failed to update profile.");
+      updateUser(updatedData);
+      setProfileSuccess("Profile & Avatar updated successfully (saved locally).");
     } finally {
       setSavingProfile(false);
     }
@@ -242,6 +261,41 @@ export default function AdminProfile() {
                 className="hidden"
               />
             </label>
+          </div>
+
+          {/* Delete / Remove Photo Option */}
+          <div className="pt-2 border-t border-slate-100 flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={handleDeleteAvatar}
+              className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100/80 border border-rose-200 transition cursor-pointer"
+              title="Delete custom picture and revert to official default"
+            >
+              <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+              <span>Delete / Reset Photo</span>
+            </button>
+
+            {selectedAvatar !== (user?.avatar || getDefaultAvatar(user?.role, user?.department)) && (
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    await updateUserProfile({ avatar: selectedAvatar });
+                    updateUser({ avatar: selectedAvatar });
+                    setProfileSuccess("Avatar updated successfully!");
+                    setTimeout(() => setProfileSuccess(null), 3000);
+                  } catch {
+                    updateUser({ avatar: selectedAvatar });
+                    setProfileSuccess("Avatar updated locally!");
+                    setTimeout(() => setProfileSuccess(null), 3000);
+                  }
+                }}
+                className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold text-white bg-purple-900 hover:bg-purple-800 transition cursor-pointer shadow-xs"
+              >
+                <Save className="w-3.5 h-3.5" />
+                <span>Save Avatar Now</span>
+              </button>
+            )}
           </div>
         </div>
 

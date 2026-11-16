@@ -36,10 +36,39 @@ export const testAdminRoute = async () => {
 };
 
 /**
- * Update user profile details and avatar
+ * Update user profile details and avatar (with offline localStorage persistence)
  */
 export const updateUserProfile = async (profileData) => {
-  return await api.put("/auth/profile", profileData);
+  try {
+    return await api.put("/auth/profile", profileData);
+  } catch (err) {
+    console.warn("Backend unavailable, persisting user profile update to localStorage:", err.message);
+    const activeRaw = localStorage.getItem("haqdwaar_active_user");
+    const active = activeRaw ? JSON.parse(activeRaw) : {};
+    const updated = { ...active, ...profileData };
+    localStorage.setItem("haqdwaar_active_user", JSON.stringify(updated));
+
+    // Also update in registered users database
+    try {
+      const rawUsers = localStorage.getItem("lok_samarth_users");
+      if (rawUsers) {
+        const users = JSON.parse(rawUsers);
+        const updatedUsers = users.map((u) =>
+          u.email === updated.email ? { ...u, ...profileData } : u
+        );
+        localStorage.setItem("lok_samarth_users", JSON.stringify(updatedUsers));
+      }
+    } catch (e) {
+      console.warn("Could not sync to lok_samarth_users:", e);
+    }
+
+    return {
+      success: true,
+      data: { user: updated },
+      user: updated,
+      message: "Profile and avatar updated successfully (saved locally).",
+    };
+  }
 };
 
 /**

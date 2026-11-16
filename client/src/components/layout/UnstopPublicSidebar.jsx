@@ -354,9 +354,11 @@ export default function UnstopPublicSidebar({ isOpenMobile, onCloseMobile }) {
                 className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-white border border-slate-200/90 shadow-2xs hover:border-emerald-400 hover:shadow-xs transition text-left cursor-pointer group"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
+                  <div className="w-6 h-6 rounded-full overflow-hidden bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
                     {location.pathname.startsWith("/admin") ? (
                       <Building2 className="w-3.5 h-3.5" />
+                    ) : user?.avatar ? (
+                      <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
                     ) : (
                       <User className="w-3.5 h-3.5" />
                     )}
@@ -394,8 +396,12 @@ export default function UnstopPublicSidebar({ isOpenMobile, onCloseMobile }) {
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
-                        <User className="w-3.5 h-3.5" />
+                      <div className="w-6 h-6 rounded-full overflow-hidden bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
+                        {user?.avatar ? (
+                          <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                        ) : (
+                          <User className="w-3.5 h-3.5" />
+                        )}
                       </div>
                       <span>
                         {isAuthenticated && user?.name && user.name !== "Citizen" ? user.name : "Citizen"}

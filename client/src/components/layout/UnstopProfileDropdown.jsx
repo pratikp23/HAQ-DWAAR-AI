@@ -19,6 +19,7 @@ import {
   Share2
 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
+import { getInitials } from "../../utils/citizenAvatars";
 
 /**
  * Unstop-Style User Profile Popover / Dropdown Menu
@@ -53,7 +54,9 @@ export default function UnstopProfileDropdown({ align = "right", className = "" 
   // Citizen displayName & initials (Defaulted to Pratik Pathak)
   const displayName = user?.name && user.name !== "Citizen" ? user.name : "Pratik Pathak";
   const userEmail = user?.email && !user.email.includes("citizen@") ? user.email : "pratikpathak343@gmail.com";
-  const userAvatar = user?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80";
+  const hasCustomAvatar = Boolean(user?.avatar && typeof user.avatar === "string" && user.avatar.trim() !== "");
+  const userAvatar = hasCustomAvatar ? user.avatar : null;
+  const userInitials = getInitials(displayName);
 
   const handleCopyReferral = () => {
     const referralUrl = `${window.location.origin}/register?ref=${encodeURIComponent(displayName.toLowerCase().replace(/\s+/g, "-"))}`;
@@ -81,16 +84,22 @@ export default function UnstopProfileDropdown({ align = "right", className = "" 
         aria-expanded={isOpen}
       >
         <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full p-[2px] bg-gradient-to-tr from-emerald-500 via-teal-400 to-emerald-600 shadow-xs group-hover:scale-105 transition-transform">
-          <div className="w-full h-full rounded-full overflow-hidden bg-white">
-            <img
-              src={userAvatar}
-              alt={displayName}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80";
-              }}
-            />
+          <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center">
+            {userAvatar ? (
+              <img
+                src={userAvatar}
+                alt={displayName}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.style.display = "none";
+                }}
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-tr from-[#112318] to-emerald-800 text-white flex items-center justify-center font-black text-xs">
+                {userInitials}
+              </div>
+            )}
           </div>
           {/* Small Verified Indicator Dot */}
           <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full" />
@@ -111,12 +120,22 @@ export default function UnstopProfileDropdown({ align = "right", className = "" 
             {/* Avatar with Unstop-style Green Ring & Checkmark */}
             <div className="relative">
               <div className="w-16 h-16 rounded-full p-[3px] bg-emerald-500 flex items-center justify-center shadow-xs">
-                <div className="w-full h-full rounded-full overflow-hidden bg-white">
-                  <img
-                    src={userAvatar}
-                    alt={displayName}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center">
+                  {userAvatar ? (
+                    <img
+                      src={userAvatar}
+                      alt={displayName}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.style.display = "none";
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-tr from-[#112318] to-emerald-800 text-white flex items-center justify-center font-black text-base">
+                      {userInitials}
+                    </div>
+                  )}
                 </div>
               </div>
               {/* Green Verified Checkmark Pill at bottom */}
