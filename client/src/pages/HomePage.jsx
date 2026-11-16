@@ -33,6 +33,7 @@ import {
   Briefcase,
   Home,
   HeartPulse,
+  Heart,
   Building2,
   Volume2,
   CheckCircle,
@@ -49,6 +50,9 @@ import {
   Coins
 } from "lucide-react";
 import { getSchemes } from "../services/schemeApi";
+import { STATUTORY_SCHEMES } from "../data/statutorySchemes";
+import { getSchemeVisualMeta } from "../utils/schemeImages";
+import { SchemeCardSkeleton } from "../components/common/Skeleton";
 import { useAuth } from "../hooks/useAuth";
 import { useLanguage } from "../context/LanguageContext";
 import CivicInfiniteMarquee from "../components/common/CivicInfiniteMarquee";
@@ -67,6 +71,8 @@ export default function HomePage() {
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
   const [roleTrackFilter, setRoleTrackFilter] = useState("FARMER");
   const [activeBannerSlide, setActiveBannerSlide] = useState(0);
+  const [featuredSlide, setFeaturedSlide] = useState(0);
+  const [isCarouselHovered, setIsCarouselHovered] = useState(false);
 
   // Banner Slides: Indian National Flag Tiranga + User Civic Illustrations
   const bannerSlides = [
@@ -128,23 +134,54 @@ export default function HomePage() {
     return () => clearInterval(timer);
   }, [bannerSlides.length]);
 
-  // Load schemes from backend
+  // Load schemes from backend with statutory fallback
   useEffect(() => {
     const fetchTopSchemes = async () => {
       try {
+        setLoadingSchemes(true);
         const res = await getSchemes();
         const schemesList = res?.data?.schemes || res?.schemes || (Array.isArray(res) ? res : []);
-        if (schemesList.length > 0) {
+        if (schemesList && schemesList.length > 0) {
           setSchemes(schemesList);
+        } else {
+          setSchemes(STATUTORY_SCHEMES);
         }
       } catch (err) {
-        console.warn("Could not load schemes:", err.message);
+        console.warn("Could not load schemes from API, falling back to statutory schemes:", err.message);
+        setSchemes(STATUTORY_SCHEMES);
       } finally {
         setLoadingSchemes(false);
       }
     };
     fetchTopSchemes();
   }, []);
+
+  // Group real schemes into batches of 4 cards (Zero Demo Data)
+  const schemeBatches = React.useMemo(() => {
+    const list = schemes && schemes.length > 0 ? schemes : STATUTORY_SCHEMES;
+    const batches = [];
+    for (let i = 0; i < list.length; i += 4) {
+      batches.push(list.slice(i, i + 4));
+    }
+    return batches.length > 0 ? batches : [[]];
+  }, [schemes]);
+
+  // Auto-advance carousel every 2 seconds (pauses on hover)
+  useEffect(() => {
+    if (isCarouselHovered || schemeBatches.length <= 1) return;
+    const timer = setInterval(() => {
+      setFeaturedSlide((prev) => (prev + 1) % schemeBatches.length);
+    }, 2000);
+    return () => clearInterval(timer);
+  }, [isCarouselHovered, schemeBatches.length]);
+
+  const prevFeaturedBatch = () => {
+    setFeaturedSlide((prev) => (prev - 1 + schemeBatches.length) % schemeBatches.length);
+  };
+
+  const nextFeaturedBatch = () => {
+    setFeaturedSlide((prev) => (prev + 1) % schemeBatches.length);
+  };
 
   // Smooth scroll for hash links (e.g. /#faq)
   useEffect(() => {
@@ -163,69 +200,7 @@ export default function HomePage() {
     setOpenFaqIdx(openFaqIdx === idx ? null : idx);
   };
 
-  // 1. Featured National Flagship Schemes (Real Authentic Schemes with HeroUI Cards)
-  const featuredPosters = [
-    {
-      id: "nsp-csss-scholarship",
-      name: "NSP Central Sector Scheme of Scholarship (CSSS)",
-      category: "Higher Education & Technical",
-      department: "Ministry of Education (DoHE)",
-      benefit: "₹20,000 / Year DBT",
-      benefitSubtitle: "Direct Bank Transfer for College & Technical Students",
-      eligibility: "Class 12th >80th Percentile • Family Income < ₹4.5 Lakh",
-      tags: ["Central Sector", "Aadhaar DBT", "College / Degree"],
-      image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&auto=format&fit=crop&q=80",
-      deadline: "Open for AY 2025-26",
-      route: "/browse-schemes?category=STUDENT&search=Scholarship",
-      badgeText: "Direct DBT Disbursed",
-      badgeColor: "bg-emerald-600",
-    },
-    {
-      id: "ayushman-bharat",
-      name: "Ayushman Bharat Pradhan Mantri Jan Arogya (PM-JAY)",
-      category: "Health & Medical Care",
-      department: "National Health Authority (NHA)",
-      benefit: "₹5,00,000 / Family / Year",
-      benefitSubtitle: "100% Cashless Secondary & Tertiary Hospital Care",
-      eligibility: "SECC Vulnerable Families • Golden Card Holder",
-      tags: ["Cashless", "28,000+ Hospitals", "Zero Middlemen"],
-      image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop&q=80",
-      deadline: "Active Across India",
-      route: "/browse-schemes?category=HEALTH&search=Ayushman",
-      badgeText: "Golden Card Active",
-      badgeColor: "bg-rose-600",
-    },
-    {
-      id: "pm-surya-ghar",
-      name: "PM Surya Ghar: Muft Bijli Yojana",
-      category: "Clean Energy & Solar",
-      department: "Ministry of New & Renewable Energy",
-      benefit: "Up to ₹78,000 Direct Subsidy",
-      benefitSubtitle: "Rooftop Solar Subsidy + 300 Units Free Power/Mo",
-      eligibility: "Residential Households with Grid Rooftop",
-      tags: ["Solar Rooftop", "Direct DBT", "Zero Electric Bill"],
-      image: "https://images.unsplash.com/photo-1509391365360-2e959784a276?w=800&auto=format&fit=crop&q=80",
-      deadline: "Live Portal Intake",
-      route: "/browse-schemes?category=GENERAL&search=Surya",
-      badgeText: "Instant Subsidy",
-      badgeColor: "bg-amber-600",
-    },
-    {
-      id: "pm-kisan",
-      name: "PM-KISAN Samman Nidhi",
-      category: "Agriculture & Farmers",
-      department: "Ministry of Agriculture & Farmers Welfare",
-      benefit: "₹6,000 / Year DBT",
-      benefitSubtitle: "Direct Income Support in 3 Equal 4-Monthly Tranches",
-      eligibility: "Landholding Farmer Families with Aadhaar Bank Linkage",
-      tags: ["Direct Cash", "Central Sector", "NPCI Active"],
-      image: "https://images.unsplash.com/photo-1592982537447-7440770cbfc9?w=800&auto=format&fit=crop&q=80",
-      deadline: "Continuous (Round Year)",
-      route: "/browse-schemes?category=KISAN&search=Kisan",
-      badgeText: "100% Central Funded",
-      badgeColor: "bg-emerald-600",
-    },
-  ];
+
 
   // 2. Direct Cash Transfer (DBT) Schemes (Unstop "Competitions" style horizontal cards)
   const dbtSchemes = [
@@ -513,122 +488,138 @@ export default function HomePage() {
       </section>
 
       {/* ======================================================== */}
-      {/* 2. FEATURED SCHEMES POSTER CAROUSEL (HeroUI Reference)    */}
+      {/* 2. AUTO-MOVING FEATURED CAROUSEL (4 CARDS EVERY 2S)      */}
       {/* ======================================================== */}
       <section className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1">
+        {/* Section Header: "| Featured" Title & Carousel Controls */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
           <div className="flex items-center gap-2.5">
-            <div className="w-2 h-7 bg-[#234731] rounded-full" />
-            <div>
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                <span>Featured Flagship Schemes</span>
-                <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#ebf3ed] text-[#234731] border border-[#c8ded0]">
-                  Official Gazette Verified
-                </span>
+            <div className="w-1.5 h-6 sm:h-7 bg-[#234731] rounded-full" />
+            <div className="flex items-center gap-2.5">
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                Featured
               </h2>
-              <p className="text-xs text-slate-500 font-medium">
-                Real central and state statutory welfare schemes pre-integrated with Aadhaar DBT and DigiLocker.
-              </p>
+              <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#ebf3ed] text-[#234731] border border-[#c8ded0]">
+                National Welfare Highlights
+              </span>
             </div>
           </div>
-          <Link
-            to="/browse-schemes"
-            className="text-xs sm:text-sm font-extrabold text-[#234731] hover:text-[#152b1e] inline-flex items-center gap-1 self-start sm:self-auto bg-[#ebf3ed] hover:bg-[#dfece2] px-3.5 py-1.5 rounded-full border border-[#c8ded0] transition"
-          >
-            <span>Explore 350+ Schemes</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            <Link
+              to="/browse-schemes"
+              className="text-xs sm:text-sm font-extrabold text-[#234731] hover:text-[#152b1e] inline-flex items-center gap-1 bg-[#ebf3ed] hover:bg-[#dfece2] px-3.5 py-1.5 rounded-full border border-[#c8ded0] transition mr-1"
+            >
+              <span>Explore All</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+
+            {/* Circular Carousel Controls */}
+            <button
+              type="button"
+              onClick={prevFeaturedBatch}
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-slate-200/90 shadow-2xs hover:shadow-md flex items-center justify-center text-slate-700 hover:text-slate-900 hover:scale-105 active:scale-95 transition cursor-pointer"
+              aria-label="Previous schemes"
+            >
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+            <button
+              type="button"
+              onClick={nextFeaturedBatch}
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white border border-slate-200/90 shadow-2xs hover:shadow-md flex items-center justify-center text-slate-700 hover:text-slate-900 hover:scale-105 active:scale-95 transition cursor-pointer"
+              aria-label="Next schemes"
+            >
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+          </div>
         </div>
 
-        {/* HeroUI 4-Column Poster Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {featuredPosters.map((poster) => (
-            <Card
-              key={poster.id}
-              radius="2xl"
-              padding="none"
-              isHoverable
-              className="group border border-slate-200/90 hover:border-[#234731] shadow-2xs hover:shadow-xl hover:shadow-emerald-950/10 transition-all duration-300 bg-white"
+        {/* 4 Cards Carousel (Auto-advances every 2s, Pure Images inside HeroUI Card) */}
+        <div
+          onMouseEnter={() => setIsCarouselHovered(true)}
+          onMouseLeave={() => setIsCarouselHovered(false)}
+          className="relative group/carousel"
+        >
+          {/* Floating Left Arrow */}
+          {schemeBatches.length > 1 && (
+            <button
+              type="button"
+              onClick={prevFeaturedBatch}
+              className="hidden md:flex absolute -left-3.5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm border border-slate-200 shadow-lg hover:shadow-xl items-center justify-center text-slate-700 hover:text-slate-900 hover:scale-110 active:scale-95 transition-all cursor-pointer opacity-0 group-hover/carousel:opacity-100"
+              aria-label="Previous batch"
             >
-              {/* HeroUI Card Top Image Banner */}
-              <Card.Image
-                src={poster.image}
-                alt={poster.name}
-                aspectRatio="aspect-16/10"
-              >
-                {/* Floating Category Pill */}
-                <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-white/95 text-slate-900 shadow-sm backdrop-blur-md border border-white/40">
-                  {poster.category}
-                </span>
+              <ChevronLeft className="w-5 h-5 text-slate-800" />
+            </button>
+          )}
 
-                {/* Floating Official Status Pill */}
-                <span className={`absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${poster.badgeColor} text-white shadow-sm flex items-center gap-1.5`}>
-                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                  <span>{poster.badgeText}</span>
-                </span>
-              </Card.Image>
-
-              {/* HeroUI Card Body */}
-              <Card.Body className="p-4 sm:p-5 flex flex-col justify-between space-y-4">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 truncate">
-                    <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                    <span className="truncate">{poster.department}</span>
-                  </div>
-
-                  <h3 className="font-black text-base text-slate-900 group-hover:text-[#1b3524] transition-colors line-clamp-2 leading-snug">
-                    {poster.name}
-                  </h3>
-
-                  {/* High-Visibility Benefit Box */}
-                  <div className="p-3 rounded-2xl bg-[#ebf3ed] border border-[#c8ded0] space-y-1">
-                    <div className="text-[10px] font-extrabold uppercase tracking-wider text-[#234731]">
-                      Statutory Entitlement Value
-                    </div>
-                    <div className="text-base sm:text-lg font-black text-[#112318] tracking-tight">
-                      {poster.benefit}
-                    </div>
-                    <div className="text-[11px] font-semibold text-slate-600 line-clamp-1">
-                      {poster.benefitSubtitle}
-                    </div>
-                  </div>
-
-                  {/* Eligibility Snapshot */}
-                  <div className="text-[11px] font-medium text-slate-600 bg-slate-50 p-2 rounded-xl border border-slate-100 flex items-start gap-1.5">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                    <span className="line-clamp-2">{poster.eligibility}</span>
-                  </div>
-                </div>
-
-                {/* Tags */}
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  {poster.tags.map((tag, tIdx) => (
-                    <span
-                      key={tIdx}
-                      className="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-700"
+          {loadingSchemes ? (
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="aspect-[3/4] w-full rounded-2xl sm:rounded-3xl bg-[#e2ede5] animate-pulse" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 transition-all duration-500 animate-in fade-in">
+              {schemeBatches[featuredSlide]?.map((scheme) => {
+                const visual = getSchemeVisualMeta(scheme);
+                return (
+                  <Card
+                    key={scheme._id || scheme.id}
+                    radius="2xl"
+                    padding="none"
+                    isHoverable
+                    isPressable
+                    className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-200/90 hover:border-[#234731] shadow-2xs hover:shadow-xl transition-all duration-300 bg-slate-100 aspect-[3/4] w-full cursor-pointer"
+                  >
+                    {/* Pure Image Only — Zero text/clutter inside the div */}
+                    <Link
+                      to={`/schemes/${scheme._id}`}
+                      className="block w-full h-full relative overflow-hidden"
+                      title={scheme.name}
                     >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </Card.Body>
+                      <img
+                        src={scheme.imageUrl || visual.displayUrl}
+                        alt={scheme.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                    </Link>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
 
-              {/* HeroUI Card Footer */}
-              <Card.Footer className="px-4 sm:px-5 py-3.5 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between gap-2">
-                <span className="text-[11px] text-slate-500 font-semibold truncate flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5 text-slate-400" />
-                  <span>{poster.deadline}</span>
-                </span>
-                <Link
-                  to={poster.route}
-                  className="px-3.5 py-2 rounded-xl bg-[#234731] hover:bg-[#152b1e] text-white font-extrabold text-xs shadow-xs hover:shadow-md transition flex items-center gap-1.5 shrink-0"
-                >
-                  <span>Check &amp; Apply</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </Card.Footer>
-            </Card>
-          ))}
+          {/* Floating Right Arrow */}
+          {schemeBatches.length > 1 && (
+            <button
+              type="button"
+              onClick={nextFeaturedBatch}
+              className="hidden md:flex absolute -right-3.5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm border border-slate-200 shadow-lg hover:shadow-xl items-center justify-center text-slate-700 hover:text-slate-900 hover:scale-110 active:scale-95 transition-all cursor-pointer opacity-0 group-hover/carousel:opacity-100"
+              aria-label="Next batch"
+            >
+              <ChevronRight className="w-5 h-5 text-slate-800" />
+            </button>
+          )}
+
+          {/* Slide Indicator Dots */}
+          {schemeBatches.length > 1 && (
+            <div className="flex items-center justify-center gap-1.5 pt-3">
+              {schemeBatches.map((_, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setFeaturedSlide(idx)}
+                  className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                    featuredSlide === idx
+                      ? "w-6 bg-[#234731]"
+                      : "w-2 bg-slate-300 hover:bg-slate-400"
+                  }`}
+                  aria-label={`Go to batch ${idx + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
