@@ -214,8 +214,8 @@ export default function SchemeCoach() {
         </div>
 
         {/* Stepper Progress Bar */}
-        <div className="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200 shadow-xs">
-          <div className="grid grid-cols-5 gap-1 sm:gap-2">
+        <div className="bg-white p-2.5 sm:p-4 rounded-2xl border border-slate-200 shadow-xs overflow-x-auto no-scrollbar">
+          <div className="grid grid-cols-5 min-w-[320px] sm:min-w-0 gap-1 sm:gap-2">
             {stepsMeta.map((s) => {
               const isActive = currentStep === s.number;
               const isPast = currentStep > s.number;

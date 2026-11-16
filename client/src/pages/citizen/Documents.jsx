@@ -888,10 +888,10 @@ export default function Documents() {
                       {digiLockerDocs.map((item) => (
                         <div
                           key={item.id}
-                          className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-4"
+                          className="p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4"
                         >
                           <div className="space-y-1">
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-wrap items-center gap-2">
                               <span className="font-bold text-slate-900 text-sm">{item.documentName}</span>
                               <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
                                 DigiLocker Synced
@@ -905,7 +905,7 @@ export default function Documents() {
                             </p>
                           </div>
 
-                          <div>
+                          <div className="self-end sm:self-auto shrink-0">
                             {item.alreadyImported ? (
                               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 bg-slate-200 border border-slate-300">
                                 <Check className="w-3.5 h-3.5 text-slate-500" />
