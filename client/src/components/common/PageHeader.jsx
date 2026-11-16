@@ -34,7 +34,7 @@ export default function PageHeader({
           {title}
         </h1>
         {description && (
-          <p className="text-sm sm:text-base text-[#4b5563] leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
             {description}
           </p>
         )}

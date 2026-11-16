@@ -52,7 +52,7 @@ export default function BenefitPassportCard({
                 Benefit Passport
               </h2>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 font-normal mt-0.5">
+            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-0.5">
               नागरिक लाभ पत्र • Citizen Identity
             </p>
           </div>

@@ -81,6 +81,24 @@
     text-wrap: balance;
   }
 
+  /* Universal Subheading Font Reference */
+  .subheading-text,
+  .card-subheading,
+  .section-subheading {
+    font-size: 0.75rem; /* 12px on mobile / text-xs */
+    line-height: 1.625; /* leading-relaxed */
+    font-weight: 500; /* font-medium */
+    color: #475569; /* text-slate-600 */
+  }
+
+  @media (min-width: 640px) {
+    .subheading-text,
+    .card-subheading,
+    .section-subheading {
+      font-size: 0.875rem; /* 14px on tablet/desktop / text-sm */
+    }
+  }
+
   /* Civic Infinite Marquee */
   @keyframes marquee-linear {
     0% {

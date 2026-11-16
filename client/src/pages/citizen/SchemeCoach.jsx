@@ -258,7 +258,7 @@ export default function SchemeCoach() {
               </span>
             </div>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
               {eligibility.summary}
             </p>
 

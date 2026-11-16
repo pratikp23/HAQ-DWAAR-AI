@@ -20,7 +20,7 @@ export default function SectionHeader({
           {badge}
         </div>
         {subtitle && (
-          <p className="text-xs sm:text-sm text-[#4b5563]">
+          <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
             {subtitle}
           </p>
         )}

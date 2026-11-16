@@ -287,7 +287,7 @@ export default function Applications() {
               <Briefcase className="w-6 h-6" />
             </div>
             <h3 className="text-base font-bold text-slate-900">No applications tracked yet</h3>
-            <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-1 max-w-md mx-auto">
               Explore government benefits in the Scheme Registry or view your personalized recommendations to start tracking.
             </p>
             <div className="mt-5 flex items-center justify-center space-x-3">

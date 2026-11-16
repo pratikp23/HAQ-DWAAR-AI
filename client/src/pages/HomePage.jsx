@@ -163,7 +163,13 @@ export default function HomePage() {
   // 1-card by 1-card slow smooth sliding featured schemes (Unstop style)
   const baseSchemes = React.useMemo(() => {
     const list = schemes && schemes.length > 0 ? schemes : STATUTORY_SCHEMES;
-    return list.slice(0, 12);
+    return list.slice(0, 12).map((scheme) => {
+      const visual = getSchemeVisualMeta(scheme);
+      return {
+        ...scheme,
+        imageUrl: scheme.imageUrl || visual.displayUrl,
+      };
+    });
   }, [schemes]);
 
   // Infinite seamless looping array
@@ -565,13 +571,18 @@ export default function HomePage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
           <div className="flex items-center gap-2.5">
             <div className="w-1.5 h-6 sm:h-7 bg-[#234731] rounded-full" />
-            <div className="flex items-center gap-2.5">
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                Featured
-              </h2>
-              <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#ebf3ed] text-[#234731] border border-[#c8ded0]">
-                National Welfare Highlights
-              </span>
+            <div>
+              <div className="flex items-center gap-2.5">
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                  Featured
+                </h2>
+                <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#ebf3ed] text-[#234731] border border-[#c8ded0]">
+                  National Welfare Highlights
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-0.5">
+                Official Government of India flagship schemes and direct citizen entitlements.
+              </p>
             </div>
           </div>
 
@@ -715,7 +726,7 @@ export default function HomePage() {
           <span className="text-xs font-black uppercase tracking-wider text-slate-500">
             Trusted National Public Rails &amp; Portals
           </span>
-          <p className="text-xs text-slate-500 font-medium">
+          <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
             Read-only direct synchronization with official Government of India infrastructure
           </p>
         </div>
@@ -733,7 +744,7 @@ export default function HomePage() {
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                 Direct Benefit Transfer (DBT) &amp; Income Support
               </h2>
-              <p className="text-xs text-slate-500 font-medium">
+              <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
                 Direct monetary entitlements credited directly to your Aadhaar-linked bank account.
               </p>
             </div>
@@ -763,7 +774,7 @@ export default function HomePage() {
                   <h3 className="font-extrabold text-sm text-slate-900 group-hover:text-[#152b1e] transition-colors truncate">
                     {item.title}
                   </h3>
-                  <p className="text-xs text-slate-500 truncate mt-0.5">
+                  <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed truncate mt-0.5">
                     {item.org}
                   </p>
                 </div>
@@ -801,7 +812,7 @@ export default function HomePage() {
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                 Scholarships &amp; Student Welfare Grants
               </h2>
-              <p className="text-xs text-slate-500 font-medium">
+              <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
                 Unleash educational grants, tuition fee waivers, and coaching assistance tailored to your studies.
               </p>
             </div>
@@ -831,7 +842,7 @@ export default function HomePage() {
                   <h3 className="font-extrabold text-sm text-slate-900 group-hover:text-[#152b1e] transition-colors truncate">
                     {item.title}
                   </h3>
-                  <p className="text-xs text-slate-500 truncate mt-0.5">
+                  <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed truncate mt-0.5">
                     {item.org}
                   </p>
                 </div>
@@ -869,7 +880,7 @@ export default function HomePage() {
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                 Role-Based Citizen Welfare Tracks
               </h2>
-              <p className="text-xs text-slate-500 font-medium">
+              <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
                 Unlock 360° assistance with realistic, deterministic welfare tracks tailored to your life situation.
               </p>
             </div>
@@ -1055,7 +1066,7 @@ export default function HomePage() {
           <div className="text-4xl sm:text-6xl md:text-7xl font-black text-slate-900 tracking-tight">
             1.4 Billion+
           </div>
-          <p className="text-sm font-semibold text-slate-500">
+          <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
             Citizens covered across all 28 States &amp; 8 Union Territories
           </p>
         </div>
@@ -1089,11 +1100,16 @@ export default function HomePage() {
       {/* 9. FREQUENTLY ASKED QUESTIONS (Accordion)                */}
       {/* ======================================================== */}
       <section id="faq" className="space-y-4">
-        <div className="flex items-center gap-2 pb-1">
-          <div className="w-1.5 h-6 bg-[#234731] rounded-full" />
-          <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-            Frequently Asked Questions
-          </h2>
+        <div className="flex flex-col gap-1 pb-1">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-6 bg-[#234731] rounded-full" />
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              Frequently Asked Questions
+            </h2>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed ml-3.5">
+            Everything you need to know about eligibility, DigiLocker integration, and statutory rights.
+          </p>
         </div>
 
         <div className="space-y-2">

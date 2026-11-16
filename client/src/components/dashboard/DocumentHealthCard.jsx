@@ -102,7 +102,7 @@ export default function DocumentHealthCard({
                 DigiLocker Vault Health
               </h2>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5 ml-3.5">
+            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-0.5 ml-3.5">
               दस्तावेज़ स्वास्थ्य • 3 of 4 Required Documents Verified
             </p>
           </div>

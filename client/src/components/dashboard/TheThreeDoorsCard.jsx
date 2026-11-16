@@ -45,7 +45,7 @@ export default function TheThreeDoorsCard({
               The 3 Application Doors • आवेदन के तीन द्वार
             </h2>
           </div>
-          <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5 ml-4">
+          <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-0.5 ml-4">
             Choose how you wish to claim your verified welfare entitlements
           </p>
         </div>
@@ -75,7 +75,7 @@ export default function TheThreeDoorsCard({
               <h3 className="text-sm sm:text-base font-black text-slate-900 group-hover:text-emerald-800 transition-colors">
                 1-Click Quick Apply
               </h3>
-              <p className="text-xs text-slate-500 font-medium mt-1 leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-600 font-medium mt-1 leading-relaxed">
                 Direct automated submission for schemes with 100% eligibility. Instantly transmits verified credentials to Nodal Officer review queue.
               </p>
             </div>
@@ -123,7 +123,7 @@ export default function TheThreeDoorsCard({
               <h3 className="text-sm sm:text-base font-black text-slate-900 group-hover:text-purple-800 transition-colors">
                 AI Scheme Coach
               </h3>
-              <p className="text-xs text-slate-500 font-medium mt-1 leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-600 font-medium mt-1 leading-relaxed">
                 Step-by-step interactive guidance. Coach auto-fills complex department forms, translates criteria into 22 languages, and checks document validity.
               </p>
             </div>
@@ -170,7 +170,7 @@ export default function TheThreeDoorsCard({
               <h3 className="text-sm sm:text-base font-black text-slate-900 group-hover:text-amber-800 transition-colors">
                 Assisted Mode (CSC VLE)
               </h3>
-              <p className="text-xs text-slate-500 font-medium mt-1 leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-600 font-medium mt-1 leading-relaxed">
                 Prefer in-person assistance or require biometric e-KYC? Locate your nearest Jan Seva Kendra / CSC center with certified Village Level Entrepreneurs.
               </p>
             </div>

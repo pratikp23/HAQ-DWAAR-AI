@@ -99,7 +99,7 @@ Card.Title = function CardTitle({ children, className = "" }) {
 
 Card.Description = function CardDescription({ children, className = "" }) {
   return (
-    <p className={`text-xs text-slate-500 mt-0.5 leading-relaxed font-medium ${className}`}>
+    <p className={`text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-0.5 ${className}`}>
       {children}
     </p>
   );

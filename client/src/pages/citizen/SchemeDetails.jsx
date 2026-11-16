@@ -495,7 +495,7 @@ export default function SchemeDetails() {
                 About This Scheme
               </h2>
             </div>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
               {scheme.fullDescription || scheme.shortDescription}
             </p>
             {scheme.targetAudience?.length > 0 && (

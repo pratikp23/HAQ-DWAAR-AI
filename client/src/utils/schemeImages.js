@@ -12,21 +12,21 @@ import {
 /**
  * HAQ DWAAR AI — Scheme Photography & Visual Asset Registry
  * 
- * Curated high-resolution Unsplash photography matching Indian civic & welfare programs.
- * Provides keyword-level precision matching plus robust category fallbacks.
+ * Curated high-resolution imagery strictly related to each specific Indian welfare scheme.
+ * Provides exact 1:1 scheme matching for flagship programs and category fallbacks.
  */
 export const CATEGORY_IMAGE_REGISTRY = {
   STUDENT: {
     url: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80",
-    alt: "Students walking in college campus with books",
+    alt: "College and university students studying on campus",
     badge: "HIGHER EDUCATION",
     badgeColor: "bg-blue-600 text-white",
     gradient: "from-blue-700 via-indigo-800 to-slate-900",
     icon: GraduationCap,
   },
   KISAN: {
-    url: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80",
-    alt: "Farmer in lush green agricultural field in sunlight",
+    url: "https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=800&q=80",
+    alt: "Farmer in lush green agricultural field",
     badge: "AGRICULTURE & KISAN",
     badgeColor: "bg-emerald-600 text-white",
     gradient: "from-emerald-700 via-teal-800 to-slate-900",
@@ -49,16 +49,16 @@ export const CATEGORY_IMAGE_REGISTRY = {
     icon: Briefcase,
   },
   HEALTH: {
-    url: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80",
-    alt: "Healthcare clinic and medical welfare",
+    url: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80",
+    alt: "Healthcare clinic and medical doctors",
     badge: "HEALTH & AYUSHMAN",
     badgeColor: "bg-rose-600 text-white",
     gradient: "from-rose-700 via-pink-800 to-slate-900",
     icon: HeartPulse,
   },
   HOUSING: {
-    url: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=800&q=80",
-    alt: "Rural housing and permanent shelter initiative",
+    url: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80",
+    alt: "Pucca permanent house under housing scheme",
     badge: "HOUSING & AWAS",
     badgeColor: "bg-orange-600 text-white",
     gradient: "from-orange-700 via-red-800 to-slate-900",
@@ -66,15 +66,15 @@ export const CATEGORY_IMAGE_REGISTRY = {
   },
   WOMEN: {
     url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80",
-    alt: "Women empowerment and social development",
+    alt: "Women empowerment and maternal health welfare",
     badge: "WOMEN & CHILD",
     badgeColor: "bg-pink-600 text-white",
     gradient: "from-pink-700 via-rose-800 to-slate-900",
     icon: HeartHandshake,
   },
   GENERAL: {
-    url: "https://images.unsplash.com/photo-1532619675605-1ede6c2ed2b0?auto=format&fit=crop&w=800&q=80",
-    alt: "Social security and citizen welfare assistance",
+    url: "https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=800&q=80",
+    alt: "Clean energy rooftop solar panels and public infrastructure",
     badge: "SOCIAL WELFARE",
     badgeColor: "bg-slate-700 text-white",
     gradient: "from-[#240b49] via-[#3d1368] to-slate-900",
@@ -83,60 +83,128 @@ export const CATEGORY_IMAGE_REGISTRY = {
 };
 
 /**
- * Returns the most accurate photographic URL and metadata for a scheme
- * based on scheme name keywords or assigned category.
+ * Returns the photographic URL and metadata strictly related to a scheme.
  */
 export function getSchemeVisualMeta(scheme = {}) {
+  // If the scheme has an explicit high-res image URL, prioritize it
+  if (scheme.imageUrl && scheme.imageUrl.startsWith("http")) {
+    return {
+      displayUrl: scheme.imageUrl,
+      alt: scheme.name || "Government Welfare Scheme",
+      ...CATEGORY_IMAGE_REGISTRY[scheme.category || "GENERAL"],
+    };
+  }
+
   const name = (scheme.name || "").toLowerCase();
+  const desc = (scheme.shortDescription || scheme.fullDescription || "").toLowerCase();
+  const fullText = `${name} ${desc}`;
   const category = (scheme.category || "GENERAL").toUpperCase();
 
-  // Keyword-level specific overrides for famous flagship schemes
-  if (name.includes("kisan") || name.includes("krishi") || name.includes("crop") || name.includes("soil") || name.includes("agriculture")) {
+  // 1. PM Surya Ghar / Rooftop Solar / Muft Bijli
+  if (fullText.includes("surya ghar") || fullText.includes("solar") || fullText.includes("bijli") || fullText.includes("electricity")) {
     return {
-      ...CATEGORY_IMAGE_REGISTRY.KISAN,
-      displayUrl: scheme.imageUrl || CATEGORY_IMAGE_REGISTRY.KISAN.url,
+      ...CATEGORY_IMAGE_REGISTRY.GENERAL,
+      displayUrl: "https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=800&q=80",
+      alt: "Rooftop solar panel installation for clean electricity",
     };
   }
 
-  if (name.includes("scholarship") || name.includes("medhavi") || name.includes("matric") || name.includes("vidyarthi") || name.includes("education")) {
-    return {
-      ...CATEGORY_IMAGE_REGISTRY.STUDENT,
-      displayUrl: scheme.imageUrl || CATEGORY_IMAGE_REGISTRY.STUDENT.url,
-    };
-  }
-
-  if (name.includes("ayushman") || name.includes("health") || name.includes("aarogya") || name.includes("swasthya") || name.includes("medical")) {
+  // 2. Ayushman Bharat / Health / Hospital / PM-JAY / ABHA
+  if (fullText.includes("ayushman") || fullText.includes("jan arogya") || fullText.includes("swasthya") || fullText.includes("health") || fullText.includes("hospital")) {
     return {
       ...CATEGORY_IMAGE_REGISTRY.HEALTH,
-      displayUrl: scheme.imageUrl || CATEGORY_IMAGE_REGISTRY.HEALTH.url,
+      displayUrl: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80",
+      alt: "Doctors and medical healthcare services",
     };
   }
 
-  if (name.includes("mudra") || name.includes("msme") || name.includes("vishwakarma") || name.includes("udyam") || name.includes("business") || name.includes("startup")) {
+  // 3. PM-KISAN / Direct Farmer Support
+  if (fullText.includes("pm-kisan") || fullText.includes("kisan samman") || (fullText.includes("kisan") && fullText.includes("dbt"))) {
     return {
-      ...CATEGORY_IMAGE_REGISTRY.BUSINESS,
-      displayUrl: scheme.imageUrl || CATEGORY_IMAGE_REGISTRY.BUSINESS.url,
+      ...CATEGORY_IMAGE_REGISTRY.KISAN,
+      displayUrl: "https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=800&q=80",
+      alt: "Farmer in agricultural crop field",
     };
   }
 
-  if (name.includes("awas") || name.includes("housing") || name.includes("shelter") || name.includes("ghar")) {
+  // 4. Crop Insurance / PMFBY / Fasal Bima
+  if (fullText.includes("fasal bima") || fullText.includes("pmfby") || fullText.includes("crop insurance")) {
+    return {
+      ...CATEGORY_IMAGE_REGISTRY.KISAN,
+      displayUrl: "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80",
+      alt: "Lush green wheat crops and harvest field",
+    };
+  }
+
+  // 5. PMAY / Awas Yojana / Housing
+  if (fullText.includes("awas") || fullText.includes("housing") || fullText.includes("pucca house") || fullText.includes("shelter")) {
     return {
       ...CATEGORY_IMAGE_REGISTRY.HOUSING,
-      displayUrl: scheme.imageUrl || CATEGORY_IMAGE_REGISTRY.HOUSING.url,
+      displayUrl: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80",
+      alt: "Newly constructed permanent pucca house",
     };
   }
 
-  if (name.includes("ladli") || name.includes("kanya") || name.includes("mahila") || name.includes("sukanya") || name.includes("women")) {
+  // 6. PM SVANidhi / Street Vendors & Hawkers
+  if (fullText.includes("svanidhi") || fullText.includes("street vendor") || fullText.includes("hawker") || fullText.includes("vending")) {
+    return {
+      ...CATEGORY_IMAGE_REGISTRY.BUSINESS,
+      displayUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
+      alt: "Street vendor marketplace and small hawker",
+    };
+  }
+
+  // 7. PM MUDRA / MSME / Artisans / Small Enterprises
+  if (fullText.includes("mudra") || fullText.includes("msme") || fullText.includes("vishwakarma") || fullText.includes("shishu") || fullText.includes("kishore")) {
+    return {
+      ...CATEGORY_IMAGE_REGISTRY.BUSINESS,
+      displayUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80",
+      alt: "Small business enterprise and artisan workshop",
+    };
+  }
+
+  // 8. AICTE Pragati / Girls in Tech
+  if (fullText.includes("pragati") || (fullText.includes("girl") && fullText.includes("technical"))) {
+    return {
+      ...CATEGORY_IMAGE_REGISTRY.STUDENT,
+      displayUrl: "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=800&q=80",
+      alt: "Young woman studying engineering in technical institution",
+    };
+  }
+
+  // 9. Central Sector Scholarship (NSP) / Higher Education
+  if (fullText.includes("central sector") || fullText.includes("college") || fullText.includes("university") || fullText.includes("pm-usp")) {
+    return {
+      ...CATEGORY_IMAGE_REGISTRY.STUDENT,
+      displayUrl: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80",
+      alt: "College students on campus with study materials",
+    };
+  }
+
+  // 10. Post-Matric SC/ST/OBC Scholarship
+  if (fullText.includes("post matric") || fullText.includes("sc/st") || fullText.includes("tuition")) {
+    return {
+      ...CATEGORY_IMAGE_REGISTRY.STUDENT,
+      displayUrl: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=800&q=80",
+      alt: "Students studying in classroom library",
+    };
+  }
+
+  // 11. Atal Pension Yojana / Senior Citizen Security
+  if (fullText.includes("atal pension") || fullText.includes("apy") || fullText.includes("pension") || fullText.includes("senior citizen")) {
+    return {
+      ...CATEGORY_IMAGE_REGISTRY.GENERAL,
+      displayUrl: "https://images.unsplash.com/photo-1516726817505-f5ed825624d8?auto=format&fit=crop&w=800&q=80",
+      alt: "Senior citizens with financial pension security",
+    };
+  }
+
+  // 12. PMMVY / Mother & Child / Sukanya / Ladli
+  if (fullText.includes("matru vandana") || fullText.includes("pmmvy") || fullText.includes("pregnant") || fullText.includes("lactating") || fullText.includes("sukanya")) {
     return {
       ...CATEGORY_IMAGE_REGISTRY.WOMEN,
-      displayUrl: scheme.imageUrl || CATEGORY_IMAGE_REGISTRY.WOMEN.url,
-    };
-  }
-
-  if (name.includes("employment") || name.includes("rozgar") || name.includes("skill") || name.includes("kaushal") || name.includes("shramik")) {
-    return {
-      ...CATEGORY_IMAGE_REGISTRY.EMPLOYMENT,
-      displayUrl: scheme.imageUrl || CATEGORY_IMAGE_REGISTRY.EMPLOYMENT.url,
+      displayUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80",
+      alt: "Maternal and child healthcare welfare",
     };
   }
 
@@ -144,6 +212,6 @@ export function getSchemeVisualMeta(scheme = {}) {
   const match = CATEGORY_IMAGE_REGISTRY[category] || CATEGORY_IMAGE_REGISTRY.GENERAL;
   return {
     ...match,
-    displayUrl: scheme.imageUrl || match.url,
+    displayUrl: match.url,
   };
 }

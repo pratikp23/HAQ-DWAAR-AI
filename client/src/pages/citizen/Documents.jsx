@@ -617,7 +617,7 @@ export default function Documents() {
             </div>
             <div>
               <h3 className="text-lg font-bold text-slate-800">Your Document Vault is empty</h3>
-              <p className="text-slate-500 text-sm max-w-md mx-auto mt-1">
+              <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed max-w-md mx-auto mt-1">
                 Upload your certificates or click <strong>"Import from DigiLocker"</strong> to add simulated documents for instant scheme readiness checks.
               </p>
             </div>

@@ -246,7 +246,7 @@ export default function RecommendationCard({
 
           {/* Scheme Short Description with clear line height */}
           {shortDescription && (
-            <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-relaxed line-clamp-2">
+            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed line-clamp-2">
               {shortDescription}
             </p>
           )}

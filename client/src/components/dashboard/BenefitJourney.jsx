@@ -116,7 +116,7 @@ export default function BenefitJourney({
               Scheme se Application Tak (योजना से आवेदन तक)
             </h2>
           </div>
-          <p className="text-xs sm:text-sm text-purple-900/80 font-normal mt-1">
+          <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-1">
             A transparent 6-stage navigation pipeline from discovery to official DBT disbursement
           </p>
         </div>

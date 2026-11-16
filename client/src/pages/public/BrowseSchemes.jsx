@@ -440,7 +440,7 @@ export default function BrowseSchemes() {
                   </h2>
 
                   {/* Short Description */}
-                  <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">
+                  <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed line-clamp-2">
                     {scheme.shortDescription}
                   </p>
 
