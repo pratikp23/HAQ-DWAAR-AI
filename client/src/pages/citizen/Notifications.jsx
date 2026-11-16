@@ -268,7 +268,7 @@ export default function Notifications() {
                         )}
                       </div>
 
-                      <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">
+                      <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed max-w-2xl">
                         {notif.message}
                       </p>
 

@@ -164,7 +164,7 @@ export default function AdminSchemes() {
             <h1 className="text-2xl font-black text-[#0f172a] tracking-tight">
               Central Schemes &amp; Gazette Compliance Directory
             </h1>
-            <p className="text-xs sm:text-sm text-[#4b5563] mt-1">
+            <p className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mt-1">
               Cross-department schemes oversight, deterministic rule specifications, official circular verification, and citizen fraud grievance protection.
             </p>
           </div>
