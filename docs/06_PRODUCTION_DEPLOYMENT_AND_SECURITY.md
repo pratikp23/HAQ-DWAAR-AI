@@ -65,7 +65,7 @@ res.status(statusCode).json({
 1. Sign up at [mongodb.com/atlas](https://mongodb.com/atlas).
 2. Create a free M0 cluster (located in `ap-south-1` Mumbai for fastest Indian latency).
 3. Whitelist Network Access: Allow IP `0.0.0.0/0` (with strong password).
-4. Copy Connection String: `mongodb+srv://admin:<password>@haqdwaar.cluster.mongodb.net/haqdwaar-ai`.
+4. Copy Connection String: Obtain your connection URI from MongoDB Atlas (Drivers -> Copy URI).
 
 ### Step 2: Backend Deployment on Railway.app
 1. Go to [railway.app](https://railway.app) → New Project → Deploy from GitHub Repo.
@@ -100,8 +100,8 @@ res.status(statusCode).json({
 NODE_ENV=production
 PORT=5000
 
-# MongoDB Atlas Mumbai Replica Set
-MONGO_URI=mongodb+srv://haq_admin:SECURE_PASSWORD@haqdwaar.cluster.mongodb.net/haqdwaar-ai?retryWrites=true&w=majority
+# MongoDB Atlas Connection URI (Configure securely in cloud platform dashboard; do not commit actual credentials)
+MONGO_URI=your_mongodb_atlas_connection_uri_here
 
 # JWT 64-character Secret
 JWT_SECRET=a8f9c1b7e4d2...[64_HEX_CHARACTERS]...09f1
